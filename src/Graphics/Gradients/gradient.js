@@ -6,7 +6,7 @@ export class Gradient {
     /** @type {ColorStop[]} */
     #colorStops = [];
     /** @type {GradientBuilder?} */
-    #builderCance = null;
+    #builderCache = null;
     #gradientChanged = true;
 
     /**
@@ -43,11 +43,11 @@ export class Gradient {
     }
 
     getGradientBuilder() {
-        let builder = this.#builderCance;
+        let builder = this.#builderCache;
 
         if (this.#gradientChanged || builder === null) {
             builder = this.createGradientBuilder();
-            this.#builderCance = builder;
+            this.#builderCache = builder;
         }
 
         return builder;
