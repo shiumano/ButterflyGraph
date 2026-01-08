@@ -242,6 +242,11 @@ export class DrawObject {
     get transformChanged() { return this.#transformChanged || !this.perfectlyOptimized; }  // 変わったって言われてないかもしれない
     get objectChanged() { return this.#objectChanged || !this.perfectlyOptimized; }
 
+    // ”描画した”という情報はRenderer側のものなので、外部からfalseに変更できるようにしている
+    /**
+     * オブジェクトの変化があったかどうかの”メモ”
+     * Rendererは、このプロパティを参照することで、変化がない場合の再描画をスキップすることができる
+     */
     get contentChanged() { return this.#contentChanged || !this.perfectlyOptimized; }
     set contentChanged(value) { this.#contentChanged = value; }
 
