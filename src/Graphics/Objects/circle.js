@@ -43,10 +43,10 @@ export class Circle extends DrawObject {
     }
 
     // ゲロ甘ったるい糖衣構文
-    set width(value) { this.radius = value / 2}
+    set width(value) { this.radius = value / 2; }
     get width() { return super.width; }
 
-    set height(value) { this.radius = value / 2}
+    set height(value) { this.radius = value / 2; }
     get height() { return super.height; }
 
     /**
