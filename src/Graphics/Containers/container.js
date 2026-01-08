@@ -78,7 +78,7 @@ export class Container extends DrawObject {
      * Containerがtimed = falseなら、その下もtの変化での更新はしない そういうもの
      */
     get timed() { return super.timed && this.#childrenTimed; }
-    set timed(value) { super.timed = value }
+    set timed(value) { super.timed = value; }
 
     get clip() { return this.#clip; }
     set clip(value) { 
