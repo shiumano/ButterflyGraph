@@ -125,7 +125,6 @@ export class DrawNode {
 
     /**
      * ctxにtransform を適用し、自身と子を描画
-     * @protected
      * @param {CanvasRenderingContext2D} ctx 
      */
     render(ctx) {
