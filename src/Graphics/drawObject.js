@@ -321,8 +321,8 @@ export class DrawObject {
      */
     calculateTransforms(t) {
         return {
-            x: this.parent !== null ? this.x - this.originOffsetX : undefined,  // PERF: 親が居るんならそっちで計算される
-            y: this.parent !== null ? this.y - this.originOffsetY : undefined,  // HACK: わかりにくいコードだけど
+            x: this.x - this.originOffsetX,
+            y: this.y - this.originOffsetY,
             negativeOverflowX: 0,
             negativeOverflowY: 0,
             rotation: this.rotation,
