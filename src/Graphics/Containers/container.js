@@ -32,16 +32,16 @@ export class Container extends DrawObject {
         this.#clip = options.clip ?? false;
 
         let childrenTimed = false;
-        let childlenPerfect = true;  // だったらどれほどいいことか
+        let childrenPerfect = true;  // だったらどれほどいいことか
 
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             child.parent = this;
             childrenTimed ||= child.timed;
-            childlenPerfect &&= child.perfectlyOptimized;
+            childrenPerfect &&= child.perfectlyOptimized;
         }
         this.#childrenTimed = childrenTimed;
-        this.#childrenPerfectlyOptimized = childlenPerfect;
+        this.#childrenPerfectlyOptimized = childrenPerfect;
     }
 
     get width() { return super.width; }
@@ -52,7 +52,7 @@ export class Container extends DrawObject {
         const children = this.getAllChildren();
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            if (child.anchor.x != 0) {
+            if (child.anchor.x !== 0) {
                 child.requestRecreate("transform");
             }
         }
@@ -67,7 +67,7 @@ export class Container extends DrawObject {
         const children = this.getAllChildren();
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            if (child.anchor.y != 0) {
+            if (child.anchor.y !== 0) {
                 child.requestRecreate("transform");
             }
         }
@@ -75,6 +75,7 @@ export class Container extends DrawObject {
 
     /**
      * tの変化で更新するか否か
+     * Containerがtimed = falseなら、その下もtの変化での更新はしない そういうもの
      */
     get timed() { return super.timed && this.#childrenTimed; }
     set timed(value) { super.timed = value }
@@ -115,6 +116,13 @@ export class Container extends DrawObject {
      * @param {DrawObject} child 
      */
     addChild(child) {
+        const index = this.#children.indexOf(child);
+        if (index !== -1) return;  // 既にあるので、追加する意味はない
+
+        if (child.parent !== null && child.parent instanceof Container) {
+            child.parent.removeChild(child);  // childを奪う そういう仕様とする
+        }
+
         child.parent = this;
         this.#children.push(child);
         this.#childrenTimed ||= child.timed;
@@ -126,6 +134,9 @@ export class Container extends DrawObject {
      * @param {DrawObject} child 
      */
     removeChild(child) {
+        const index = this.#children.indexOf(child);
+        if (index === -1) return;  // この Container の子ではない
+
         child.parent = null;
         const newChildren = [];
         let childrenTimed = false;
@@ -231,7 +242,7 @@ export class ContainerNode extends DrawNode {
     }
 
     /**
-     * @param {Partial<DrawNodeOptions>} options
+     * @param {Partial<ContainerNodeOptions>} options
      */
     with(options) {
         return new ContainerNode({...this.options, ...options}, this)
