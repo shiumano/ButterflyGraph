@@ -91,6 +91,25 @@ export class DrawNode {
 
     get zIndex() { return this.#zIndex; }
 
+    // いつかグラデーションの設定の処理を追加しようと思うと、こうしておくほうが良い
+    /**
+     * ctxに塗りつぶしの色を設定する
+     * @param {CanvasRenderingContext2D} ctx 
+     */
+    _setFillStyle(ctx) {
+        if (this.#fillColor != undefined)
+            ctx.fillStyle = this.#fillColor;
+    }
+
+    /**
+     * ctxに線の色を設定する
+     * @param {CanvasRenderingContext2D} ctx 
+     */
+    _setStrokeStyle(ctx) {
+        if (this.#strokeColor != undefined)
+            ctx.strokeStyle = this.#strokeColor;
+    }
+
     // 派生クラスで実装する必要があるので、あくまでこれはサンプル実装
     /**
      * 新しいオプションを指定して再生成
