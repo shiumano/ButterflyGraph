@@ -1,5 +1,6 @@
 /**
  * @import { Vector2 } from "./vector2"
+ * @import { GradientBuilder } from "./Gradients/gradient.js"
  * @typedef {{
  *   x: number
  *   y: number
@@ -12,8 +13,8 @@
  *   origin: Vector2
  *   alpha: number
  *   zIndex: number
- *   fillStyle?: string
- *   strokeStyle?: string
+ *   fillStyle?: string | GradientBuilder
+ *   strokeStyle?: string | GradientBuilder
  *   visible: boolean
  *   showBounds?: boolean
  * }} DrawNodeOptions
@@ -38,7 +39,9 @@ export class DrawNode {
     #alpha;
     #zIndex;
     #fillColor;
+    #fillGradient;
     #strokeColor;
+    #strokeGradient;
     #visible;
     #showBounds;
 
@@ -64,9 +67,16 @@ export class DrawNode {
         this.#alpha = options.alpha;
         this.#zIndex = options.zIndex;
 
-        this.#fillColor = options.fillStyle;
+        // typeof判定は先にやっておく、drawではnullチェックのみとする
+        if (typeof options.fillStyle === "string")
+            this.#fillColor = options.fillStyle;
+        else
+            this.#fillGradient = options.fillStyle;
 
-        this.#strokeColor = options.strokeStyle;
+        if (typeof options.strokeStyle === "string")
+            this.#strokeColor = options.strokeStyle;
+        else
+            this.#strokeGradient = options.strokeStyle;
 
         this.#visible = options.visible;
 
@@ -97,8 +107,10 @@ export class DrawNode {
      * @param {CanvasRenderingContext2D} ctx 
      */
     _setFillStyle(ctx) {
-        if (this.#fillColor != undefined)
+        if (this.#fillColor !== undefined)
             ctx.fillStyle = this.#fillColor;
+        else if (this.#fillGradient !== undefined)
+            ctx.fillStyle = this.#fillGradient.getGradient(ctx);
     }
 
     /**
@@ -106,8 +118,10 @@ export class DrawNode {
      * @param {CanvasRenderingContext2D} ctx 
      */
     _setStrokeStyle(ctx) {
-        if (this.#strokeColor != undefined)
+        if (this.#strokeColor !== undefined)
             ctx.strokeStyle = this.#strokeColor;
+        else if (this.#strokeGradient !== undefined)
+            ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
     }
 
     // 派生クラスで実装する必要があるので、あくまでこれはサンプル実装

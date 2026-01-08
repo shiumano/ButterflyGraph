@@ -2,8 +2,9 @@ import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
 
 /**
- * @import { DrawNodeOptions } from "./drawNode.js"
  * @import { Vector2 } from "./vector2.js";
+ * @import { DrawNodeOptions } from "./drawNode.js"
+ * @import { Gradient } from "./Gradients/gradient.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -20,7 +21,7 @@ import { DrawNode } from "./drawNode.js";
  *   visible?: boolean
  *   timed?: boolean
  *   showBounds?: boolean
- *   color?: string
+ *   color?: string | Gradient
  * }} DrawObjectOptions
  * @typedef {{
  *   t: number | undefined 
@@ -279,6 +280,16 @@ export class DrawObject {
     #updateOriginOffset() {
         this.#originOffsetX = this.width * this.origin.x * this.scaleX;
         this.#originOffsetY = this.height * this.origin.y * this.scaleY;
+    }
+
+    /**
+     * stringのcolorもしくはGradientBuilderを取得
+     */
+    getColor() {
+        if (typeof this.color === "string")
+            return this.color;
+        else
+            return this.color.createGradientBuilder();
     }
 
     /**
