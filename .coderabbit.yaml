@@ -1,1 +1,9 @@
 language: "ja-JP"
+
+on:
+  pull_request:
+    types: [opened]
+  pull_request_review_comment:
+    types: [created]
+  issue_comment:
+    types: [created]
