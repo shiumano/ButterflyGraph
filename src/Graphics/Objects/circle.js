@@ -4,11 +4,12 @@ import { DrawNode } from "../drawNode.js";
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
+ * @import { GradientBuilder } from "../Gradients/gradient.js";
  * @typedef {DrawObjectOptions & {
  *   radius?: number
  * }} CircleOptions
  * @typedef {DrawNodeOptions & {
- *   fillStyle: string
+ *   fillStyle: string | GradientBuilder
  *   radius: number
  * }} CircleNodeOptions
  */
@@ -57,7 +58,7 @@ export class Circle extends DrawObject {
         const options = super.calculateOptions(t);
         return {
             ...options,
-            fillStyle: this.color,
+            fillStyle: this.getColor(),
             radius: this.radius
         };
     }

@@ -4,9 +4,11 @@ import { DrawNode } from "../drawNode.js";
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
+ * @import { GradientBuilder } from "../Gradients/gradient.js";
  * @typedef {DrawObjectOptions & {
  * }} RectangleOptions
  * @typedef {DrawNodeOptions & {
+ *    fillStyle: string | GradientBuilder
  * }} RectangleNodeOptions
  */
 
@@ -29,7 +31,7 @@ export class Rectangle extends DrawObject {
         const options = super.calculateOptions(t);
         return {
             ...options, 
-            fillStyle: this.color,
+            fillStyle: this.getColor(),
         };
     }
 
