@@ -2,6 +2,9 @@
  * @typedef {{ position: number, color: string }} ColorStop
  */
 
+/**
+ * グラデーションを表すオブジェクト
+ */
 export class Gradient {
     /** @type {ColorStop[]} */
     #colorStops = [];
@@ -55,6 +58,9 @@ export class Gradient {
     }
 }
 
+/**
+ * ctxからCanvasGradientを作成する
+ */
 export class GradientBuilder {
     /** @type {readonly ColorStop[]} */
     #colorStops = [];
