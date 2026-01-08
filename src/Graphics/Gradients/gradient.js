@@ -64,8 +64,7 @@ export class Gradient {
 export class GradientBuilder {
     /** @type {readonly ColorStop[]} */
     #colorStops = [];
-    #updateCache = true;
-    /** @type {Map<number, CanvasGradient | string>} */
+    /** @type {Map<number, CanvasGradient>} */
     #cache = new Map();
 
     /**
@@ -87,15 +86,13 @@ export class GradientBuilder {
         // 違うctxの場合：使い回せないので再作成
         let gradient = this.#cache.get(id);
 
-        if (this.#updateCache || !gradient) {
+        if (gradient === undefined) {
             // --- Gradient を作る ---
             gradient = this.createGradient(ctx);
             this.#applyStops(gradient);
 
             // キャッシュに保存
             this.#cache.set(id, gradient);
-
-            this.#updateCache = false;
         }
 
         return gradient;
