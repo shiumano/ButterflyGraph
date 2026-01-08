@@ -3,6 +3,7 @@ import { DrawNode } from "./drawNode.js";
 
 /**
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
+ * @import { Vector2 } from "./vector2.js";
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -13,8 +14,8 @@ import { DrawNode } from "./drawNode.js";
  *   scaleX?: number
  *   scaleY?: number
  *   alpha?: number
- *   anchor?: Anchor
- *   origin?: Anchor
+ *   anchor?: Vector2
+ *   origin?: Vector2
  *   zIndex?: number
  *   visible?: boolean
  *   timed?: boolean
