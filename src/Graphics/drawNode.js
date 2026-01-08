@@ -48,7 +48,7 @@ export class DrawNode {
      */
     constructor(options, oldNode = null) {
         if (this.constructor === DrawNode)
-            console.warn("Construct abstruct class!!");
+            console.warn("Constructing abstract class!");
 
         this.#options = Object.freeze(options);
 
