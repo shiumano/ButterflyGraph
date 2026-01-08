@@ -324,8 +324,6 @@ export class DrawObject {
         return {
             x: this.x - this.originOffsetX,
             y: this.y - this.originOffsetY,
-            negativeOverflowX: 0,
-            negativeOverflowY: 0,
             rotation: this.rotation,
             scaleX: this.scaleX,
             scaleY: this.scaleY,
