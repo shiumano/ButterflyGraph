@@ -29,7 +29,7 @@ export class Gradient {
     }
 
     getColorStops() {
-        return Object.freeze(this.#colorStops);
+        return Object.freeze([...this.#colorStops]);
     }
 
     clearColorStops() {
