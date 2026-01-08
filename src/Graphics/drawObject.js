@@ -221,8 +221,11 @@ export class DrawObject {
 
     get parent() { return this.#parent; }
     set parent(value) {
+        if (this.#parent === value) return;
+
         this.#parent = value;
         this.#updateOriginOffset();
+        this.requestRecreate("transform");
     }
 
     get timed() { return this.#timed; }
