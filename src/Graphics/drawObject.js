@@ -23,6 +23,7 @@ import { DrawNode } from "./drawNode.js";
  *   showBounds?: boolean
  *   color?: string | Gradient
  *   fillStyle?: string | Gradient
+ *   strokeStyle?: string | Gradient
  * }} DrawObjectOptions
  * @typedef {{
  *   t: number | undefined 
@@ -46,6 +47,7 @@ export class DrawObject {
     #visible;
     #showBounds;
     #fillStyle;
+    #strokeStyle;
 
     /** @type {DrawObject?} */
     #parent = null;
@@ -90,6 +92,7 @@ export class DrawObject {
         this.#showBounds = options.showBounds ?? false;
 
         this.#fillStyle = options.fillStyle ?? options.color ?? "#000";
+        this.#strokeStyle = options.strokeStyle ?? "#000";
 
         this.#updateOriginOffset();
     }
@@ -225,6 +228,14 @@ export class DrawObject {
         this.requestRecreate("object");
     }
 
+    get strokeStyle() { return this.#strokeStyle; }
+    set strokeStyle(value) {
+        if (this.#strokeStyle === value) return;
+
+        this.#strokeStyle = value;
+        this.requestRecreate("object");
+    }
+
     get parent() { return this.#parent; }
     set parent(value) {
         if (this.#parent === value) return;
@@ -288,12 +299,13 @@ export class DrawObject {
 
     /**
      * stringのcolorもしくはGradientBuilderを取得
+     * @param {string | Gradient} style 
      */
-    getColor() {
-        if (typeof this.fillStyle === "string")
-            return this.fillStyle;
+    getStyle(style) {
+        if (typeof style === "string")
+            return style;
         else
-            return this.fillStyle.createGradientBuilder();
+            return style.createGradientBuilder();
     }
 
     /**
