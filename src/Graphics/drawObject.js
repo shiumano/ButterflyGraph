@@ -2,7 +2,7 @@ import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
 
 /**
- * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
+ * @import { DrawNodeOptions } from "./drawNode.js"
  * @import { Vector2 } from "./vector2.js";
  * @typedef {{
  *   x?: number
