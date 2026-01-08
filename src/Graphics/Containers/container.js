@@ -173,7 +173,7 @@ export class Container extends DrawObject {
         let children = this.cachedNode?.options?.children;
         if (children === undefined || this.timed || this.objectChanged) {
             const childObjects = this.getAllChildren();
-            if (childObjects.length == 1) {
+            if (childObjects.length === 1) {
                 const childNode = childObjects[0].getSnapshot(t);
                 children = [childNode];
             } else {
