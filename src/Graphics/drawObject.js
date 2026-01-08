@@ -370,7 +370,6 @@ export class DrawObject {
     /**
      * DrawNodeを取得する
      * キャッシュを利用可能であればキャッシュを返す
-     * @protected
      * @param {number} t 
      */
     getSnapshot(t) {
