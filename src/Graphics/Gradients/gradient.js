@@ -72,7 +72,8 @@ export class GradientBuilder {
      * @param {readonly ColorStop[]} stops 
      */
     constructor(stops) {
-        this.#colorStops = [...stops];  // 受け取った時点で別のオブジェクトであるべき
+        this.#colorStops = Object.isFrozen(stops) ? stops : [...stops];  // 受け取った時点で別のオブジェクトであるべき 既に凍ってるなら問題ない
+        // FIXME: シャローコピーなのでColorStopオブジェを触られたら終わる
     }
 
     /**
