@@ -1,0 +1,96 @@
+の〜〜と
+
+真面目な文書ではない、だけどこれはとても重要
+
+これは私がほしいと思ったから作ったものです
+これは元々ゴミ箱に捨てるつもりでしたが、捨てるのが惜しくなったのでここに置いてます
+私は日本人です、私のためのものです、コメントは日本人である私のためのものです
+海外の皆さん、読みたければGoogle翻訳を使ってください
+
+コメントのカテゴリの意味
+　TODO: いつかやる、でもいまはめんどいからやらない
+　FIXME: いつかなおす、だけどいまはめんどいからやらない
+　HACK: 動きはあってんだけど意味不明 高速逆平方根なんて作らないけど
+
+　WARN: 設計思想と合わない
+　TOOBAD: 救いようがないゴミ設計
+　PERF: 性能に悪影響あり 削れる負荷
+　IDK: 調べりゃわかるかもしれんが調べることができていない
+　しょうがない: しょうがない
+
+　コメントは正規表現で消せます、自由に書いていきましょう
+
+　 $ rg '(TODO|FIXME|HACK|WARN|TOOBAD|PERF|IDK|しょうがない):' -B 4 -A 3
+
+パフォーマンス
+　Vanilla.jsより遅くなってはいけません
+　Vanilla.jsは高速です
+　Vanilla.jsにも限界はあります
+　Vanilla.jsの性能を最大限引き出すコードを書きましょう
+
+　Reactはゴミです
+
+JSDoc
+　基本的にはｲﾝﾃﾘｾﾝｽがほしいだけ
+　ついでに実行前の静的解析ができるなら良いことじゃないですか
+　そして、ただのコメントだから実際に実行されるJavaScriptコードはそこにある
+
+　TypeScriptはゴミです
+
+any
+　ぜったいに潰す
+　OffscreenCanvas→Canvasはギリゆるそう
+　DrawNode.optionsがanyなのは絶対に許してはいけない
+　いつか、潰す
+
+エコシステム化
+　エコシステム化はしてはいけません
+　DrawNodeは、いきなり単体でnewしても使えます
+　ctxはいつでも変えられます
+
+　const canvas = document.getElementById("my-canvas");
+　const ctx = canvas.getContext("2d");
+
+　const circle = new Circle({radius: 50, color: "red"});
+
+　const start = performance.now();
+　function update(now) {
+　    const t = now - start;
+
+　    ctx.reset();  // fillStyleやscale, rotationをリセット、ピクセルを全消去
+
+　    // 通常のCanvas APIを使用した描画
+　    ctx.fillStyle = "#0f08";
+　    ctx.fillRect(0, 0, 30, 30);
+　
+　    // ライブラリを使用する
+　    const snapshot = circle.getSnapshot(t);
+　    snapshot.render(ctx);
+
+　    requestAnimationFrame(update);
+　}
+
+　requestAnimationFrame(update);
+
+　これだけで動く世界を壊してはいけません
+　AIに「Canvas APIを使ったコードを書いて」と言って書いてもらったコードがそのまま動くようにしましょう
+　AIはButterflyGraphを知りません
+　AIは私を知りません
+
+存在価値
+　そんなもの元からありません
+　ライブラリなんてぶっちゃけなくても良いんです
+　ただ、それをちょっとだけ便利にした……それだけのことです
+　ESNext標準機能だけでリッチなウェブサイトは作れるでしょ？多少大変だけど
+
+　このライブラリは空気です
+　あって当たり前だけど、実は標準機能じゃなかった
+　jQuery, JSZip, Pythonで言えばrequestsのような立ち位置
+　「そんな本気のものじゃないけど、素材の味そのままはちょっとつらい」
+　そのときに、いつでも捨てられてしまう無価値な踏み台になる
+　そんなものになりたい
+
+WebGL
+　Canvas APIには勝てません
+　使いやすさもパフォーマンスも意味わかんないくらい強い
+　Canvas APIはWebブラウザーというOSの特権システムコールです
