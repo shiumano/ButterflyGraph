@@ -111,11 +111,9 @@ class RadialGradientBuilder extends GradientBuilder {
      * @param {CanvasRenderingContext2D} ctx 
      */
     createGradient(ctx) {
-        const grad = ctx.createRadialGradient(
+        return ctx.createRadialGradient(
             this.#x0, this.#y0, this.#r0,
             this.#x1, this.#y1, this.#r1
         );
-
-        return this._applyStops(grad);
     }
 }

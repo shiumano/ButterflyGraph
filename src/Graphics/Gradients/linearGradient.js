@@ -79,11 +79,9 @@ class LinearGradientBuilder extends GradientBuilder {
      * @param {CanvasRenderingContext2D} ctx 
      */
     createGradient(ctx) {
-        const grad = ctx.createLinearGradient(
+        return ctx.createLinearGradient(
             this.#x0, this.#y0,
             this.#x1, this.#y1
         );
-
-        return this._applyStops(grad);
     }
 }

@@ -70,12 +70,10 @@ class ConicGradientBuilder extends GradientBuilder {
      * @param {CanvasRenderingContext2D} ctx 
      */
     createGradient(ctx) {
-        const grad = ctx.createConicGradient(
+        return ctx.createConicGradient(
             this.#angle,
             this.#x,
             this.#y
         );
-
-        return this._applyStops(grad);
     }
 }

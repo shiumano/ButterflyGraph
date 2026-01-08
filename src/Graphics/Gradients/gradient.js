@@ -89,6 +89,7 @@ export class GradientBuilder {
         if (this.#updateCache || !gradient) {
             // --- Gradient を作る ---
             gradient = this.createGradient(ctx);
+            this.#applyStops(gradient);
 
             // キャッシュに保存
             this.cache.set(id, gradient);
@@ -102,22 +103,20 @@ export class GradientBuilder {
     /**
      * 
      * @param {CanvasRenderingContext2D} ctx
-     * @returns {CanvasGradient | string}
+     * @returns {CanvasGradient}
      */
     createGradient(ctx) {
         throw new Error("Not implemented");
     }
 
     /**
-     * @protected
      * @param {CanvasGradient} grad
      */
-    _applyStops(grad) {
+    #applyStops(grad) {
         for (let i = 0; i < this.#colorStops.length; i++) {
             const cs = this.#colorStops[i];
             grad.addColorStop(cs.position, cs.color);
         }
-        return grad;
     }
 }
 
