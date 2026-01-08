@@ -49,8 +49,9 @@ export class DrawObject {
 
     #timed = true;
 
-    #originOffsetX;
-    #originOffsetY;
+    // 実際は必ずコンストラクタで値が設定されるが、フロー解析が追いつかない
+    #originOffsetX = 0;
+    #originOffsetY = 0;
 
     #transformChanged = true;
     #objectChanged = true;
@@ -87,8 +88,7 @@ export class DrawObject {
 
         this.#color = options.color ?? "#000";
 
-        this.#originOffsetX = this.width * this.origin.x;
-        this.#originOffsetY = this.height * this.origin.y;
+        this.#updateOriginOffset();
     }
 
     get x() { return this.#x; }
