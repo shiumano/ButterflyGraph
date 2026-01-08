@@ -16,7 +16,7 @@ export class Gradient {
      * @param {ColorStop[]} stops 
      */
     constructor(stops = []) {
-        this.#colorStops = stops;
+        this.#colorStops = [...stops];  // 受け取った時点でそれは別のオブジェクトであるべき
     }
 
     /**
@@ -72,7 +72,7 @@ export class GradientBuilder {
      * @param {readonly ColorStop[]} stops 
      */
     constructor(stops) {
-        this.#colorStops = stops;
+        this.#colorStops = [...stops];  // 受け取った時点で別のオブジェクトであるべき
     }
 
     /**
