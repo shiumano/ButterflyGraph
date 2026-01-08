@@ -48,6 +48,7 @@ export class Gradient {
         if (this.#gradientChanged || builder === null) {
             builder = this.createGradientBuilder();
             this.#builderCache = builder;
+            this.#gradientChanged = false;
         }
 
         return builder;
