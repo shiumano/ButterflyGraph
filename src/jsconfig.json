@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "strict": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "paths": {
+            "@core/*": [
+                "./src/*"
+            ]
+        }
+    },
+    "include": [
+        "**/*.js"
+    ]
+}
