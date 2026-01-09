@@ -32,7 +32,7 @@ export class HTMLCanvasRenderer extends Renderer {
             const ctx = /** @type {CanvasRenderingContext2D | null} */ (/** @type {any} */ offCanvas.getContext("2d"));
             if (!ctx) throw new Error("Cannot get rendering context.");
 
-            super(ctx, element.clientWidth, element.clientHeight);
+            super(ctx, element.width, element.height);
 
             this.#outCtx = outCtx;
             this.#offCanvas = offCanvas;
@@ -40,7 +40,7 @@ export class HTMLCanvasRenderer extends Renderer {
             const ctx = element.getContext("2d");
             if (!ctx) throw new Error("Cannot get rendering context.");
 
-            super(ctx, element.clientWidth, element.clientHeight);
+            super(ctx, element.width, element.height);
         }
 
         this.#canvas = element;
