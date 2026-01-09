@@ -12,7 +12,7 @@ export class Vector2 {
      * @overload
      * @param {number} x
      * @param {number} y
-     * @param {true} editable 
+     * @param {true} [editable=true] 
      * @returns {Vector2}
      * @overload
      * @param {number} x
