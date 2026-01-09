@@ -47,7 +47,7 @@ export class TextObject extends DrawObject {
             TextObject.#ctx.textBaseline = "top";
 
         this.#fill = options.fill ?? true;
-        this.#strokeWidth = options.strokeWidth ?? 0;
+        this.#strokeWidth = Math.max(options.strokeWidth ?? 0, 0);
 
         this.#text = options.text ?? "";
         this.#font = options.font ?? "10px sans-serif";
@@ -70,9 +70,10 @@ export class TextObject extends DrawObject {
 
     get strokeWidth() { return this.#strokeWidth; }
     set strokeWidth(value) {
-        if (this.#strokeWidth === value) return;
+        const clampedValue = Math.max(value, 0);
+        if (this.#strokeWidth === clampedValue) return;
 
-        this.#strokeWidth = value;
+        this.#strokeWidth = clampedValue;
         
         if (this.text.length !== 0) {
             super.width = this.#textWidth + this.strokeWidth;
