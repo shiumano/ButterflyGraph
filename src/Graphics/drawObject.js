@@ -356,6 +356,8 @@ export class DrawObject {
             scaleY: this.scaleY,
             anchor: this.anchor.freeze(),
             origin: this.origin.freeze(),
+            originOffsetX: this.originOffsetX,
+            originOffsetY: this.originOffsetY,
             alpha: this.alpha,
             zIndex: this.zIndex,
             visible: this.visible,
