@@ -59,7 +59,7 @@ class ConicGradientBuilder extends GradientBuilder {
      * @param {number} y
      * @param {readonly ColorStop[]} stops
      */
-    constructor(angle, x, y, stops = []) {
+    constructor(angle, x, y, stops) {
         super(stops);
         this.#angle = angle;
         this.#x = x;
