@@ -103,6 +103,9 @@ class CircleNode extends DrawNode {
      * @param {Partial<CircleNodeOptions>} options
      */
     with(options) {
+        if (this.constructor !== CircleNode)
+            throw new Error(`The ${this.constructor.name}.with(options) is not implemented.`);
+
         return new CircleNode({...this.options, ...options}, this);
     }
 

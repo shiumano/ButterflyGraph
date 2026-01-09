@@ -11,6 +11,8 @@
  *   scaleY: number
  *   anchor: Vector2
  *   origin: Vector2
+ *   originOffsetX: number
+ *   originOffsetY: number
  *   alpha: number
  *   zIndex: number
  *   fillStyle?: string | GradientBuilder
@@ -58,8 +60,8 @@ export class DrawNode {
         this.#x = options.x;
         this.#y = options.y;
         this.#rotation = options.rotation;
-        this.#rotationCenterX = options.width * options.origin.x * options.scaleX;
-        this.#rotationCenterY = options.height * options.origin.y * options.scaleY;
+        this.#rotationCenterX = options.originOffsetX;
+        this.#rotationCenterY = options.originOffsetY;
         this.#width = options.width;
         this.#height = options.height;
         this.#scaleX = options.scaleX;

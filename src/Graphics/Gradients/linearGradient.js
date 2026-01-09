@@ -66,7 +66,7 @@ class LinearGradientBuilder extends GradientBuilder {
      * @param {number} y1
      * @param {readonly ColorStop[]} stops
      */
-    constructor(x0, y0, x1, y1, stops = []) {
+    constructor(x0, y0, x1, y1, stops) {
         super(stops);
         this.#x0 = x0;
         this.#y0 = y0;

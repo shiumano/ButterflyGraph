@@ -95,7 +95,7 @@ class RadialGradientBuilder extends GradientBuilder {
      * @param {number} r1
      * @param {readonly ColorStop[]} stops
      */
-    constructor(x0, y0, r0, x1, y1, r1, stops = []) {
+    constructor(x0, y0, r0, x1, y1, r1, stops) {
         super(stops);
         this.#x0 = x0;
         this.#y0 = y0;

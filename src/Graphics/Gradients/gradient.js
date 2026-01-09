@@ -29,7 +29,7 @@ export class Gradient {
     }
 
     getColorStops() {
-        return Object.freeze([...this.#colorStops]);
+        return Object.freeze(this.#colorStops.map(stop => { return { ...stop }; }));
     }
 
     clearColorStops() {
@@ -72,7 +72,6 @@ export class GradientBuilder {
      */
     constructor(stops) {
         this.#colorStops = Object.isFrozen(stops) ? stops : [...stops];  // 受け取った時点で別のオブジェクトであるべき 既に凍ってるなら問題ない
-        // FIXME: シャローコピーなのでColorStopオブジェを触られたら終わる
     }
 
     /**

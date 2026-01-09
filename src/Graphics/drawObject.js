@@ -318,8 +318,8 @@ export class DrawObject {
         const childOptions = child.calculateThisOptions(t);
         return {
             ...childOptions,
-            x: child.x - child.originOffsetX + this.width * child.anchor.x,
-            y: child.y - child.originOffsetY + this.height * child.anchor.y
+            x: childOptions.x + this.width * child.anchor.x,
+            y: childOptions.y + this.height * child.anchor.y
         };
     }
 
@@ -356,6 +356,8 @@ export class DrawObject {
             scaleY: this.scaleY,
             anchor: this.anchor,
             origin: this.origin,
+            originOffsetX: this.originOffsetX,
+            originOffsetY: this.originOffsetY,
             alpha: this.alpha,
             zIndex: this.zIndex,
             visible: this.visible,

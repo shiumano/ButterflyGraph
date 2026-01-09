@@ -242,6 +242,9 @@ export class ContainerNode extends DrawNode {
      * @param {Partial<ContainerNodeOptions>} options
      */
     with(options) {
+        if (this.constructor !== ContainerNode)
+            throw new Error(`The ${this.constructor.name}.with(options) is not implemented.`);
+
         return new ContainerNode({...this.options, ...options}, this)
     }
 
