@@ -27,7 +27,9 @@ export class HTMLCanvasRenderer extends Renderer {
             // PERF: OffscreenCanvasは操作にかかった時間がプロファイラに出る！
             // PERF: その代償として、死ぬほど低速なdrawImageの呼び出しをする必要がある デバッグ以外で使うな
             const offCanvas = new OffscreenCanvas(element.width, element.height);
-            const ctx = /** @type {CanvasRenderingContext2D | null} */ (/** @type {any} */ offCanvas.getContext("2d"));  // WARN: JSDoc型キャスト
+            // WARN: JSDoc型キャスト
+            // しょうがない: キャストが必要ということは互換性がないということ CanvasとOffscreenCanvasで差が出たらがんばってそっちの方を直してくれ
+            const ctx = /** @type {CanvasRenderingContext2D | null} */ (/** @type {any} */ offCanvas.getContext("2d"));
             if (!ctx) throw new Error("Cannot get rendering context.");
 
             super(ctx, element.clientWidth, element.clientHeight);
@@ -40,7 +42,6 @@ export class HTMLCanvasRenderer extends Renderer {
 
             super(ctx, element.clientWidth, element.clientHeight);
         }
-
 
         this.#canvas = element;
     }
