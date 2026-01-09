@@ -52,20 +52,20 @@ export class HTMLCanvasRenderer extends Renderer {
      * @param {number} height 
      */
     resize(width, height) {
-        const clampedWidth = Math.max(width, 1);
-        const clampedHeight = Math.max(height, 1);
+        super.resize(width, height);
 
-        this.#canvas.width = clampedWidth;
-        this.#canvas.height = clampedHeight;
+        // Renderer.resizeにより0以上にクランプ済み
+        const newWidth = this.width;
+        const newHeight = this.height;
+
+        // Canvasに反映
+        this.#canvas.width = newWidth;
+        this.#canvas.height = newHeight;
         if (this.#offCanvas !== undefined) {
-            this.#offCanvas.width = clampedWidth;
-            this.#offCanvas.height = clampedHeight;
+            this.#offCanvas.width = newWidth;
+            this.#offCanvas.height = newHeight;
             this.#optionApplied = false;
         }
-
-        // Renderer にも反映
-        this.width = clampedWidth;
-        this.height = clampedHeight;
     }
 
     #setOption() {
