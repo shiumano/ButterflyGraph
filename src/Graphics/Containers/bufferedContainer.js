@@ -254,6 +254,11 @@ class BufferedContainerNode extends ContainerNode {
         // TODO: AABBだるいからあとでやる 休ませてくれ……
         // const transformRotation = Math.atan2(transform.b, transform.a);
 
+        if (scaleX == 0 || scaleY == 0) return;  // 描画するものは何もない
+        // FIXME: scaleXまたはscaleYが負の値だとバグる
+        // TODO: 一旦逃げるが、左右or上下が反転したものが描画できるようにいつか直す
+        if (scaleX < 0 || scaleY < 0) return;
+
         let width;
         let height;
 
