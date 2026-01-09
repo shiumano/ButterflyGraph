@@ -11,7 +11,7 @@ export class LinearGradient extends Gradient {
     #y1;
 
     /**
-     * 
+     *
      * @param {number} x0
      * @param {number} y0
      * @param {number} x1
@@ -27,9 +27,9 @@ export class LinearGradient extends Gradient {
     }
 
     /**
-     * 
-     * @param {number} x 
-     * @param {number} y 
+     *
+     * @param {number} x
+     * @param {number} y
      */
     setStart(x, y) {
         this.#x0 = x;
@@ -38,9 +38,9 @@ export class LinearGradient extends Gradient {
     }
 
     /**
-     * 
-     * @param {number} x 
-     * @param {number} y 
+     *
+     * @param {number} x
+     * @param {number} y
      */
     setEnd(x, y) {
         this.#x1 = x;
@@ -75,8 +75,8 @@ class LinearGradientBuilder extends GradientBuilder {
     }
 
     /**
-     * 
-     * @param {CanvasRenderingContext2D} ctx 
+     *
+     * @param {CanvasRenderingContext2D} ctx
      */
     createGradient(ctx) {
         return ctx.createLinearGradient(

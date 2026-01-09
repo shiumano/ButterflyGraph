@@ -14,7 +14,7 @@ import { DrawNode } from "../drawNode.js";
 
 export class Rectangle extends DrawObject {
     /**
-     * @param {RectangleOptions} options 
+     * @param {RectangleOptions} options
      */
     constructor(options = {}) {
         super(options);
@@ -24,19 +24,19 @@ export class Rectangle extends DrawObject {
     set timed(_) { }
 
     /**
-     * 
-     * @param {number} t 
+     *
+     * @param {number} t
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
         return {
-            ...options, 
+            ...options,
             fillStyle: this.getStyle(this.fillStyle),
         };
     }
 
     /**
-     * 
+     *
      * @param {number} t
      */
     createSnapshot(t) {
@@ -50,7 +50,7 @@ export class Rectangle extends DrawObject {
 export class RectangleNode extends DrawNode {
     /**
      * @param {RectangleNodeOptions} options
-     * @param {RectangleNode?} oldNode 
+     * @param {RectangleNode?} oldNode
      */
     constructor(options, oldNode = null) {
         super(options, oldNode);
@@ -67,8 +67,8 @@ export class RectangleNode extends DrawNode {
     }
 
     /**
-     * 
-     * @param {CanvasRenderingContext2D} ctx 
+     *
+     * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
         this._setFillStyle(ctx);

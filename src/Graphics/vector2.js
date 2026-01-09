@@ -12,7 +12,7 @@ export class Vector2 {
      * @overload
      * @param {number} x
      * @param {number} y
-     * @param {true} [editable=true] 
+     * @param {true} [editable=true]
      * @returns {Vector2}
      * @overload
      * @param {number} x
@@ -27,7 +27,7 @@ export class Vector2 {
     }
 
     get x() { return this.#x; }
-    set x(value) { 
+    set x(value) {
         if (this.#editable)
             this.#x = value;
         else
@@ -35,7 +35,7 @@ export class Vector2 {
     }
 
     get y() { return this.#y; }
-    set y(value) { 
+    set y(value) {
         if (this.#editable)
             this.#y = value;
         else

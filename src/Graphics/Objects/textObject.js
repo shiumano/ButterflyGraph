@@ -41,8 +41,8 @@ export class TextObject extends DrawObject {
     #textAscent = 0;
 
     /**
-     * 
-     * @param {TextOptions} options 
+     *
+     * @param {TextOptions} options
      */
     constructor(options = {}) {
         super(options);
@@ -77,7 +77,7 @@ export class TextObject extends DrawObject {
         if (this.#strokeWidth === clampedValue) return;
 
         this.#strokeWidth = clampedValue;
-        
+
         if (this.text.length !== 0) {
             super.width = this.#textWidth + this.strokeWidth;
             super.height = this.#textHeight + this.strokeWidth;
@@ -148,13 +148,13 @@ export class TextObject extends DrawObject {
     }
 
     /**
-     * 
-     * @param {number} t 
+     *
+     * @param {number} t
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
         return {
-            ...options, 
+            ...options,
             fillStyle: this.getStyle(this.fillStyle),
             strokeStyle: this.getStyle(this.strokeStyle),
             text: this.text,
@@ -166,8 +166,8 @@ export class TextObject extends DrawObject {
     }
 
     /**
-     * 
-     * @param {number} t 
+     *
+     * @param {number} t
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
@@ -187,7 +187,7 @@ class TextNode extends DrawNode {
 
     /**
      * @param {TextNodeOptions} options
-     * @param {TextNode?} oldNode 
+     * @param {TextNode?} oldNode
      */
     constructor(options, oldNode = null) {
         super(options);
@@ -200,7 +200,7 @@ class TextNode extends DrawNode {
     }
 
     /**
-     * 
+     *
      * @param {Partial<TextNodeOptions>} options
      */
     with(options) {
@@ -211,8 +211,8 @@ class TextNode extends DrawNode {
     }
 
     /**
-     * 
-     * @param {CanvasRenderingContext2D} ctx 
+     *
+     * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
         // PERF: 毎回設定するのは嫌だが、フレームワーク的ロックを行わない以上ctxの状態は信用できない

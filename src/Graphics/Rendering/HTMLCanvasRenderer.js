@@ -15,9 +15,9 @@ export class HTMLCanvasRenderer extends Renderer {
     #optionApplied = false;
 
     /**
-     * 
-     * @param {HTMLCanvasElement} element 
-     * @param {boolean} debug 
+     *
+     * @param {HTMLCanvasElement} element
+     * @param {boolean} debug
      */
     constructor(element, debug=false) {
         if (debug) {
@@ -47,9 +47,9 @@ export class HTMLCanvasRenderer extends Renderer {
     }
 
     /**
-     * 
-     * @param {number} width 
-     * @param {number} height 
+     *
+     * @param {number} width
+     * @param {number} height
      */
     resize(width, height) {
         super.resize(width, height);
@@ -81,8 +81,8 @@ export class HTMLCanvasRenderer extends Renderer {
     }
 
     /**
-     * 
-     * @param {DrawNode} drawRoot 
+     *
+     * @param {DrawNode} drawRoot
      */
     render(drawRoot) {
         super.render(drawRoot);
@@ -97,4 +97,3 @@ export class HTMLCanvasRenderer extends Renderer {
         }
     }
 }
-

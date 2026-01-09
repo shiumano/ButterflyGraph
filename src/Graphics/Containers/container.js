@@ -21,8 +21,8 @@ export class Container extends DrawObject {
     #clip;
 
     /**
-     * 
-     * @param {ContainerOptions} options 
+     *
+     * @param {ContainerOptions} options
      */
     constructor(options = {}) {
         super(options);
@@ -81,7 +81,7 @@ export class Container extends DrawObject {
     set timed(value) { super.timed = value; }
 
     get clip() { return this.#clip; }
-    set clip(value) { 
+    set clip(value) {
         if (this.#clip === value) return;
 
         this.#clip = value;
@@ -89,8 +89,8 @@ export class Container extends DrawObject {
     }
 
     /**
-     * 
-     * @param {RecreateReason} reason 
+     *
+     * @param {RecreateReason} reason
      */
     requestRecreate(reason) {
         // PERF: reasonにさらに"timed"を追加し、さらにrequester: DrawNodeを追加すればこのforは消せる
@@ -107,13 +107,13 @@ export class Container extends DrawObject {
         super.requestRecreate(reason);
     }
 
-    getAllChildren() { 
+    getAllChildren() {
         return Object.freeze(this.#children.slice());  // PERF: 配列コピーすんのコストなんだわ やめていい？
     }
 
     /**
-     * 
-     * @param {DrawObject} child 
+     *
+     * @param {DrawObject} child
      */
     addChild(child) {
         const index = this.#children.indexOf(child);
@@ -130,8 +130,8 @@ export class Container extends DrawObject {
     }
 
     /**
-     * 
-     * @param {DrawObject} child 
+     *
+     * @param {DrawObject} child
      */
     removeChild(child) {
         const index = this.#children.indexOf(child);
@@ -163,10 +163,10 @@ export class Container extends DrawObject {
     }
 
     /**
-     * 
-     * @param {number} t 
+     *
+     * @param {number} t
      */
-    calculateOptions(t) { 
+    calculateOptions(t) {
         let options = super.calculateOptions(t);
 
         /** @type {DrawNode[] | undefined} */ // WARN: optionsがanyなせいで……any解決したらこれは消せ
@@ -193,8 +193,8 @@ export class Container extends DrawObject {
     }
 
     /**
-     * 
-     * @param {number} t 
+     *
+     * @param {number} t
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
@@ -213,7 +213,7 @@ export class ContainerNode extends DrawNode {
 
     /**
      * @param {ContainerNodeOptions} options
-     * @param {ContainerNode?} oldNode 
+     * @param {ContainerNode?} oldNode
      */
     constructor(options, oldNode = null) {
         super(options, oldNode);

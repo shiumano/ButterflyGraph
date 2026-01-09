@@ -7,10 +7,10 @@ export class Renderer {
     #height;
 
     /**
-     * 
+     *
      * @param {CanvasRenderingContext2D} ctx
      * @param {number} width
-     * @param {number} height 
+     * @param {number} height
      */
     constructor(ctx, width, height) {
         this.ctx = ctx;
@@ -25,9 +25,9 @@ export class Renderer {
     set height(value) { this.resize(this.width, value); }
 
     /**
-     * 
-     * @param {number} width 
-     * @param {number} height 
+     *
+     * @param {number} width
+     * @param {number} height
      */
     resize(width, height) {
         const clampedWidth = Math.max(width, 1);
@@ -39,8 +39,8 @@ export class Renderer {
     }
 
     /**
-     * 
-     * @param {DrawNode} drawRoot 
+     *
+     * @param {DrawNode} drawRoot
      */
     render(drawRoot) {
         this.ctx.reset();
