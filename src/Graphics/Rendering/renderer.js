@@ -3,6 +3,9 @@
  */
 
 export class Renderer {
+    #width;
+    #height;
+
     /**
      * 
      * @param {CanvasRenderingContext2D} ctx
@@ -11,8 +14,28 @@ export class Renderer {
      */
     constructor(ctx, width, height) {
         this.ctx = ctx;
-        this.width = width;
-        this.height = height;
+        this.#width = width;
+        this.#height = height;
+    }
+
+    get width() { return this.#width; }
+    set width(value) { this.resize(value, this.height); }
+
+    get height() { return this.#height; }
+    set height(value) { this.resize(this.width, value); }
+
+    /**
+     * 
+     * @param {number} width 
+     * @param {number} height 
+     */
+    resize(width, height) {
+        const clampedWidth = Math.max(width, 1);
+        const clampedHeight = Math.max(height, 1);
+
+        // Renderer にも反映
+        this.#width = clampedWidth;
+        this.#height = clampedHeight;
     }
 
     /**
