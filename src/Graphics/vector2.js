@@ -7,6 +7,19 @@ export class Vector2 {
     #x;
     #y;
     #editable;
+
+    /**
+     * @overload
+     * @param {number} x
+     * @param {number} y
+     * @param {true} editable 
+     * @returns {Vector2}
+     * @overload
+     * @param {number} x
+     * @param {number} y
+     * @param {false} editable
+     * @returns {Readonly<Vector2>}
+     */
     constructor(x = 0, y = 0, editable = true) {
         this.#x = x;
         this.#y = y;
