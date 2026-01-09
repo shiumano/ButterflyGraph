@@ -198,7 +198,7 @@ class TextNode extends DrawNode {
         this.#fill = options.fill;
         this.#strokeWidth = options.strokeWidth;
         this.#offsetX = this.#strokeWidth / 2;
-        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;
+        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;  // IDK: なんだか変な気がするが、これが正しい
     }
 
     /**
