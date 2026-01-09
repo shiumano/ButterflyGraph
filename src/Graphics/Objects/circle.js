@@ -18,7 +18,6 @@ export class Circle extends DrawObject {
     #radius;
 
     /**
-     *
      * @param {CircleOptions} options
      */
     constructor(options = {}) {
@@ -51,7 +50,6 @@ export class Circle extends DrawObject {
     get height() { return super.height; }
 
     /**
-     *
      * @param {number} t
      */
     calculateOptions(t) {
@@ -64,7 +62,6 @@ export class Circle extends DrawObject {
     }
 
     /**
-     *
      * @param {number} t
      */
     createSnapshot(t) {
@@ -99,7 +96,6 @@ class CircleNode extends DrawNode {
     }
 
     /**
-     *
      * @param {Partial<CircleNodeOptions>} options
      */
     with(options) {
@@ -110,7 +106,6 @@ class CircleNode extends DrawNode {
     }
 
     /**
-     *
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {

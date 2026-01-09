@@ -15,7 +15,6 @@ export class HTMLCanvasRenderer extends Renderer {
     #optionApplied = false;
 
     /**
-     *
      * @param {HTMLCanvasElement} element
      * @param {boolean} debug
      */
@@ -47,7 +46,6 @@ export class HTMLCanvasRenderer extends Renderer {
     }
 
     /**
-     *
      * @param {number} width
      * @param {number} height
      */
@@ -81,7 +79,6 @@ export class HTMLCanvasRenderer extends Renderer {
     }
 
     /**
-     *
      * @param {DrawNode} drawRoot
      */
     render(drawRoot) {

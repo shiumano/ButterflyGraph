@@ -33,7 +33,6 @@ export class BufferedContainer extends Container {
     #redrawRainbow = false;
 
     /**
-     *
      * @param {BufferedContainerOptions} options
      */
     constructor(options = {}) {
@@ -125,7 +124,6 @@ export class BufferedContainer extends Container {
 const bitmapRefCount = new WeakMap();
 
 /**
- *
  * @param {ImageBitmap?} bmp
  */
 function incRef(bmp) {
@@ -134,7 +132,6 @@ function incRef(bmp) {
     bitmapRefCount.set(bmp, refs + 1);
 }
 /**
- *
  * @param {ImageBitmap?} bmp
  */
 function deRef(bmp) {
@@ -223,7 +220,6 @@ class BufferedContainerNode extends ContainerNode {
     }
 
     /**
-     *
      * @param {Partial<BufferedContainerNodeOptions>} options
      */
     with(options) {

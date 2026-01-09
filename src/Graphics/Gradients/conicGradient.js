@@ -10,7 +10,6 @@ export class ConicGradient extends Gradient {
     #y;
 
     /**
-     *
      * @param {number} angle 起点角度（rad）
      * @param {number} x
      * @param {number} y
@@ -24,7 +23,6 @@ export class ConicGradient extends Gradient {
     }
 
     /**
-     *
      * @param {number} angle
      */
     setAngle(angle) {
@@ -33,7 +31,6 @@ export class ConicGradient extends Gradient {
     }
 
     /**
-     *
      * @param {number} x
      * @param {number} y
      */
@@ -66,7 +63,6 @@ class ConicGradientBuilder extends GradientBuilder {
         this.#y = y;
     }
     /**
-     *
      * @param {CanvasRenderingContext2D} ctx
      */
     createGradient(ctx) {

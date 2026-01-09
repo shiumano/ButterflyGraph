@@ -24,7 +24,6 @@ export class Rectangle extends DrawObject {
     set timed(_) { }
 
     /**
-     *
      * @param {number} t
      */
     calculateOptions(t) {
@@ -36,7 +35,6 @@ export class Rectangle extends DrawObject {
     }
 
     /**
-     *
      * @param {number} t
      */
     createSnapshot(t) {
@@ -67,7 +65,6 @@ export class RectangleNode extends DrawNode {
     }
 
     /**
-     *
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {

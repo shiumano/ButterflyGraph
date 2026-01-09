@@ -75,7 +75,6 @@ export class GradientBuilder {
     }
 
     /**
-     *
      * @param {CanvasRenderingContext2D} ctx
      */
     getGradient(ctx) {
@@ -98,7 +97,6 @@ export class GradientBuilder {
     }
 
     /**
-     *
      * @param {CanvasRenderingContext2D} ctx
      * @returns {CanvasGradient}
      */
@@ -122,7 +120,6 @@ const ctxIdMap = new WeakMap();
 let ctxIdCounter = 0;
 
 /**
- *
  * @param {CanvasRenderingContext2D} ctx
  */
 function getContextId(ctx) {

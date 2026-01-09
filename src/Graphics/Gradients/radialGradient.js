@@ -13,7 +13,6 @@ export class RadialGradient extends Gradient {
     #r1;
 
     /**
-     *
      * @param {number} x0
      * @param {number} y0
      * @param {number} r0
@@ -37,7 +36,6 @@ export class RadialGradient extends Gradient {
     }
 
     /**
-     *
      * @param {number} x
      * @param {number} y
      * @param {number} r
@@ -53,7 +51,6 @@ export class RadialGradient extends Gradient {
     }
 
     /**
-     *
      * @param {number} x
      * @param {number} y
      * @param {number} r
@@ -86,7 +83,6 @@ class RadialGradientBuilder extends GradientBuilder {
     #r1;
 
     /**
-     *
      * @param {number} x0
      * @param {number} y0
      * @param {number} r0
@@ -107,7 +103,6 @@ class RadialGradientBuilder extends GradientBuilder {
     }
 
     /**
-     *
      * @param {CanvasRenderingContext2D} ctx
      */
     createGradient(ctx) {

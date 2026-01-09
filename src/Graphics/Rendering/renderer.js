@@ -7,7 +7,6 @@ export class Renderer {
     #height;
 
     /**
-     *
      * @param {CanvasRenderingContext2D} ctx
      * @param {number} width
      * @param {number} height
@@ -25,7 +24,6 @@ export class Renderer {
     set height(value) { this.resize(this.width, value); }
 
     /**
-     *
      * @param {number} width
      * @param {number} height
      */
@@ -39,7 +37,6 @@ export class Renderer {
     }
 
     /**
-     *
      * @param {DrawNode} drawRoot
      */
     render(drawRoot) {

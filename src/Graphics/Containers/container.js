@@ -21,7 +21,6 @@ export class Container extends DrawObject {
     #clip;
 
     /**
-     *
      * @param {ContainerOptions} options
      */
     constructor(options = {}) {
@@ -89,7 +88,6 @@ export class Container extends DrawObject {
     }
 
     /**
-     *
      * @param {RecreateReason} reason
      */
     requestRecreate(reason) {
@@ -112,7 +110,6 @@ export class Container extends DrawObject {
     }
 
     /**
-     *
      * @param {DrawObject} child
      */
     addChild(child) {
@@ -130,7 +127,6 @@ export class Container extends DrawObject {
     }
 
     /**
-     *
      * @param {DrawObject} child
      */
     removeChild(child) {
@@ -163,7 +159,6 @@ export class Container extends DrawObject {
     }
 
     /**
-     *
      * @param {number} t
      */
     calculateOptions(t) {
@@ -193,7 +188,6 @@ export class Container extends DrawObject {
     }
 
     /**
-     *
      * @param {number} t
      */
     createSnapshot(t) {

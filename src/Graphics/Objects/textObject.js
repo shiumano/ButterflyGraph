@@ -41,7 +41,6 @@ export class TextObject extends DrawObject {
     #textAscent = 0;
 
     /**
-     *
      * @param {TextOptions} options
      */
     constructor(options = {}) {
@@ -148,7 +147,6 @@ export class TextObject extends DrawObject {
     }
 
     /**
-     *
      * @param {number} t
      */
     calculateOptions(t) {
@@ -166,7 +164,6 @@ export class TextObject extends DrawObject {
     }
 
     /**
-     *
      * @param {number} t
      */
     createSnapshot(t) {
@@ -200,7 +197,6 @@ class TextNode extends DrawNode {
     }
 
     /**
-     *
      * @param {Partial<TextNodeOptions>} options
      */
     with(options) {
@@ -211,7 +207,6 @@ class TextNode extends DrawNode {
     }
 
     /**
-     *
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
