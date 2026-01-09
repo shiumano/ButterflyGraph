@@ -198,10 +198,7 @@ export class Container extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-
-        const node = this.cachedNode?.with(options) ?? new ContainerNode(options);
-
-        return {t: this.timed ? t : undefined, node: node}
+        return this.cachedNode?.with(options) ?? new ContainerNode(options);
     }
 
     get childrenPerfectlyOptimized() { return this.#childrenPerfectlyOptimized; }  // 永遠の負債 世話が焼けるわね！

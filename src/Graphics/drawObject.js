@@ -386,12 +386,11 @@ export class DrawObject {
      * 時間 t におけるこのオブジェクトの見た目を DrawNode 化する
      * @abstract
      * @param {number} t
-     * @returns {DrawNodeCache}
+     * @returns {DrawNode}
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        const node = this.cachedNode?.with(options) ?? new DrawNode(options);
-        return { t: t, node: node };
+        return this.cachedNode?.with(options) ?? new DrawNode(options);
     }
 
     /**
@@ -406,7 +405,10 @@ export class DrawObject {
             || this.#transformChanged
             || this.#objectChanged
         ) {
-            nodeCache = this.createSnapshot(t);
+            nodeCache = {
+                t: this.timed ? t : undefined,
+                node: this.createSnapshot(t)
+            };
             this.#nodeCache = nodeCache;
             this.#transformChanged = false;
             this.#objectChanged = false;
