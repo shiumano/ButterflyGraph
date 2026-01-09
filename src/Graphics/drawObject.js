@@ -179,7 +179,7 @@ export class DrawObject {
         if (this.#anchor.x === value.x
             && this.#anchor.y === value.y) return;
 
-        this.#anchor = value.freeze();
+        this.#anchor = value;
         this.requestRecreate("transform");
     }
 
@@ -188,7 +188,7 @@ export class DrawObject {
         if (this.#origin.x === value.x
             && this.#origin.y === value.y) return;
 
-        this.#origin = value.freeze();
+        this.#origin = value;
         this.#updateOriginOffset();
         this.requestRecreate("transform");
     }
