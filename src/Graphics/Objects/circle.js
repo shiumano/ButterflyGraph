@@ -69,9 +69,7 @@ export class Circle extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        const node = this.cachedNode?.with(options) ?? new CircleNode(options);
-
-        return { t: undefined, node: node };
+        return this.cachedNode?.with(options) ?? new CircleNode(options);
     }
 
     get perfectlyOptimized() { return this.constructor === Circle; }
