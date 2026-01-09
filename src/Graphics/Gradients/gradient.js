@@ -13,7 +13,7 @@ export class Gradient {
     #gradientChanged = true;
 
     /**
-     * @param {ColorStop[]} stops 
+     * @param {ColorStop[]} stops
      */
     constructor(stops = []) {
         this.#colorStops = [...stops];  // 受け取った時点でそれは別のオブジェクトであるべき
@@ -68,15 +68,14 @@ export class GradientBuilder {
     #cache = new Map();
 
     /**
-     * @param {readonly ColorStop[]} stops 
+     * @param {readonly ColorStop[]} stops
      */
     constructor(stops) {
         this.#colorStops = Object.isFrozen(stops) ? stops : [...stops];  // 受け取った時点で別のオブジェクトであるべき 既に凍ってるなら問題ない
     }
 
     /**
-     * 
-     * @param {CanvasRenderingContext2D} ctx 
+     * @param {CanvasRenderingContext2D} ctx
      */
     getGradient(ctx) {
         const id = getContextId(ctx);
@@ -98,7 +97,6 @@ export class GradientBuilder {
     }
 
     /**
-     * 
      * @param {CanvasRenderingContext2D} ctx
      * @returns {CanvasGradient}
      */
@@ -122,8 +120,7 @@ const ctxIdMap = new WeakMap();
 let ctxIdCounter = 0;
 
 /**
- * 
- * @param {CanvasRenderingContext2D} ctx 
+ * @param {CanvasRenderingContext2D} ctx
  */
 function getContextId(ctx) {
     let ctxId = ctxIdMap.get(ctx);
@@ -134,4 +131,3 @@ function getContextId(ctx) {
 
     return ctxId;
 }
-

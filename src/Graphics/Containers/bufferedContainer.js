@@ -3,7 +3,7 @@ import { Container, ContainerNode } from "./container.js";
 /**
  * @import { ContainerOptions, ContainerNodeOptions } from "@core/Graphics/Containers/container.js"
  * @typedef {ContainerOptions & {
- *   follow?: "all" | "scale" | "none" 
+ *   follow?: "all" | "scale" | "none"
  *   resolutionScale?: number
  *   supersize?: boolean
  *   redrawRainbow?: boolean
@@ -20,10 +20,10 @@ import { Container, ContainerNode } from "./container.js";
 /**
  * 描画内容をOffscreenCanvasに描画して、それを表示するContainer
  * 想定している使い方は、globalCompositeOperationを変更するなどして破壊的描画をする際のサンドボックスにすること
- * 
+ *
  * パフォーマンスはCanvas APIのdrawImageが非常に低速なため、内部のオブジェクトが数十個を超えないと軽量化としての意味はない
  * また、内容が変化しまくるものをBufferedContainerに入れるべきではない
- * 
+ *
  * 使うときは慎重に、使わなきゃいけないときにだけ使うこと
  */
 export class BufferedContainer extends Container {
@@ -33,8 +33,7 @@ export class BufferedContainer extends Container {
     #redrawRainbow = false;
 
     /**
-     * 
-     * @param {BufferedContainerOptions} options 
+     * @param {BufferedContainerOptions} options
      */
     constructor(options = {}) {
         super(options);
@@ -52,7 +51,7 @@ export class BufferedContainer extends Container {
     /**
      * 実際のキャンバスのサイズをコピーするか否か
      * trueの場合、followの値は無視される
-     * 
+     *
      * めっちゃ重いので最終手段
      */
     get supersize() { return this.#supersize; }
@@ -125,8 +124,7 @@ export class BufferedContainer extends Container {
 const bitmapRefCount = new WeakMap();
 
 /**
- * 
- * @param {ImageBitmap?} bmp 
+ * @param {ImageBitmap?} bmp
  */
 function incRef(bmp) {
     if (bmp === null) return;  // 虚無に参照など無い
@@ -134,8 +132,7 @@ function incRef(bmp) {
     bitmapRefCount.set(bmp, refs + 1);
 }
 /**
- * 
- * @param {ImageBitmap?} bmp 
+ * @param {ImageBitmap?} bmp
  */
 function deRef(bmp) {
     if (bmp === null) return 0;  // 虚無に参照など無い
@@ -179,7 +176,7 @@ class BufferedContainerNode extends ContainerNode {
 
     /**
      * @param {BufferedContainerNodeOptions} options
-     * @param {BufferedContainerNode?} oldNode 
+     * @param {BufferedContainerNode?} oldNode
      */
     constructor(options, oldNode = null) {
         super(options, oldNode);
@@ -223,8 +220,7 @@ class BufferedContainerNode extends ContainerNode {
     }
 
     /**
-     * 
-     * @param {Partial<BufferedContainerNodeOptions>} options 
+     * @param {Partial<BufferedContainerNodeOptions>} options
      */
     with(options) {
         if (this.constructor !== BufferedContainerNode)
@@ -234,7 +230,7 @@ class BufferedContainerNode extends ContainerNode {
     }
 
     /**
-     * @param {DOMMatrix} transform 
+     * @param {DOMMatrix} transform
      * @param {number} canvasWidth
      * @param {number} canvasHeight
      */
@@ -364,7 +360,7 @@ function matEquals(a, b) {
 /**
  * @param {DOMMatrix} matrix
  * @param {number} scaleX
- * @param {number} scaleY 
+ * @param {number} scaleY
  */
 function scaleEquals(matrix, scaleX, scaleY) {
     return (

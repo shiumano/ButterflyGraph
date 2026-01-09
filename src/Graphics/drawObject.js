@@ -26,9 +26,9 @@ import { DrawNode } from "./drawNode.js";
  *   strokeStyle?: string | Gradient
  * }} DrawObjectOptions
  * @typedef {{
- *   t: number | undefined 
+ *   t: number | undefined
  *   node: DrawNode
- * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変 
+ * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
  * @typedef {"transform" | "object"} RecreateReason
  */
 
@@ -65,7 +65,7 @@ export class DrawObject {
     #nodeCache = null;
 
     /**
-     * @param {DrawObjectOptions} options 
+     * @param {DrawObjectOptions} options
      */
     constructor(options = {}) {
         this.#x = options.x ?? 0;
@@ -122,7 +122,7 @@ export class DrawObject {
     }
 
     get width() { return this.#width; }
-    set width(value) { 
+    set width(value) {
         if (this.#width === value) return;
 
         this.#width = value;
@@ -132,7 +132,7 @@ export class DrawObject {
     }
 
     get height() { return this.#height; }
-    set height(value) { 
+    set height(value) {
         if (this.#height === value) return;
 
         this.#height = value;
@@ -167,7 +167,7 @@ export class DrawObject {
     }
 
     get alpha() { return this.#alpha; }
-    set alpha(value) { 
+    set alpha(value) {
         if (this.#alpha === value) return;
 
         this.#alpha = value;
@@ -271,7 +271,7 @@ export class DrawObject {
 
     /**
      * オブジェクトの再生性を要求、情報を親に伝播
-     * @param {RecreateReason} reason 
+     * @param {RecreateReason} reason
      */
     requestRecreate(reason) {
         this.#contentChanged = true;
@@ -299,7 +299,7 @@ export class DrawObject {
 
     /**
      * stringのcolorもしくはGradientBuilderを取得
-     * @param {string | Gradient} style 
+     * @param {string | Gradient} style
      */
     getStyle(style) {
         if (typeof style === "string")
@@ -311,7 +311,7 @@ export class DrawObject {
     /**
      * 子オブジェクトのオプションの計算
      * @param {DrawObject} child
-     * @param {number} t 
+     * @param {number} t
      * @returns {DrawNodeOptions}
      */
     calculateChildOptions(child, t) {
@@ -325,7 +325,7 @@ export class DrawObject {
 
     /**
      * 自分自身のオプションの計算
-     * @param {number} t 
+     * @param {number} t
      * @returns {DrawNodeOptions}
      */
     calculateThisOptions(t) {
@@ -345,7 +345,7 @@ export class DrawObject {
 
     /**
      * transformの計算
-     * @param {number} t 
+     * @param {number} t
      */
     calculateTransforms(t) {
         return {
@@ -398,7 +398,7 @@ export class DrawObject {
     /**
      * DrawNodeを取得する
      * キャッシュを利用可能であればキャッシュを返す
-     * @param {number} t 
+     * @param {number} t
      */
     getSnapshot(t) {
         let nodeCache = this.#nodeCache;

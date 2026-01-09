@@ -18,8 +18,7 @@ export class Circle extends DrawObject {
     #radius;
 
     /**
-     * 
-     * @param {CircleOptions} options 
+     * @param {CircleOptions} options
      */
     constructor(options = {}) {
         super(options);
@@ -34,7 +33,7 @@ export class Circle extends DrawObject {
     set timed(_) { }
 
     get radius() { return this.#radius; }
-    set radius(value) { 
+    set radius(value) {
         if (this.#radius === value) return;
 
         this.#radius = value;
@@ -51,8 +50,7 @@ export class Circle extends DrawObject {
     get height() { return super.height; }
 
     /**
-     * 
-     * @param {number} t 
+     * @param {number} t
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
@@ -64,7 +62,6 @@ export class Circle extends DrawObject {
     }
 
     /**
-     * 
      * @param {number} t
      */
     createSnapshot(t) {
@@ -81,7 +78,7 @@ class CircleNode extends DrawNode {
 
     /**
      * @param {CircleNodeOptions} options
-     * @param {CircleNode?} oldNode 
+     * @param {CircleNode?} oldNode
      */
     constructor(options, oldNode = null) {
         super(options);
@@ -99,7 +96,6 @@ class CircleNode extends DrawNode {
     }
 
     /**
-     * 
      * @param {Partial<CircleNodeOptions>} options
      */
     with(options) {
@@ -110,8 +106,7 @@ class CircleNode extends DrawNode {
     }
 
     /**
-     * 
-     * @param {CanvasRenderingContext2D} ctx 
+     * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
         this._setFillStyle(ctx);

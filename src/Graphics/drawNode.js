@@ -49,7 +49,7 @@ export class DrawNode {
 
     /**
      * @param {DrawNodeOptions} options
-     * @param {DrawNode?} oldNode 
+     * @param {DrawNode?} oldNode
      */
     constructor(options, oldNode = null) {
         if (this.constructor === DrawNode)
@@ -106,7 +106,7 @@ export class DrawNode {
     // いつかグラデーションの設定の処理を追加しようと思うと、こうしておくほうが良い
     /**
      * ctxに塗りつぶしの色を設定する
-     * @param {CanvasRenderingContext2D} ctx 
+     * @param {CanvasRenderingContext2D} ctx
      */
     _setFillStyle(ctx) {
         if (this.#fillColor !== undefined)
@@ -117,7 +117,7 @@ export class DrawNode {
 
     /**
      * ctxに線の色を設定する
-     * @param {CanvasRenderingContext2D} ctx 
+     * @param {CanvasRenderingContext2D} ctx
      */
     _setStrokeStyle(ctx) {
         if (this.#strokeColor !== undefined)
@@ -141,7 +141,7 @@ export class DrawNode {
 
     /**
      * ctxにtransform を適用し、自身と子を描画
-     * @param {CanvasRenderingContext2D} ctx 
+     * @param {CanvasRenderingContext2D} ctx
      */
     render(ctx) {
         if (!this.#visible || this.#alpha === 0) return;
