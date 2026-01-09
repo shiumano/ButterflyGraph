@@ -19,6 +19,7 @@ import { DrawNode } from "../drawNode.js";
  *   font: string
  *   fill: boolean
  *   strokeWidth: number
+ *   textAscent: number
  * }} TextNodeOptions
  */
 
@@ -36,6 +37,8 @@ export class TextObject extends DrawObject {
 
     #textHeight = 0;
     #textWidth = 0;
+
+    #textAscent = 0;
 
     /**
      * 
@@ -130,10 +133,14 @@ export class TextObject extends DrawObject {
             TextObject.#ctx.font = this.font;
             const metrics = TextObject.#ctx.measureText(this.text);
             this.#textWidth = metrics.width;
-            if (this.sizeReference === "actual")
-                this.#textHeight = metrics.actualBoundingBoxDescent - metrics.actualBoundingBoxAscent;
-            else
-                this.#textHeight = metrics.fontBoundingBoxDescent;
+            if (this.sizeReference === "actual") {
+                this.#textHeight = metrics.actualBoundingBoxDescent + metrics.actualBoundingBoxAscent;
+                this.#textAscent = metrics.actualBoundingBoxAscent;
+            }
+            else {
+                this.#textHeight = metrics.fontBoundingBoxDescent + metrics.fontBoundingBoxAscent;
+                this.#textAscent = metrics.fontBoundingBoxAscent;
+            }
 
             super.width = this.#textWidth + this.strokeWidth;
             super.height = this.#textHeight + this.strokeWidth;
@@ -153,7 +160,8 @@ export class TextObject extends DrawObject {
             text: this.text,
             font: this.font,
             fill: this.fill,
-            strokeWidth: this.strokeWidth
+            strokeWidth: this.strokeWidth,
+            textAscent: this.#textAscent
         }
     }
 
@@ -176,7 +184,8 @@ class TextNode extends DrawNode {
     #font;
     #fill;
     #strokeWidth;
-    #offset;
+    #offsetX;
+    #offsetY;
 
     /**
      * @param {TextNodeOptions} options
@@ -188,7 +197,8 @@ class TextNode extends DrawNode {
         this.#font = options.font;
         this.#fill = options.fill;
         this.#strokeWidth = options.strokeWidth;
-        this.#offset = this.#strokeWidth / 2;
+        this.#offsetX = this.#strokeWidth / 2;
+        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;
     }
 
     /**
@@ -216,12 +226,12 @@ class TextNode extends DrawNode {
             this._setStrokeStyle(ctx);
             ctx.lineWidth = this.#strokeWidth;
             ctx.lineJoin = "round";  // miterはやってらんない
-            ctx.strokeText(this.#text, this.#offset, this.#offset);
+            ctx.strokeText(this.#text, this.#offsetX, this.#offsetY);
         }
 
         if (this.#fill) {
             this._setFillStyle(ctx);
-            ctx.fillText(this.#text, this.#offset, this.#offset);
+            ctx.fillText(this.#text, this.#offsetX, this.#offsetY);
         }
     }
 }
