@@ -94,3 +94,40 @@ WebGL
 　Canvas APIには勝てません
 　使いやすさもパフォーマンスも意味わかんないくらい強い
 　Canvas APIはWebブラウザーというOSの特権システムコールです
+
+BufferedContainer
+　じつは、ButterflyGraphの名前の由来はこれです
+　なんとなくbufferとbutterflyって似てるでしょ？それだけの理由
+　しかしBufferedContainerがこのライブラリを大きく変化させたのも事実
+　BufferedContainerは非常に重い
+　そう、Vanilla.jsより遅くなるという最悪の事態に近づいてしまうんです
+　だからどうにかして軽くしようと必死で最適化をしました
+
+　・requestRecreate(reason)による内容変化の通知
+　　これは、不要なバッファの再描画を避けて、同じ内容の再レンダリングを避けるためです
+　・DrawNode.with(options)とconstructor(options, oldNode)による内部オブジェクトの引き継ぎ
+　　これは、とんでもなく高価なオブジェクトであるOffscreenCanvasを使い回せるようにするためです
+
+　そのほかにも色々なことがありました、もうよく覚えていませんが
+
+　しかし、BufferedContainerは”特別な存在”であり、”ごく一般的な存在”でもあります
+　BufferedContainerのdraw(ctx)関数では
+
+　const transform = ctx.getTransform();
+　const canvasWidth = ctx.canvas.width;
+　const canvasHeight = ctx.canvas.height;
+
+　このようにして、何も制限されることなくCanvasの状態を参照しています
+　普通はこのようなことは許されないでしょう
+
+　ですが、このライブラリは違います、何も制限がありません
+　BufferedContainerのこの暴挙も、ライブラリ内部の特権ではありません
+　ライブラリ外部で、ライブラリの利用者として存在しても何も不思議はないんです
+
+　ctxは、だれでも公平に、全てが渡されています
+　ctxは、だれでも公平に、自分で作り出すこともできます
+
+　危険もあります、ただし、それ以上に無限の可能性があります
+　その可能性は、使い倒せるようにしておきたい
+
+　BufferedContainerがCanvas APIを本当に飛び出すための翼になるのは、また別の話……
