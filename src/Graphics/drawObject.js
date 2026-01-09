@@ -22,6 +22,8 @@ import { DrawNode } from "./drawNode.js";
  *   timed?: boolean
  *   showBounds?: boolean
  *   color?: string | Gradient
+ *   fillStyle?: string | Gradient
+ *   strokeStyle?: string | Gradient
  * }} DrawObjectOptions
  * @typedef {{
  *   t: number | undefined 
@@ -44,7 +46,8 @@ export class DrawObject {
     #zIndex;
     #visible;
     #showBounds;
-    #color;
+    #fillStyle;
+    #strokeStyle;
 
     /** @type {DrawObject?} */
     #parent = null;
@@ -88,7 +91,8 @@ export class DrawObject {
 
         this.#showBounds = options.showBounds ?? false;
 
-        this.#color = options.color ?? "#000";
+        this.#fillStyle = options.fillStyle ?? options.color ?? "#000";
+        this.#strokeStyle = options.strokeStyle ?? "#000";
 
         this.#updateOriginOffset();
     }
@@ -213,11 +217,22 @@ export class DrawObject {
         this.requestRecreate("object");
     }
 
-    get color() { return this.#color; }
-    set color(value) {
-        if (this.#color === value) return;
+    get color() { return this.fillStyle; }
+    set color(value) { this.fillStyle = value; }
 
-        this.#color = value;
+    get fillStyle() { return this.#fillStyle; }
+    set fillStyle(value) {
+        if (this.#fillStyle === value) return;
+
+        this.#fillStyle = value;
+        this.requestRecreate("object");
+    }
+
+    get strokeStyle() { return this.#strokeStyle; }
+    set strokeStyle(value) {
+        if (this.#strokeStyle === value) return;
+
+        this.#strokeStyle = value;
         this.requestRecreate("object");
     }
 
@@ -284,12 +299,13 @@ export class DrawObject {
 
     /**
      * stringのcolorもしくはGradientBuilderを取得
+     * @param {string | Gradient} style 
      */
-    getColor() {
-        if (typeof this.color === "string")
-            return this.color;
+    getStyle(style) {
+        if (typeof style === "string")
+            return style;
         else
-            return this.color.createGradientBuilder();
+            return style.createGradientBuilder();
     }
 
     /**
