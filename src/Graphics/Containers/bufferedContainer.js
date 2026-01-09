@@ -117,7 +117,7 @@ export class BufferedContainer extends Container {
 
         const node = this.cachedNode?.with(options) ?? new BufferedContainerNode(options);
 
-        return {t: this.timed ? t : t, node: node};
+        return {t: this.timed ? t : undefined, node: node};
     }
 
     get perfectlyOptimized() { return this.constructor === BufferedContainer && this.childrenPerfectlyOptimized; }
