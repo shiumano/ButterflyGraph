@@ -94,6 +94,7 @@ export class TextObject extends DrawObject {
 
         this.#font = value;
         this.#updateMetrics();
+        this.requestRecreate("object");
     }
 
     get text() { return this.#text; }
@@ -102,6 +103,7 @@ export class TextObject extends DrawObject {
 
         this.#text = value;
         this.#updateMetrics();
+        this.requestRecreate("object");
     }
 
     get sizeReference() { return this.#sizeReference; }
@@ -110,6 +112,7 @@ export class TextObject extends DrawObject {
 
         this.#sizeReference = value;
         this.#updateMetrics();
+        this.requestRecreate("object");
     };
 
     #updateMetrics() {
