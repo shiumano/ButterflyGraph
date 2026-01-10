@@ -1,5 +1,6 @@
 /**
  * @typedef {{ position: number, color: string }} ColorStop
+ * @typedef {"stops" | "criteria"} GradientRecreateReason
  */
 
 /**
@@ -11,6 +12,7 @@ export class Gradient {
     /** @type {GradientBuilder?} */
     #builderCache = null;
     #gradientChanged = true;
+    #stopsChanged = true;
 
     /** @type {Readonly<Readonly<ColorStop[]>>?} */
     #frozenStops = null;
@@ -28,23 +30,34 @@ export class Gradient {
      */
     addColorStop(position, color) {
         this.#colorStops.push({ position, color });
-        this.requestRecreate();
+        this.requestRecreate("stops");
     }
 
     getColorStops() {
-        this.#frozenStops ??= Object.freeze(this.#colorStops.map(stop => Object.freeze({ ...stop })));
+        let stops = this.#frozenStops;
 
-        return this.#frozenStops;
+        if (this.#stopsChanged || stops === null) {
+            stops = Object.freeze(this.#colorStops.map(stop => Object.freeze({ ...stop })));
+            this.#frozenStops = this.#frozenStops;
+            this.#stopsChanged = false;
+        }
+
+        return stops;
     }
 
     clearColorStops() {
         this.#colorStops = [];
-        this.requestRecreate();
+        this.requestRecreate("stops");
     }
 
-    requestRecreate() {
+    /**
+     * @param {GradientRecreateReason} reason
+     */
+    requestRecreate(reason) {
         this.#gradientChanged = true;
-        this.#frozenStops = null;
+
+        if (reason === "stops")
+            this.#stopsChanged = true;
     }
 
     createGradientBuilder() {

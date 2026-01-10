@@ -32,7 +32,7 @@ export class LinearGradient extends Gradient {
     setStart(x, y) {
         this.#x0 = x;
         this.#y0 = y;
-        this.requestRecreate();
+        this.requestRecreate("criteria");
     }
 
     /**
@@ -42,7 +42,7 @@ export class LinearGradient extends Gradient {
     setEnd(x, y) {
         this.#x1 = x;
         this.#y1 = y;
-        this.requestRecreate();
+        this.requestRecreate("criteria");
     }
 
     createGradientBuilder() {
