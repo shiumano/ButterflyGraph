@@ -27,7 +27,7 @@ export class ConicGradient extends Gradient {
      */
     setAngle(angle) {
         this.#angle = angle;
-        this.requestRecreate();
+        this.requestRecreate("criteria");
     }
 
     /**
@@ -37,7 +37,7 @@ export class ConicGradient extends Gradient {
     setCenter(x, y) {
         this.#x = x;
         this.#y = y;
-        this.requestRecreate();
+        this.requestRecreate("criteria");
     }
 
     createGradientBuilder() {

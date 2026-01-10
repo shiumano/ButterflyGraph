@@ -47,7 +47,7 @@ export class RadialGradient extends Gradient {
         this.#x0 = x;
         this.#y0 = y;
         this.#r0 = r;
-        this.requestRecreate();
+        this.requestRecreate("criteria");
     }
 
     /**
@@ -62,7 +62,7 @@ export class RadialGradient extends Gradient {
         this.#x1 = x;
         this.#y1 = y;
         this.#r1 = r;
-        this.requestRecreate();
+        this.requestRecreate("criteria");
     }
 
     createGradientBuilder() {
