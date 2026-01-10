@@ -64,8 +64,8 @@ export class Gradient {
 export class GradientBuilder {
     /** @type {readonly ColorStop[]} */
     #colorStops = [];
-    /** @type {Map<number, CanvasGradient>} */
-    #cache = new Map();
+    /** @type {WeakMap<RenderingContext, CanvasGradient>} */
+    #cache = new WeakMap();
 
     /**
      * @param {readonly ColorStop[]} stops
@@ -78,11 +78,9 @@ export class GradientBuilder {
      * @param {CanvasRenderingContext2D} ctx
      */
     getGradient(ctx) {
-        const id = getContextId(ctx);
-
         // 同じctxの場合：作り直すのは無駄なので再利用
         // 違うctxの場合：使い回せないので再作成
-        let gradient = this.#cache.get(id);
+        let gradient = this.#cache.get(ctx);
 
         if (gradient === undefined) {
             // --- Gradient を作る ---
@@ -90,7 +88,7 @@ export class GradientBuilder {
             this.#applyStops(gradient);
 
             // キャッシュに保存
-            this.#cache.set(id, gradient);
+            this.#cache.set(ctx, gradient);
         }
 
         return gradient;
@@ -113,21 +111,4 @@ export class GradientBuilder {
             grad.addColorStop(cs.position, cs.color);
         }
     }
-}
-
-/** @type {WeakMap<CanvasRenderingContext2D, number>} */
-const ctxIdMap = new WeakMap();
-let ctxIdCounter = 0;
-
-/**
- * @param {CanvasRenderingContext2D} ctx
- */
-function getContextId(ctx) {
-    let ctxId = ctxIdMap.get(ctx);
-    if (ctxId === undefined) {
-        ctxId = ctxIdCounter++;
-        ctxIdMap.set(ctx, ctxId);
-    }
-
-    return ctxId;
 }
