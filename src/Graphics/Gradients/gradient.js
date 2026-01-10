@@ -12,6 +12,9 @@ export class Gradient {
     #builderCache = null;
     #gradientChanged = true;
 
+    /** @type {Readonly<ColorStop[]>?} */
+    #frozenStops = null;
+
     /**
      * @param {ColorStop[]} stops
      */
@@ -29,7 +32,11 @@ export class Gradient {
     }
 
     getColorStops() {
-        return Object.freeze(this.#colorStops.map(stop => { return { ...stop }; }));
+        if (this.#gradientChanged || this.#frozenStops === null) {
+            this.#frozenStops = Object.freeze(this.#colorStops.map(stop => { return { ...stop }; }));
+        }
+
+        return this.#frozenStops;
     }
 
     clearColorStops() {
