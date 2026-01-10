@@ -38,7 +38,7 @@ export class Gradient {
 
         if (this.#stopsChanged || stops === null) {
             stops = Object.freeze(this.#colorStops.map(stop => Object.freeze({ ...stop })));
-            this.#frozenStops = this.#frozenStops;
+            this.#frozenStops = stops;
             this.#stopsChanged = false;
         }
 
