@@ -32,9 +32,7 @@ export class Gradient {
     }
 
     getColorStops() {
-        if (this.#gradientChanged || this.#frozenStops === null) {
-            this.#frozenStops = Object.freeze(this.#colorStops.map(stop => Object.freeze({ ...stop })));
-        }
+        this.#frozenStops ??= Object.freeze(this.#colorStops.map(stop => Object.freeze({ ...stop })));
 
         return this.#frozenStops;
     }
@@ -46,6 +44,7 @@ export class Gradient {
 
     requestRecreate() {
         this.#gradientChanged = true;
+        this.#frozenStops = null;
     }
 
     createGradientBuilder() {
