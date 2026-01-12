@@ -21,9 +21,9 @@ import { Gradient } from "./Gradients/gradient.js"
  *   visible?: boolean
  *   timed?: boolean
  *   showBounds?: boolean
- *   color?: string | Gradient
- *   fillStyle?: string | Gradient
- *   strokeStyle?: string | Gradient
+ *   color?: string | CanvasGradient | CanvasPattern | Gradient
+ *   fillStyle?: string | CanvasGradient | CanvasPattern | Gradient
+ *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
  * @typedef {{
  *   t: number | undefined
@@ -298,8 +298,8 @@ export class DrawObject {
     }
 
     /**
-     * stringのcolorもしくはGradientBuilderを取得
-     * @param {string | Gradient} style
+     * CanvasのstyleもしくはGradientBuilderを取得
+     * @param {string | CanvasGradient | CanvasPattern | Gradient} style
      */
     getStyle(style) {
         if (style instanceof Gradient)

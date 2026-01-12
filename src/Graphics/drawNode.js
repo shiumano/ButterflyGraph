@@ -16,8 +16,8 @@ import { GradientBuilder } from "./Gradients/gradient.js"
  *   originOffsetY: number
  *   alpha: number
  *   zIndex: number
- *   fillStyle?: string | GradientBuilder
- *   strokeStyle?: string | GradientBuilder
+ *   fillStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
+ *   strokeStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
  *   visible: boolean
  *   showBounds?: boolean
  * }} DrawNodeOptions
