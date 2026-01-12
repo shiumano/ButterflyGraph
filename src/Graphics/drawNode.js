@@ -1,6 +1,7 @@
+import { GradientBuilder } from "./Gradients/gradient.js"
+
 /**
  * @import { Vector2 } from "./vector2"
- * @import { GradientBuilder } from "./Gradients/gradient.js"
  * @typedef {{
  *   x: number
  *   y: number
@@ -69,16 +70,16 @@ export class DrawNode {
         this.#alpha = options.alpha;
         this.#zIndex = options.zIndex;
 
-        // typeof判定は先にやっておく、drawではnullチェックのみとする
-        if (typeof options.fillStyle === "string")
-            this.#fillColor = options.fillStyle;
-        else
+        // type判定は先にやっておく、drawではnullチェックのみとする
+        if (options.fillStyle instanceof GradientBuilder)
             this.#fillGradient = options.fillStyle;
-
-        if (typeof options.strokeStyle === "string")
-            this.#strokeColor = options.strokeStyle;
         else
+            this.#fillColor = options.fillStyle;
+
+        if (options.strokeStyle instanceof GradientBuilder)
             this.#strokeGradient = options.strokeStyle;
+        else
+            this.#strokeColor = options.strokeStyle;
 
         this.#visible = options.visible;
 

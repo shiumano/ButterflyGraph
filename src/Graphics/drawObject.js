@@ -1,10 +1,10 @@
 import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
+import { Gradient } from "./Gradients/gradient.js"
 
 /**
  * @import { Vector2 } from "./vector2.js";
  * @import { DrawNodeOptions } from "./drawNode.js"
- * @import { Gradient } from "./Gradients/gradient.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -302,10 +302,10 @@ export class DrawObject {
      * @param {string | Gradient} style
      */
     getStyle(style) {
-        if (typeof style === "string")
-            return style;
+        if (style instanceof Gradient)
+            return style.getGradientBuilder();
         else
-            return style.createGradientBuilder();
+            return style;
     }
 
     /**
