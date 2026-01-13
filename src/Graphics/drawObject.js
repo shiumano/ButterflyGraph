@@ -25,13 +25,21 @@ import { Gradient } from "./Gradients/gradient.js"
  *   fillStyle?: string | CanvasGradient | CanvasPattern | Gradient
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
- * @typedef {{
- *   t: number | undefined
- *   node: DrawNode
- * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
  * @typedef {"transform" | "object"} RecreateReason
  */
 
+/**
+ * @template {DrawNodeOptions} T
+ * @typedef {{
+ *   t: number | undefined
+ *   node: DrawNode<T>
+ * }} DrawNodeCache<T> t ... number:対応する時刻 undefined:時間的に不変
+ */
+
+/**
+ * @template {DrawNodeOptions} T
+ * @returns {DrawObject<T>}
+ */
 export class DrawObject {
     #x;
     #y;
@@ -49,7 +57,7 @@ export class DrawObject {
     #fillStyle;
     #strokeStyle;
 
-    /** @type {DrawObject?} */
+    /** @type {DrawObject<T>?} */
     #parent = null;
 
     #timed = true;
@@ -61,7 +69,7 @@ export class DrawObject {
     #transformChanged = true;
     #objectChanged = true;
     #contentChanged = true;
-    /** @type {DrawNodeCache?} */
+    /** @type {DrawNodeCache<T>?} */
     #nodeCache = null;
 
     /**
@@ -310,9 +318,9 @@ export class DrawObject {
 
     /**
      * 子オブジェクトのオプションの計算
-     * @param {DrawObject} child
+     * @param {DrawObject<T>} child
      * @param {number} t
-     * @returns {DrawNodeOptions}
+     * @returns {T}
      */
     calculateChildOptions(child, t) {
         const childOptions = child.calculateThisOptions(t);
@@ -326,14 +334,15 @@ export class DrawObject {
     /**
      * 自分自身のオプションの計算
      * @param {number} t
-     * @returns {DrawNodeOptions}
+     * @returns {T}
      */
     calculateThisOptions(t) {
         const hasCache = this.cachedNode !== undefined;
         const cacheOptions = hasCache ? this.cachedNode.options : {};
         const transforms = (!hasCache || this.transformChanged) ? this.calculateTransforms(t) : {};
 
-        // TOOBAD: anyで型チェックが爆発四散してOKでてるだけ…いや実際の流れとしては正しいんだけど、TSが理解できる領域ではないらしい
+        // TOOBAD: 実際の流れとしては正しいんだけど、TSが理解できる領域ではないらしい
+        // @ts-expect-error
         return {
             ...cacheOptions,
             ...transforms,
@@ -367,7 +376,7 @@ export class DrawObject {
     /**
      * DrawNodeOptionsを生成
      * @param {number} t
-     * @returns {DrawNodeOptions}
+     * @returns {T}
      */
     calculateOptions(t) {
         // TODO: objectChangedとtransformChangedを活用し、*ｲﾝﾃﾘｼﾞｪﾝﾄ*な差分更新を行う 関数を分けるのがだるすぎる
@@ -388,7 +397,7 @@ export class DrawObject {
      * 時間 t におけるこのオブジェクトの見た目を DrawNode 化する
      * @abstract
      * @param {number} t
-     * @returns {DrawNode}
+     * @returns {DrawNode<T>}
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);

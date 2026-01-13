@@ -9,11 +9,14 @@ import { DrawNode } from "../drawNode.js";
  *   radius?: number
  * }} CircleOptions
  * @typedef {DrawNodeOptions & {
- *   fillStyle: string | GradientBuilder
+ *   fillStyle: string | CanvasGradient | CanvasPattern | GradientBuilder
  *   radius: number
  * }} CircleNodeOptions
  */
 
+/**
+ * @extends {DrawObject<CircleNodeOptions>}
+ */
 export class Circle extends DrawObject {
     #radius;
 
@@ -72,6 +75,9 @@ export class Circle extends DrawObject {
     get perfectlyOptimized() { return this.constructor === Circle; }
 }
 
+/**
+ * @extends {DrawNode<CircleNodeOptions>}
+ */
 class CircleNode extends DrawNode {
     /** @type {Path2D} */
     #path;

@@ -8,10 +8,13 @@ import { DrawNode } from "../drawNode.js";
  * @typedef {DrawObjectOptions & {
  * }} RectangleOptions
  * @typedef {DrawNodeOptions & {
- *    fillStyle: string | GradientBuilder
+ *    fillStyle: string | CanvasGradient | CanvasPattern | GradientBuilder
  * }} RectangleNodeOptions
  */
 
+/**
+ * @extends {DrawObject<RectangleNodeOptions>}
+ */
 export class Rectangle extends DrawObject {
     /**
      * @param {RectangleOptions} options
@@ -45,6 +48,9 @@ export class Rectangle extends DrawObject {
     get perfectlyOptimized() { return this.constructor === Rectangle; }
 }
 
+/**
+ * @extends {DrawNode<RectangleNodeOptions>}
+ */
 export class RectangleNode extends DrawNode {
     /**
      * @param {RectangleNodeOptions} options
