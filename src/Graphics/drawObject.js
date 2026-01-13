@@ -38,7 +38,6 @@ import { Gradient } from "./Gradients/gradient.js"
 
 /**
  * @template {DrawNodeOptions} T
- * @type {DrawObject<T>}
  */
 export class DrawObject {
     #x;

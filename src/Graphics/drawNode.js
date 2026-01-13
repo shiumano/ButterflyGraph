@@ -28,7 +28,6 @@ import { GradientBuilder } from "./Gradients/gradient.js"
  * x, yを起点として、オブジェクトを描画するためのクラス。
  * イミュータブルとし、変更があった場合は再作成する。
  * @template {DrawNodeOptions} T
- * @type {DrawNode<T>}
  */
 export class DrawNode {
     #options;
