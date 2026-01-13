@@ -27,6 +27,7 @@ import { GradientBuilder } from "./Gradients/gradient.js"
 /**
  * x, yを起点として、オブジェクトを描画するためのクラス。
  * イミュータブルとし、変更があった場合は再作成する。
+ * @template {DrawNodeOptions} T
  */
 export class DrawNode {
     #options;
@@ -49,8 +50,8 @@ export class DrawNode {
     #showBounds;
 
     /**
-     * @param {DrawNodeOptions} options
-     * @param {DrawNode?} oldNode
+     * @param {T} options
+     * @param {DrawNode<T>?} oldNode
      */
     constructor(options, oldNode = null) {
         if (this.constructor === DrawNode)
@@ -87,15 +88,7 @@ export class DrawNode {
     }
 
     /**
-     * TODO: any消せ
-     * FIXME: any消せ
-     * HACK: any消せ
-     * TOOBAD: パブリックのany消せ
-     * WARN: コードとしては確実にコンストラクタで与えられた型になるんだけど
-     * IDK: それをJSDocでどうやって伝えればいいのか わ か ら な い
-     * しょうがない: ←で終わらすな、解決策は模索し続けろ
-     * PERF: 型は実行時には消滅します
-     * @type {any}
+     * @type {T}
      */
     get options() { return this.#options; }
 

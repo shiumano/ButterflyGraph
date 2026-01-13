@@ -5,15 +5,19 @@ import { DrawObject } from "../drawObject.js";
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
  * @import { DrawObjectOptions, RecreateReason } from "@core/Graphics/drawObject.js"
  * @typedef {DrawObjectOptions & {
- *   children?: readonly DrawObject[]
+ *   children?: readonly DrawObject<DrawNodeOptions>[]
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
- *   children: ReadonlyArray<DrawNode>
+ *   children: ReadonlyArray<DrawNode<DrawNodeOptions>>
  *   clip: boolean
  * }} ContainerNodeOptions
  */
 
+/**
+ * @template {ContainerNodeOptions} T
+ * @extends {DrawObject<T>}
+ */
 export class Container extends DrawObject {
     #children;
     #childrenTimed;
@@ -110,7 +114,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {DrawObject} child
+     * @param {DrawObject<DrawNodeOptions>} child
      */
     addChild(child) {
         const index = this.#children.indexOf(child);
@@ -127,7 +131,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {DrawObject} child
+     * @param {DrawObject<DrawNodeOptions>} child
      */
     removeChild(child) {
         const index = this.#children.indexOf(child);
@@ -164,7 +168,6 @@ export class Container extends DrawObject {
     calculateOptions(t) {
         let options = super.calculateOptions(t);
 
-        /** @type {DrawNode[] | undefined} */ // WARN: optionsがanyなせいで……any解決したらこれは消せ
         let children = this.cachedNode?.options?.children;
         if (children === undefined || this.timed || this.objectChanged) {
             const childObjects = this.getAllChildren();
@@ -172,9 +175,8 @@ export class Container extends DrawObject {
                 const childNode = childObjects[0].getSnapshot(t);
                 children = [childNode];
             } else {
-                children = childObjects.map(child => child.getSnapshot(t));
-
-                children.sort((a, b) => a.zIndex - b.zIndex);
+                children = childObjects.map(child => child.getSnapshot(t))
+                            .sort((a, b) => a.zIndex - b.zIndex);
             }
         }
 
@@ -199,6 +201,10 @@ export class Container extends DrawObject {
     get perfectlyOptimized() { return this.constructor === Container && this.childrenPerfectlyOptimized; }
 }
 
+/**
+ * @template {ContainerNodeOptions} T
+ * @extends {DrawNode<T>}
+ */
 export class ContainerNode extends DrawNode {
     #children;
     /** @type {Path2D?} */
@@ -207,10 +213,17 @@ export class ContainerNode extends DrawNode {
 
     /**
      * @param {ContainerNodeOptions} options
-     * @param {ContainerNode?} oldNode
+     * @param {ContainerNode<T>?} oldNode
      */
     constructor(options, oldNode = null) {
+        // @ts-expect-error
         super(options, oldNode);
+        /**
+         * 型 'ContainerNodeOptions' の引数を型 'T' のパラメーターに割り当てることはできません。
+         * 'ContainerNodeOptions' は型 'T' の制約に代入できますが、'T' は制約 'ContainerNodeOptions' の別のサブタイプでインスタンス化できることがあります。
+         *
+         * なぜ？
+         */
 
         this.#children = Object.freeze(options.children);
 

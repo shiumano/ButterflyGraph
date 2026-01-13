@@ -13,8 +13,8 @@ import { DrawNode } from "../drawNode.js";
  *   sizeReference?: "actual" | "font"
  * }} TextOptions
  * @typedef {DrawNodeOptions & {
- *   fillStyle: string | GradientBuilder
- *   strokeStyle: string | GradientBuilder
+ *   fillStyle: string | CanvasGradient | CanvasPattern | GradientBuilder
+ *   strokeStyle: string | CanvasGradient | CanvasPattern | GradientBuilder
  *   text: string
  *   font: string
  *   fill: boolean
@@ -23,6 +23,9 @@ import { DrawNode } from "../drawNode.js";
  * }} TextNodeOptions
  */
 
+/**
+ * @extends {DrawObject<TextNodeOptions>}
+ */
 export class TextObject extends DrawObject {
     static #canvas = new OffscreenCanvas(1, 1);
     static #ctx = this.#canvas.getContext("2d");
@@ -174,6 +177,9 @@ export class TextObject extends DrawObject {
     get perfectlyOptimized() { return this.constructor === TextObject; }
 }
 
+/**
+ * @extends {DrawNode<TextNodeOptions>}
+ */
 class TextNode extends DrawNode {
     #text;
     #font;
