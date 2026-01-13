@@ -41,9 +41,9 @@ export class DrawNode {
     #scaleY;
     #alpha;
     #zIndex;
-    #fillColor;
+    #fillStyle;
     #fillGradient;
-    #strokeColor;
+    #strokeStyle;
     #strokeGradient;
     #visible;
     #showBounds;
@@ -74,12 +74,12 @@ export class DrawNode {
         if (options.fillStyle instanceof GradientBuilder)
             this.#fillGradient = options.fillStyle;
         else
-            this.#fillColor = options.fillStyle;
+            this.#fillStyle = options.fillStyle;
 
         if (options.strokeStyle instanceof GradientBuilder)
             this.#strokeGradient = options.strokeStyle;
         else
-            this.#strokeColor = options.strokeStyle;
+            this.#strokeStyle = options.strokeStyle;
 
         this.#visible = options.visible;
 
@@ -110,8 +110,8 @@ export class DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     _setFillStyle(ctx) {
-        if (this.#fillColor !== undefined)
-            ctx.fillStyle = this.#fillColor;
+        if (this.#fillStyle !== undefined)
+            ctx.fillStyle = this.#fillStyle;
         else if (this.#fillGradient !== undefined)
             ctx.fillStyle = this.#fillGradient.getGradient(ctx);
     }
@@ -121,8 +121,8 @@ export class DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     _setStrokeStyle(ctx) {
-        if (this.#strokeColor !== undefined)
-            ctx.strokeStyle = this.#strokeColor;
+        if (this.#strokeStyle !== undefined)
+            ctx.strokeStyle = this.#strokeStyle;
         else if (this.#strokeGradient !== undefined)
             ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
     }
