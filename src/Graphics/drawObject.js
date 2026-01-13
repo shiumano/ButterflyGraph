@@ -1,10 +1,10 @@
 import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
+import { Gradient } from "./Gradients/gradient.js"
 
 /**
  * @import { Vector2 } from "./vector2.js";
  * @import { DrawNodeOptions } from "./drawNode.js"
- * @import { Gradient } from "./Gradients/gradient.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -21,9 +21,9 @@ import { DrawNode } from "./drawNode.js";
  *   visible?: boolean
  *   timed?: boolean
  *   showBounds?: boolean
- *   color?: string | Gradient
- *   fillStyle?: string | Gradient
- *   strokeStyle?: string | Gradient
+ *   color?: string | CanvasGradient | CanvasPattern | Gradient
+ *   fillStyle?: string | CanvasGradient | CanvasPattern | Gradient
+ *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
  * @typedef {{
  *   t: number | undefined
@@ -298,14 +298,14 @@ export class DrawObject {
     }
 
     /**
-     * stringのcolorもしくはGradientBuilderを取得
-     * @param {string | Gradient} style
+     * CanvasのstyleもしくはGradientBuilderを取得
+     * @param {string | CanvasGradient | CanvasPattern | Gradient} style
      */
     getStyle(style) {
-        if (typeof style === "string")
-            return style;
+        if (style instanceof Gradient)
+            return style.getGradientBuilder();
         else
-            return style.createGradientBuilder();
+            return style;
     }
 
     /**

@@ -75,6 +75,14 @@ export class Gradient {
 
         return builder;
     }
+
+    // 直接CanvasGradientを取得できる糖衣
+    /**
+     * @param {CanvasRenderingContext2D} ctx
+     */
+    getGradient(ctx) {
+        return this.getGradientBuilder().getGradient(ctx);
+    }
 }
 
 /**

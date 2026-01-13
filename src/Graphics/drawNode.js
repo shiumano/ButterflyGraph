@@ -1,6 +1,7 @@
+import { GradientBuilder } from "./Gradients/gradient.js"
+
 /**
  * @import { Vector2 } from "./vector2"
- * @import { GradientBuilder } from "./Gradients/gradient.js"
  * @typedef {{
  *   x: number
  *   y: number
@@ -15,8 +16,8 @@
  *   originOffsetY: number
  *   alpha: number
  *   zIndex: number
- *   fillStyle?: string | GradientBuilder
- *   strokeStyle?: string | GradientBuilder
+ *   fillStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
+ *   strokeStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
  *   visible: boolean
  *   showBounds?: boolean
  * }} DrawNodeOptions
@@ -40,9 +41,9 @@ export class DrawNode {
     #scaleY;
     #alpha;
     #zIndex;
-    #fillColor;
+    #fillStyle;
     #fillGradient;
-    #strokeColor;
+    #strokeStyle;
     #strokeGradient;
     #visible;
     #showBounds;
@@ -69,16 +70,16 @@ export class DrawNode {
         this.#alpha = options.alpha;
         this.#zIndex = options.zIndex;
 
-        // typeof判定は先にやっておく、drawではnullチェックのみとする
-        if (typeof options.fillStyle === "string")
-            this.#fillColor = options.fillStyle;
-        else
+        // type判定は先にやっておく、drawではnullチェックのみとする
+        if (options.fillStyle instanceof GradientBuilder)
             this.#fillGradient = options.fillStyle;
-
-        if (typeof options.strokeStyle === "string")
-            this.#strokeColor = options.strokeStyle;
         else
+            this.#fillStyle = options.fillStyle;
+
+        if (options.strokeStyle instanceof GradientBuilder)
             this.#strokeGradient = options.strokeStyle;
+        else
+            this.#strokeStyle = options.strokeStyle;
 
         this.#visible = options.visible;
 
@@ -109,8 +110,8 @@ export class DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     _setFillStyle(ctx) {
-        if (this.#fillColor !== undefined)
-            ctx.fillStyle = this.#fillColor;
+        if (this.#fillStyle !== undefined)
+            ctx.fillStyle = this.#fillStyle;
         else if (this.#fillGradient !== undefined)
             ctx.fillStyle = this.#fillGradient.getGradient(ctx);
     }
@@ -120,8 +121,8 @@ export class DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     _setStrokeStyle(ctx) {
-        if (this.#strokeColor !== undefined)
-            ctx.strokeStyle = this.#strokeColor;
+        if (this.#strokeStyle !== undefined)
+            ctx.strokeStyle = this.#strokeStyle;
         else if (this.#strokeGradient !== undefined)
             ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
     }
