@@ -40,8 +40,7 @@ JSDoc
 any
 　ぜったいに潰す
 　OffscreenCanvas→Canvasはギリゆるそう
-　DrawNode.optionsがanyなのは絶対に許してはいけない
-　いつか、潰す
+　それ以外は、潰す
 
 エコシステム化
 　エコシステム化はしてはいけません
