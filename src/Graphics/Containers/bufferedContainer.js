@@ -123,6 +123,10 @@ export class BufferedContainer extends Container {
 // WARN: お前ごときがGCになるのか？
 /** @type {WeakMap<ImageBitmap, number>} */
 const bitmapRefCount = new WeakMap();
+/** @type {FinalizationRegistry<ImageBitmap?>} */
+const registry = new FinalizationRegistry((bmp) => deRef(bmp));
+
+let bitmapCount = 0;
 
 /**
  * @param {ImageBitmap?} bmp
@@ -130,6 +134,7 @@ const bitmapRefCount = new WeakMap();
 function incRef(bmp) {
     if (bmp === null) return;  // 虚無に参照など無い
     const refs = bitmapRefCount.get(bmp) ?? 0;
+    if (refs === 0) bitmapCount++;
     bitmapRefCount.set(bmp, refs + 1);
 }
 /**
@@ -145,9 +150,12 @@ function deRef(bmp) {
     else {
         bitmapRefCount.delete(bmp);
         try { bmp.close(); } catch { }
+        bitmapCount--;
     }
     return refs - 1;
 }
+
+// setInterval(() => console.log(`Bitmap count: ${bitmapCount}`), 1000);
 
 /**
  * @extends {ContainerNode<BufferedContainerNodeOptions>}
@@ -215,6 +223,7 @@ class BufferedContainerNode extends ContainerNode {
                 // 描画内容も引き継ぎ
                 this.#bitmap = oldNode.#bitmap;
                 incRef(this.#bitmap);  // 使ってる人が増えたよ！
+                registry.register(this, this.#bitmap);
             }
         } else {
             this.#buffer = new OffscreenCanvas(1, 1);
@@ -308,10 +317,11 @@ class BufferedContainerNode extends ContainerNode {
 
         super.draw(this.#bufferCtx);
 
+        registry.unregister(this);
         deRef(this.#bitmap);  // もういらないよ！
-        const bitmap = this.#buffer.transferToImageBitmap();
-        this.#bitmap = bitmap;
-        incRef(bitmap);  // これ使うよ！
+        this.#bitmap = this.#buffer.transferToImageBitmap();
+        incRef(this.#bitmap);  // これ使うよ！
+        registry.register(this, this.#bitmap);
     }
 
     /**
