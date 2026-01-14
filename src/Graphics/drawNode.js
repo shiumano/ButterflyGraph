@@ -21,6 +21,12 @@ import { GradientBuilder } from "./Gradients/gradient.js"
  *   visible: boolean
  *   showBounds?: boolean
  * }} DrawNodeOptions
+ * @typedef {DrawNode<DrawNodeOptions>} GenericDrawNode
+ */
+
+/**
+ * @template T
+ * @typedef {T extends DrawNode<infer U> ? U : never} NodeOptions
  */
 
 // しょうがない: ……そろそろCanvasRenderingContext2Dの再実装になってきたね でも互換レイヤーだから仕方ない
@@ -124,7 +130,7 @@ export class DrawNode {
     /**
      * 新しいオプションを指定して再生成
      * @abstract
-     * @param {Partial<DrawNodeOptions>} options
+     * @param {Partial<T>} options
      */
     with(options) {
         if (this.constructor !== DrawNode)

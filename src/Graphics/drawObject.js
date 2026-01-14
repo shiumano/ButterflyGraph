@@ -4,7 +4,7 @@ import { Gradient } from "./Gradients/gradient.js"
 
 /**
  * @import { Vector2 } from "./vector2.js";
- * @import { DrawNodeOptions } from "./drawNode.js"
+ * @import { GenericDrawNode, NodeOptions } from "./drawNode.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -26,18 +26,19 @@ import { Gradient } from "./Gradients/gradient.js"
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
  * @typedef {"transform" | "object"} RecreateReason
+ * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
  */
 
 /**
- * @template {DrawNodeOptions} T
+ * @template {GenericDrawNode} T
  * @typedef {{
  *   t: number | undefined
- *   node: DrawNode<T>
- * }} DrawNodeCache<T> t ... number:対応する時刻 undefined:時間的に不変
+ *   node: T
+ * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
  */
 
 /**
- * @template {DrawNodeOptions} T
+ * @template {GenericDrawNode} T
  */
 export class DrawObject {
     #x;
@@ -319,7 +320,7 @@ export class DrawObject {
      * 子オブジェクトのオプションの計算
      * @param {DrawObject<T>} child
      * @param {number} t
-     * @returns {T}
+     * @returns {NodeOptions<T>}
      */
     calculateChildOptions(child, t) {
         const childOptions = child.calculateThisOptions(t);
@@ -333,7 +334,7 @@ export class DrawObject {
     /**
      * 自分自身のオプションの計算
      * @param {number} t
-     * @returns {T}
+     * @returns {NodeOptions<T>}
      */
     calculateThisOptions(t) {
         const hasCache = this.cachedNode !== undefined;
@@ -375,7 +376,7 @@ export class DrawObject {
     /**
      * DrawNodeOptionsを生成
      * @param {number} t
-     * @returns {T}
+     * @returns {NodeOptions<T>}
      */
     calculateOptions(t) {
         // TODO: objectChangedとtransformChangedを活用し、*ｲﾝﾃﾘｼﾞｪﾝﾄ*な差分更新を行う 関数を分けるのがだるすぎる
@@ -396,10 +397,13 @@ export class DrawObject {
      * 時間 t におけるこのオブジェクトの見た目を DrawNode 化する
      * @abstract
      * @param {number} t
-     * @returns {DrawNode<T>}
+     * @returns {T}
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
+        // new DrawNodeの出処を探してここに来たのかい？本当は別のNodeを返したかったのかな
+        // 残念、あんたがcreateSnapshot(t)を定義しなかったせいでDrawNodeが返ってきたんだよ
+        // @ts-expect-error
         return this.cachedNode?.with(options) ?? new DrawNode(options);
     }
 
