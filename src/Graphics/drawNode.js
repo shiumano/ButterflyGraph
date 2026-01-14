@@ -21,6 +21,7 @@ import { GradientBuilder } from "./Gradients/gradient.js"
  *   visible: boolean
  *   showBounds?: boolean
  * }} DrawNodeOptions
+ * @typedef {DrawNode<DrawNodeOptions>} GenericDrawNode
  */
 
 // しょうがない: ……そろそろCanvasRenderingContext2Dの再実装になってきたね でも互換レイヤーだから仕方ない

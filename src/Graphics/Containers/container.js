@@ -2,14 +2,14 @@ import { DrawNode } from "../drawNode.js";
 import { DrawObject } from "../drawObject.js";
 
 /**
- * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
- * @import { DrawObjectOptions, RecreateReason } from "@core/Graphics/drawObject.js"
+ * @import { DrawNodeOptions, GenericDrawNode } from "@core/Graphics/drawNode.js"
+ * @import { DrawObjectOptions, RecreateReason, GenericDrawObject } from "@core/Graphics/drawObject.js"
  * @typedef {DrawObjectOptions & {
- *   children?: readonly DrawObject<DrawNode<DrawNodeOptions>>[]
+ *   children?: readonly GenericDrawObject[]
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
- *   children: ReadonlyArray<DrawNode<DrawNodeOptions>>
+ *   children: readonly GenericDrawNode[]
  *   clip: boolean
  * }} ContainerNodeOptions
  */

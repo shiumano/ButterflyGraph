@@ -4,7 +4,7 @@ import { Gradient } from "./Gradients/gradient.js"
 
 /**
  * @import { Vector2 } from "./vector2.js";
- * @import { DrawNodeOptions } from "./drawNode.js"
+ * @import { DrawNodeOptions, GenericDrawNode } from "./drawNode.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -26,10 +26,11 @@ import { Gradient } from "./Gradients/gradient.js"
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
  * @typedef {"transform" | "object"} RecreateReason
+ * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
  */
 
 /**
- * @template {DrawNode<DrawNodeOptions>} T
+ * @template {GenericDrawNode} T
  * @typedef {{
  *   t: number | undefined
  *   node: T
@@ -42,7 +43,7 @@ import { Gradient } from "./Gradients/gradient.js"
  */
 
 /**
- * @template {DrawNode<DrawNodeOptions>} T
+ * @template {GenericDrawNode} T
  */
 export class DrawObject {
     #x;
