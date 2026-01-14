@@ -4,7 +4,7 @@ import { Gradient } from "./Gradients/gradient.js"
 
 /**
  * @import { Vector2 } from "./vector2.js";
- * @import { DrawNodeOptions, GenericDrawNode } from "./drawNode.js"
+ * @import { DrawNodeOptions, GenericDrawNode, NodeOptions } from "./drawNode.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -35,11 +35,6 @@ import { Gradient } from "./Gradients/gradient.js"
  *   t: number | undefined
  *   node: T
  * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
- */
-
-/**
- * @template T
- * @typedef {T extends DrawNode<infer U> ? U : never} NodeOptions
  */
 
 /**

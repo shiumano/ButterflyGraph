@@ -24,6 +24,11 @@ import { GradientBuilder } from "./Gradients/gradient.js"
  * @typedef {DrawNode<DrawNodeOptions>} GenericDrawNode
  */
 
+/**
+ * @template T
+ * @typedef {T extends DrawNode<infer U> ? U : never} NodeOptions
+ */
+
 // しょうがない: ……そろそろCanvasRenderingContext2Dの再実装になってきたね でも互換レイヤーだから仕方ない
 /**
  * x, yを起点として、オブジェクトを描画するためのクラス。
