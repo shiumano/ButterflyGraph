@@ -317,11 +317,10 @@ class BufferedContainerNode extends ContainerNode {
 
         super.draw(this.#bufferCtx);
 
-        deRef(this.#bitmap);  // もういらないよ！
         registry.unregister(this);
-        const bitmap = this.#buffer.transferToImageBitmap();
-        this.#bitmap = bitmap;
-        incRef(bitmap);  // これ使うよ！
+        deRef(this.#bitmap);  // もういらないよ！
+        this.#bitmap = this.#buffer.transferToImageBitmap();
+        incRef(this.#bitmap);  // これ使うよ！
         registry.register(this, this.#bitmap);
     }
 
