@@ -155,7 +155,7 @@ function deRef(bmp) {
     return refs - 1;
 }
 
-// setInterval(() => console.log(`Bitmap count: {bitmapCount}`), 1000);
+// setInterval(() => console.log(`Bitmap count: ${bitmapCount}`), 1000);
 
 /**
  * @extends {ContainerNode<BufferedContainerNodeOptions>}
