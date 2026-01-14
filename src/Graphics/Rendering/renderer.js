@@ -1,5 +1,5 @@
 /**
- * @import { DrawNode, DrawNodeOptions } from "@core/Graphics/drawNode.js"
+ * @import { GenericDrawNode } from "@core/Graphics/drawNode.js"
  */
 
 export class Renderer {
@@ -37,7 +37,7 @@ export class Renderer {
     }
 
     /**
-     * @param {DrawNode<DrawNodeOptions>} drawRoot
+     * @param {GenericDrawNode} drawRoot
      */
     render(drawRoot) {
         this.ctx.reset();
