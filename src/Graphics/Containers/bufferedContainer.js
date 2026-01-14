@@ -124,7 +124,7 @@ export class BufferedContainer extends Container {
 /** @type {WeakMap<ImageBitmap, number>} */
 const bitmapRefCount = new WeakMap();
 /** @type {FinalizationRegistry<ImageBitmap?>} */
-const registory = new FinalizationRegistry((bmp) => deRef(bmp));
+const registry = new FinalizationRegistry((bmp) => deRef(bmp));
 
 let bitmapCount = 0;
 
@@ -223,7 +223,7 @@ class BufferedContainerNode extends ContainerNode {
                 // 描画内容も引き継ぎ
                 this.#bitmap = oldNode.#bitmap;
                 incRef(this.#bitmap);  // 使ってる人が増えたよ！
-                registory.register(this, this.#bitmap);
+                registry.register(this, this.#bitmap);
             }
         } else {
             this.#buffer = new OffscreenCanvas(1, 1);
@@ -318,11 +318,11 @@ class BufferedContainerNode extends ContainerNode {
         super.draw(this.#bufferCtx);
 
         deRef(this.#bitmap);  // もういらないよ！
-        registory.unregister(this);
+        registry.unregister(this);
         const bitmap = this.#buffer.transferToImageBitmap();
         this.#bitmap = bitmap;
         incRef(bitmap);  // これ使うよ！
-        registory.register(this, this.#bitmap);
+        registry.register(this, this.#bitmap);
     }
 
     /**
