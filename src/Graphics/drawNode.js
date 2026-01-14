@@ -125,7 +125,7 @@ export class DrawNode {
     /**
      * 新しいオプションを指定して再生成
      * @abstract
-     * @param {Partial<DrawNodeOptions>} options
+     * @param {Partial<T>} options
      */
     with(options) {
         if (this.constructor !== DrawNode)

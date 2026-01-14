@@ -114,7 +114,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {DrawObject<DrawNode<DrawNodeOptions>>} child
+     * @param {GenericDrawObject} child
      */
     addChild(child) {
         const index = this.#children.indexOf(child);
@@ -131,7 +131,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {DrawObject<DrawNode<DrawNodeOptions>>} child
+     * @param {GenericDrawObject} child
      */
     removeChild(child) {
         const index = this.#children.indexOf(child);
@@ -216,14 +216,10 @@ export class ContainerNode extends DrawNode {
     #single;
 
     /**
-     * @param {ContainerNodeOptions} options
+     * @param {T} options
      * @param {ContainerNode<T>?} oldNode
      */
     constructor(options, oldNode = null) {
-        // しょうがない: TypeScriptの限界ではあるが、本当に設計上問題がない
-        // | 型 'ContainerNodeOptions' の引数を型 'T' のパラメーターに割り当てることはできません。
-        // | 'ContainerNodeOptions' は型 'T' の制約に代入できますが、'T' は制約 'ContainerNodeOptions' の別のサブタイプでインスタンス化できることがあります。ts(2345)
-        // @ts-expect-error
         super(options, oldNode);
 
         this.#children = Object.freeze(options.children);
@@ -247,7 +243,7 @@ export class ContainerNode extends DrawNode {
     }
 
     /**
-     * @param {Partial<ContainerNodeOptions>} options
+     * @param {Partial<T>} options
      */
     with(options) {
         if (this.constructor !== ContainerNode)
