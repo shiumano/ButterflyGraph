@@ -42,6 +42,9 @@ export class Rectangle extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
+        // WARN: ジェネリクス理論だと、superはDrawObject<DrawNode<RectangleNodeOptions>>なので、superがRectangleNodeOptionsを返すと思い込む
+        //     : しかし本当はsuperはDrawObject<DrawNode<DrawNodeOptions>>のため、fillStyleはundefined
+        //     : 自分でRectangleNodeOptionsに追加した内容を見て人力チェックしてくれ
         return this.cachedNode?.with(options) ?? new RectangleNode(options);
     }
 
