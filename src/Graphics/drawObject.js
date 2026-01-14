@@ -4,7 +4,7 @@ import { Gradient } from "./Gradients/gradient.js"
 
 /**
  * @import { Vector2 } from "./vector2.js";
- * @import { DrawNodeOptions, GenericDrawNode, NodeOptions } from "./drawNode.js"
+ * @import { GenericDrawNode, NodeOptions } from "./drawNode.js"
  * @typedef {{
  *   x?: number
  *   y?: number
