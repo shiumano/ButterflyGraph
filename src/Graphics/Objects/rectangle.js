@@ -13,7 +13,7 @@ import { DrawNode } from "../drawNode.js";
  */
 
 /**
- * @extends {DrawObject<RectangleNodeOptions>}
+ * @extends {DrawObject<RectangleNode>}
  */
 export class Rectangle extends DrawObject {
     /**

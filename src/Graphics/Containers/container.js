@@ -5,7 +5,7 @@ import { DrawObject } from "../drawObject.js";
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
  * @import { DrawObjectOptions, RecreateReason } from "@core/Graphics/drawObject.js"
  * @typedef {DrawObjectOptions & {
- *   children?: readonly DrawObject<DrawNodeOptions>[]
+ *   children?: readonly DrawObject<DrawNode<DrawNodeOptions>>[]
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
@@ -15,7 +15,7 @@ import { DrawObject } from "../drawObject.js";
  */
 
 /**
- * @template {ContainerNodeOptions} T
+ * @template {ContainerNode<ContainerNodeOptions>} T
  * @extends {DrawObject<T>}
  */
 export class Container extends DrawObject {
@@ -114,7 +114,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {DrawObject<DrawNodeOptions>} child
+     * @param {DrawObject<DrawNode<DrawNodeOptions>>} child
      */
     addChild(child) {
         const index = this.#children.indexOf(child);
@@ -131,7 +131,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {DrawObject<DrawNodeOptions>} child
+     * @param {DrawObject<DrawNode<DrawNodeOptions>>} child
      */
     removeChild(child) {
         const index = this.#children.indexOf(child);
@@ -191,9 +191,13 @@ export class Container extends DrawObject {
 
     /**
      * @param {number} t
+     * @returns {T}
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
+        // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
+        // BufferedContainerを見習いなさい
+        // @ts-expect-error
         return this.cachedNode?.with(options) ?? new ContainerNode(options);
     }
 
@@ -216,14 +220,11 @@ export class ContainerNode extends DrawNode {
      * @param {ContainerNode<T>?} oldNode
      */
     constructor(options, oldNode = null) {
+        // しょうがない: TypeScriptの限界ではあるが、本当に設計上問題がない
+        // | 型 'ContainerNodeOptions' の引数を型 'T' のパラメーターに割り当てることはできません。
+        // | 'ContainerNodeOptions' は型 'T' の制約に代入できますが、'T' は制約 'ContainerNodeOptions' の別のサブタイプでインスタンス化できることがあります。ts(2345)
         // @ts-expect-error
         super(options, oldNode);
-        /**
-         * 型 'ContainerNodeOptions' の引数を型 'T' のパラメーターに割り当てることはできません。
-         * 'ContainerNodeOptions' は型 'T' の制約に代入できますが、'T' は制約 'ContainerNodeOptions' の別のサブタイプでインスタンス化できることがあります。
-         *
-         * なぜ？
-         */
 
         this.#children = Object.freeze(options.children);
 

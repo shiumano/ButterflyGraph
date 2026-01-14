@@ -25,7 +25,7 @@ import { Container, ContainerNode } from "./container.js";
  * また、内容が変化しまくるものをBufferedContainerに入れるべきではない
  *
  * 使うときは慎重に、使わなきゃいけないときにだけ使うこと
- * @extends Container<BufferedContainerNodeOptions>
+ * @extends Container<BufferedContainerNode>
  */
 export class BufferedContainer extends Container {
     #supersize;

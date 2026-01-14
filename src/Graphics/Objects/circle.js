@@ -15,7 +15,7 @@ import { DrawNode } from "../drawNode.js";
  */
 
 /**
- * @extends {DrawObject<CircleNodeOptions>}
+ * @extends {DrawObject<CircleNode>}
  */
 export class Circle extends DrawObject {
     #radius;

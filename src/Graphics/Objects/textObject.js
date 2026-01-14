@@ -24,7 +24,7 @@ import { DrawNode } from "../drawNode.js";
  */
 
 /**
- * @extends {DrawObject<TextNodeOptions>}
+ * @extends {DrawObject<TextNode>}
  */
 export class TextObject extends DrawObject {
     static #canvas = new OffscreenCanvas(1, 1);
