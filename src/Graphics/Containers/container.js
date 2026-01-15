@@ -12,6 +12,8 @@ import { DrawObject } from "../drawObject.js";
  *   children: readonly GenericDrawNode[]
  *   clip: boolean
  * }} ContainerNodeOptions
+ * @typedef {ContainerNode<ContainerNodeOptions>} GenericContainerNode
+ * @typedef {Container<GenericContainerNode>} GenericContainer
  */
 
 /**
