@@ -10,8 +10,8 @@ import { GradientBuilder } from "./Gradients/gradient.js"
  *   height: number
  *   scaleX: number
  *   scaleY: number
- *   anchor: Vector2
- *   origin: Vector2
+ *   anchor: Readonly<Vector2>
+ *   origin: Readonly<Vector2>
  *   originOffsetX: number
  *   originOffsetY: number
  *   alpha: number
