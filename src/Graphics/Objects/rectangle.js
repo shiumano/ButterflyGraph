@@ -4,11 +4,10 @@ import { DrawNode } from "../drawNode.js";
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
- * @import { GradientBuilder } from "../Gradients/gradient.js";
  * @typedef {DrawObjectOptions & {
  * }} RectangleOptions
- * @typedef {DrawNodeOptions & {
- *    fillStyle: string | CanvasGradient | CanvasPattern | GradientBuilder
+ * @typedef {Omit<DrawNodeOptions, "fillStyle"> & {
+ *    fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
  * }} RectangleNodeOptions
  */
 
