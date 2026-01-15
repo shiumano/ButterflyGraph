@@ -37,6 +37,80 @@ JSDoc
 
 　TypeScriptはゴミです
 
+　でも、実はこのプロジェクトで書いているJSDocは本来のJSDocではない
+
+JavaScriptにおける型ベースのプログラム
+　TypeScriptはゴミです
+　ですが、TypeScriptの功績は認めています
+　そのために、JSDocを書いています
+　実際に書いているのはJSDocの”TypeScript拡張”で、本来のJSDocに無い機能を大量に使ってます
+　例えば
+　 * @import { Vector2 } from "./vector2"
+　この@importというもの、これは公式のJSDocにはありません
+　tscと、それを利用するVSCodeだから解釈できています
+　 * @template T
+　 * @typedef {T extends DrawNode<infer U> ? U : never} NodeOptions
+　これなんて完全にアウトです
+　inferなんてものTypeScriptじゃないと使えないし、型関数なんてTypeのScriptそのものです
+　……だから、このプロジェクトで書いているのは”純粋なJavaScript”ではない
+
+　……でも、”TypeScriptそのもの”でもない
+　結局、処理は全てJavaScriptで、型定義は全て/** */で囲まれたJSDoc…… /* */は完全に単なる”コメント”です
+　本当に、JSDocで書いた型はコードとして解釈されないんです
+　tscもそれはわかっています
+　だから、合ってない型に代入したらエラーが出ますし、不明な型に対して特定の型じゃないと使えないことをするとエラーになります
+
+　しか〜し、JavaScriptにも型に関する構文はある
+　typeofが一番有名でしょう
+　let f = true;
+　let a = f ? "1" : 1;  // aはfの分岐によりstring | number型
+
+　// 型エラーが出る(stringとnumberのどちらかで存在しない関数を呼ぶため)
+　a.repeat(10);
+　a.toFixed(10);
+
+　// typeofでチェックすれば型が固定され、エラーは出なくなる
+　if (typeof a === "string")
+　    a.repeat(10);
+　if (typeof a === "number")
+　    a.toFixed(10);
+　でも、自分で定義したclassは、あくまでobject
+　class c { something(n = 10) { return n; } }
+
+　let f = true;
+　let a = f ? "1" : new c();  // aはfの分岐によりstring | c型
+
+　// 型エラーが出る(stringとcのどちらかで存在しない関数を呼ぶため)
+　a.something(10);
+
+　// typeofは特定の型しか返さない
+　// 自分で定義したclassは全部"object"にひっくるめられるので、この条件式が型エラー
+　if (typeof a === "c")
+　    a.something(10);
+　そんなときにはinstanceofを使います
+　// instanceofはプロトタイプチェーンに目的の型があるかどうかをチェックする
+　if (a instanceof c)
+　    a.something(10);  // aはc型
+　こうすれば、JavaScriptでも型を明示したコードを書くことができます
+
+TypeScript
+　さっきTypeScriptはゴミですと言いましたが、だからといって誰に対しても使用を禁止するのは道徳的によろしくありません
+
+　なぜTypeScriptが嫌いなのか
+　それは、ビルドが必要になるからです
+　ビルドした結果ネイティブバイナリになって爆速になるんだったら許しますよ
+　AssemblyScriptは喜んで書きましょう
+　でも、結局変化する先はJavaScript
+　なんならJavaScriptになった結果遅くなることもある
+　enumのビルド結果を知ってますか？あんなものを見たら絶対に使いたくなくなりますよ
+　そして、結局型は幻想
+　ランタイムでの型の保証は存在しない
+　なら、TypeScriptの安全性って何？
+
+　型定義はちゃんとやってるんで、このライブラリはTypeScriptからでも使えるはずです
+　ただしJavaScriptなので、allowJsをtrueにしないと読み込んでくれません
+　雑なサンプルコードは長すぎるんで下に貼っときます
+
 any
 　ぜったいに潰す
 　OffscreenCanvas→Canvasはギリゆるそう
@@ -130,3 +204,87 @@ BufferedContainer
 　その可能性は、使い倒せるようにしておきたい
 
 　BufferedContainerがCanvas APIを本当に飛び出すための翼になるのは、また別の話……
+
+TypeScriptで書いたときのサンプルコード
+　私はTSを書いたことがない人間なので、正しいTSかどうかの保証はしません
+　ですが、一応これで型エラーは出ません
+
+import { Container, GenericContainer } from "@core/Graphics/Containers/container";
+import { DrawNode, DrawNodeOptions } from "@core/Graphics/drawNode";
+import { DrawObject, DrawObjectOptions } from "@core/Graphics/drawObject";
+
+type TestObjectOptions = DrawObjectOptions & {
+    lineWidth?: number
+}
+
+type TestNodeOptions = Omit<DrawNodeOptions, "strokeStyle"> & {
+    strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>,
+    lineWidth: number
+}
+
+class TestObject extends DrawObject<TestNode> {
+    lineWidth: number;
+    constructor(options: Partial<TestObjectOptions> = {}) {
+        super(options);
+
+        this.lineWidth = options.lineWidth ?? 0;
+    }
+
+    calculateOptions(t: number): TestNodeOptions {
+        const options = super.calculateOptions(t);
+        return {
+            ...options,
+            strokeStyle: this.getStyle(this.strokeStyle),
+            lineWidth: this.lineWidth
+        }
+    }
+
+    createSnapshot(t: number): TestNode {
+        const options = this.calculateOptions(t);
+        return this.cachedNode?.with(options) ?? new TestNode(options);
+    }
+}
+
+class TestNode extends DrawNode<TestNodeOptions> {
+    #lineWidth: number;
+    #path: Path2D;
+    constructor(options: TestNodeOptions, oldNode: TestNode | null = null) {
+        super(options, oldNode);
+
+        this.#lineWidth = options.lineWidth;
+
+        if (
+            oldNode instanceof TestNode &&
+            oldNode.width === options.width && oldNode.height === options.height) {
+            this.#path = oldNode.#path;
+        } else {
+            const cx: number = options.width / 2;
+            const cy: number = options.height / 2;
+            const r: number = Math.min(cx, cy) / 2;
+
+            const path: Path2D = new Path2D();
+            path.moveTo(cx, 0); path.lineTo(cx, options.height);
+            path.moveTo(0, cy); path.lineTo(options.width, cy);
+            path.arc(cx, cy, r, 0, Math.PI * 2);
+
+            this.#path = path;
+        }
+    }
+
+    with(options: Partial<TestNodeOptions>): TestNode {
+        if (this.constructor !== TestNode)
+            throw new Error(`The ${this.constructor.name}.with(options) is not implemented.`);
+
+        return new TestNode({...this.options, ...options});
+    }
+
+    draw(ctx: CanvasRenderingContext2D): void {
+        this._setStrokeStyle(ctx);
+        ctx.lineWidth = this.#lineWidth;
+        ctx.stroke(this.#path);
+    }
+}
+
+const root: GenericContainer = new Container();
+const obj: TestObject = new TestObject({width: 10, height: 10, lineWidth: 1});
+root.addChild(obj);
