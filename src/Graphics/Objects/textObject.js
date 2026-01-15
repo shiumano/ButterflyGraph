@@ -2,7 +2,6 @@ import { DrawObject } from "../drawObject.js";
 import { DrawNode } from "../drawNode.js";
 
 /**
- * @import { GradientBuilder } from "../Gradients/gradient.js";
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
  * @typedef {DrawObjectOptions & {
@@ -12,9 +11,9 @@ import { DrawNode } from "../drawNode.js";
  *   strokeWidth?: number
  *   sizeReference?: "actual" | "font"
  * }} TextOptions
- * @typedef {DrawNodeOptions & {
- *   fillStyle: string | CanvasGradient | CanvasPattern | GradientBuilder
- *   strokeStyle: string | CanvasGradient | CanvasPattern | GradientBuilder
+ * @typedef {Omit<DrawNodeOptions, "fillStyle" | "strokeStyle"> & {
+ *   fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
+ *   strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>
  *   text: string
  *   font: string
  *   fill: boolean
@@ -151,6 +150,7 @@ export class TextObject extends DrawObject {
 
     /**
      * @param {number} t
+     * @returns {TextNodeOptions}
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);

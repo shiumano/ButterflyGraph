@@ -4,11 +4,10 @@ import { DrawNode } from "../drawNode.js";
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
- * @import { GradientBuilder } from "../Gradients/gradient.js";
  * @typedef {DrawObjectOptions & {
  * }} RectangleOptions
- * @typedef {DrawNodeOptions & {
- *    fillStyle: string | CanvasGradient | CanvasPattern | GradientBuilder
+ * @typedef {Omit<DrawNodeOptions, "fillStyle"> & {
+ *    fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
  * }} RectangleNodeOptions
  */
 
@@ -28,6 +27,7 @@ export class Rectangle extends DrawObject {
 
     /**
      * @param {number} t
+     * @returns {RectangleNodeOptions}
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
@@ -42,9 +42,6 @@ export class Rectangle extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        // WARN: ジェネリクス理論だと、superはDrawObject<DrawNode<RectangleNodeOptions>>なので、superがRectangleNodeOptionsを返すと思い込む
-        //     : しかし本当はsuperはDrawObject<DrawNode<DrawNodeOptions>>のため、fillStyleはundefined
-        //     : 自分でRectangleNodeOptionsに追加した内容を見て人力チェックしてくれ
         return this.cachedNode?.with(options) ?? new RectangleNode(options);
     }
 
