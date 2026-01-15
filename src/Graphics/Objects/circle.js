@@ -54,6 +54,7 @@ export class Circle extends DrawObject {
 
     /**
      * @param {number} t
+     * @returns {CircleNodeOptions}
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);

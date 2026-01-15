@@ -164,6 +164,7 @@ export class Container extends DrawObject {
 
     /**
      * @param {number} t
+     * @returns {ContainerNodeOptions}
      */
     calculateOptions(t) {
         let options = super.calculateOptions(t);

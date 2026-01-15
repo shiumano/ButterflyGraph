@@ -151,6 +151,7 @@ export class TextObject extends DrawObject {
 
     /**
      * @param {number} t
+     * @returns {TextNodeOptions}
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);

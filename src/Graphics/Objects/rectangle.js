@@ -28,6 +28,7 @@ export class Rectangle extends DrawObject {
 
     /**
      * @param {number} t
+     * @returns {RectangleNodeOptions}
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);

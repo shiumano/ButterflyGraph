@@ -95,6 +95,7 @@ export class BufferedContainer extends Container {
 
     /**
      * @param {number} t
+     * @returns {BufferedContainerNodeOptions}
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
