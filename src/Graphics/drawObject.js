@@ -318,9 +318,10 @@ export class DrawObject {
 
     /**
      * 子オブジェクトのオプションの計算
-     * @param {DrawObject<T>} child
+     * @template {GenericDrawNode} N
+     * @param {DrawObject<N>} child
      * @param {number} t
-     * @returns {NodeOptions<T>}
+     * @returns {NodeOptions<N>}
      */
     calculateChildOptions(child, t) {
         const childOptions = child.calculateThisOptions(t);
