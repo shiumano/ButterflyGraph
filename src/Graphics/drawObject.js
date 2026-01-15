@@ -4,7 +4,7 @@ import { Gradient } from "./Gradients/gradient.js"
 
 /**
  * @import { Vector2 } from "./vector2.js";
- * @import { GenericDrawNode, NodeOptions } from "./drawNode.js"
+ * @import { DrawNodeOptions, GenericDrawNode, NodeOptions } from "./drawNode.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -377,7 +377,7 @@ export class DrawObject {
     /**
      * DrawNodeOptionsを生成
      * @param {number} t
-     * @returns {NodeOptions<T>}
+     * @returns {DrawNodeOptions}
      */
     calculateOptions(t) {
         // TODO: objectChangedとtransformChangedを活用し、*ｲﾝﾃﾘｼﾞｪﾝﾄ*な差分更新を行う 関数を分けるのがだるすぎる
