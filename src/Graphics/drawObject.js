@@ -1,6 +1,7 @@
 import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
 import { Gradient } from "./Gradients/gradient.js"
+import { AnimationManager } from "./Animations/animationManager.js"
 
 /**
  * @import { Vector2 } from "./vector2.js";
@@ -71,6 +72,11 @@ export class DrawObject {
     #contentChanged = true;
     /** @type {DrawNodeCache<T>?} */
     #nodeCache = null;
+
+    /** @type {{[K in keyof this]?: AnimationManager<this[K]>}} */
+    #animations = {};
+
+    #animated = false;
 
     /**
      * @param {DrawObjectOptions} options
@@ -261,6 +267,8 @@ export class DrawObject {
         this.requestRecreate("object");
     }
 
+    get animated() { return this.#animated; }
+
     get originOffsetX() { return this.#originOffsetX; }
     get originOffsetY() { return this.#originOffsetY; }
 
@@ -303,6 +311,21 @@ export class DrawObject {
     #updateOriginOffset() {
         this.#originOffsetX = this.width * this.origin.x * this.scaleX;
         this.#originOffsetY = this.height * this.origin.y * this.scaleY;
+    }
+
+    /**
+     * @template {keyof this} P
+     * @param {P} target
+     * @param {(value: number) => this[P]} applyer
+     */
+    registerAnimationFor(target, applyer) {
+        this.#animated = true;
+        this.requestRecreate("object");
+
+        const manager = new AnimationManager(0, applyer);
+        this.#animations[target] = manager;
+
+        return manager;
     }
 
     /**
@@ -375,6 +398,21 @@ export class DrawObject {
     }
 
     /**
+     *
+     * @param {number} t
+     */
+    calculateAnimations(t) {
+        for (const target in this.#animations) {
+            const manager = this.#animations[target];
+            if (manager === undefined) continue;  // こうしないとTSは信用してくれない
+
+            const calculatedValue = manager.get(t);
+
+            this[target] = calculatedValue;
+        }
+    }
+
+    /**
      * DrawNodeOptionsを生成
      * @param {number} t
      * @returns {DrawNodeOptions}
@@ -414,11 +452,14 @@ export class DrawObject {
      * @param {number} t
      */
     getSnapshot(t) {
+        if (this.animated)
+            this.calculateAnimations(t);
+
         let nodeCache = this.#nodeCache;
         if (nodeCache === null
             || (nodeCache.t !== undefined && nodeCache.t !== t)
-            || this.#transformChanged
-            || this.#objectChanged
+            || this.transformChanged
+            || this.objectChanged
         ) {
             nodeCache = {
                 t: this.timed ? t : undefined,
