@@ -50,6 +50,8 @@ export class AnimationManager {
         this.#duration += animation.duration;
         this.#lastValue = animation.endValue;
         this.#animations.push(animation);
+
+        return this;
     }
 
     // TODO: removeAnimationとかinsertAnimationとかも作る！
@@ -59,7 +61,7 @@ export class AnimationManager {
      * @param {number} duration
      */
     to(end, duration) {
-        this.addAnimation(new LinearAnimation(end, duration));
+        return this.addAnimation(new LinearAnimation(end, duration));
     }
 
     /**
