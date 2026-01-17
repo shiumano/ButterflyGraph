@@ -1,8 +1,8 @@
+import { LinearAnimation } from "./linearAnimation.js";
+
 /**
  * @import { AnimationBase } from "./animationBase"
  */
-
-import { LinearAnimation } from "./linearAnimation.js";
 
 /**
  * @template T
@@ -70,9 +70,6 @@ export class AnimationManager {
         // PERF: forは減ったがifが増えた
         // IDK: 得なのか損なのか比べても誤差でよくわからん きっと軽いでしょ
 
-        const forward = (t >= this.#lastTime) ? 1 : -1;
-        this.#lastTime = t;
-
         const animationCount = this.#animations.length;  // Array.lengthも負荷 JSはスレッド競合が起きない言語なのでヨシ！
 
         // ❌ 1st EXCEPTION: no animations
@@ -87,50 +84,54 @@ export class AnimationManager {
             return this.#lastAnimation?.getValue(t) ?? this.#lastValue;  // 何か(ry
         }
 
-        // ⭕ 1st HOTPATH: same animation
-        let animationIndex = this.#latestAnimationIndex;
-        let animationStartTime = this.#latestUsedAnimationStartTime;
+        if (t >= this.#lastTime) {
+            this.#lastTime = t;
 
-        const latestUsedAnimationStartTime = animationStartTime;
-        const latestAnimation = this.#animations[animationIndex];
+            // ⭕ 1st HOTPATH: same animation
+            let animationIndex = this.#latestAnimationIndex;
+            let animationStartTime = this.#latestUsedAnimationStartTime;
 
-        if (t > latestUsedAnimationStartTime && t < latestUsedAnimationStartTime + latestAnimation.duration) {
-            // console.log("same animation");
-            return latestAnimation.getValue(t - latestUsedAnimationStartTime);
-        }
+            const latestUsedAnimationStartTime = animationStartTime;
+            const latestAnimation = this.#animations[animationIndex];
 
-        // ⭕ 2nd HOTPATH: next animation
-        animationIndex += forward;
+            if (t > latestUsedAnimationStartTime && t < latestUsedAnimationStartTime + latestAnimation.duration) {
+                // console.log("same animation");
+                return latestAnimation.getValue(t - latestUsedAnimationStartTime);
+            }
 
-        // ❌ 3rd EXCEPTION: no next
-        if (animationIndex >= animationCount || animationIndex < 0) {  // どっちかといえば増えていくほうのパスが温かい というか普通マイナスには行かない
-            // console.log("no next");
-            return this.#lastAnimation?.getValue(t) ?? this.#lastValue;
-        }
+            // ⭕ 2nd HOTPATH: next animation
+            animationIndex++;
 
-        const nextAnimationStartTime = animationStartTime;
-        const nextAnimation = this.#animations[animationIndex];
+            // ❌ 3rd EXCEPTION: no next
+            if (animationIndex >= animationCount || animationIndex < 0) {  // どっちかといえば増えていくほうのパスが温かい というか普通マイナスには行かない
+                // console.log("no next");
+                return this.#lastAnimation?.getValue(t) ?? this.#lastValue;
+            }
 
-        animationStartTime += latestAnimation.duration * forward;
+            const nextAnimationStartTime = animationStartTime;
+            const nextAnimation = this.#animations[animationIndex];
 
-        if (t >= nextAnimationStartTime && t < nextAnimationStartTime + nextAnimation.duration) {
-            // console.log("next animation");
-            this.#latestAnimationIndex = animationIndex;
-            this.#latestUsedAnimationStartTime = animationStartTime;
-            return nextAnimation.getValue(t - nextAnimationStartTime);
-        }
+            animationStartTime += latestAnimation.duration;
 
-        // ⭕ 3rd HOTPATH: reset time
-        const firstAnimation = this.#firstAnimation;
-        if (firstAnimation !== null && t < firstAnimation.duration) {
-            // console.log("reset time");
-            this.#latestAnimationIndex = 0;
-            this.#latestUsedAnimationStartTime = 0;
-            return firstAnimation.getValue(t);
+            if (t >= nextAnimationStartTime && t < nextAnimationStartTime + nextAnimation.duration) {
+                // console.log("next animation");
+                this.#latestAnimationIndex = animationIndex;
+                this.#latestUsedAnimationStartTime = animationStartTime;
+                return nextAnimation.getValue(t - nextAnimationStartTime);
+            }
+
+            // ⭕ 3rd HOTPATH: reset time
+            const firstAnimation = this.#firstAnimation;
+            if (firstAnimation !== null && t < firstAnimation.duration) {
+                // console.log("reset time");
+                this.#latestAnimationIndex = 0;
+                this.#latestUsedAnimationStartTime = 0;
+                return firstAnimation.getValue(t);
+            }
         }
 
         // 🔙 DEOPTIMIZATION: loop search
-        animationStartTime = 0;
+        let animationStartTime = 0;
         for (let i = 0; i < this.#animations.length; i++) {  // PERF: 配列のlengthで回したほうが境界チェックが減って速い 蜘蛛猿はトントンだがV8は2倍近い差がある
             const animation = this.#animations[i];
             if (t < animationStartTime + animation.duration) {
@@ -139,7 +140,7 @@ export class AnimationManager {
                 this.#latestUsedAnimationStartTime = animationStartTime;
                 return animation.getValue(t - animationStartTime);
             }
-            animationStartTime += animation.duration * forward;
+            animationStartTime += animation.duration;
         }
         return this.#lastAnimation?.endValue ?? this.#lastValue;
     }
