@@ -19,7 +19,7 @@ export class AnimationBase {
      */
     getValue(t) {
         const moveRange = this.endValue - this.startValue;
-        const norm = t / this.duration;
+        const norm = this.duration !== 0 ? t / this.duration : 1;
 
         return this.startValue + moveRange * this.leap(norm);
     }
