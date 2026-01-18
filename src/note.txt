@@ -205,6 +205,82 @@ BufferedContainer
 
 　BufferedContainerがCanvas APIを本当に飛び出すための翼になるのは、また別の話……
 
+ButterflyGraphとは何か
+　2026年にCanvas APIを使うという技術選定をしてしまい、その便利さと可用性に魅入られた人間が作った
+　Canvas APIをCanvas APIのまま便利にするライブラリ
+
+　Immidiate modeをRetained modeに形を変えさせて、アニメーション関数を宣言的にして、キャッシュ最適化もする
+　そうすれば、まるでCanvas APIを使っていると思えないような、自然なコードを書くことが出来る
+
+
+    const canvas = document.getElementById("my-canvas");
+    if (!(canvas instanceof HTMLCanvasElement)) throw new Error("Canvas not found!!!!!")
+    const renderer = new HTMLCanvasRenderer(canvas, true);
+
+    const root = new BufferedContainer({
+        width: canvas.width,
+        height: canvas.height,
+    });
+
+    let textObj;
+    const content = new Container({
+        anchor: Anchor.centre,
+        origin: Anchor.centre,
+        children: [
+            new Circle({
+                x: 50, y: 50,
+                color: "#af2", radius: 100
+            }),
+            new Rectangle({
+                x: 30, y: 30,
+                anchor: Anchor.centre,
+                origin: Anchor.centre,
+                width: 50, height: 150,
+                rotation: -Math.PI / 3,
+                color: new LinearGradient(
+                    0, 0, 50, 80,
+                    [
+                        { position: 0, color: "blue" },
+                        { position: 1, color: "purple" }
+                    ]
+                )
+            }),
+            textObj = new TextObject({
+                x: 10, y: 10,
+                origin: Anchor.right,
+                font: "50px serif",
+                fillStyle: "black", strokeStyle: "yellow",
+                fill: true, strokeWidth: 2,
+                text: "Hello Canvas API!",
+                showBounds: true  // 描画範囲を薄いピンク色で視覚化
+            }),
+        ]
+    });
+    root.addChild(content);
+
+    const anim = content.registerAnimationFor("rotation", (value) => value * Math.PI * 2);
+    anim.to(3, 3000)
+        .delay(500)
+        .easeOut(1, 1000)
+        .delay(200)
+        .easeInOutQuad(0, 1000);
+
+
+    const textAnim = textObj.registerAnimationFor("text", (value) => (value / 1000).toFixed(3))
+    textAnim.to(10 ** 5, 10 ** 5)
+
+    function update(now) {
+        const snapshot = root.getSnapshot(now);
+        renderer.render(snapshot);
+
+        requestAnimationFrame(update);
+    }
+
+    requestAnimationFrame(update);
+
+　ね？簡単でしょ？
+　……簡単じゃないって？まぁ、それは個人の感覚だからなんとも…………
+
 TypeScriptで書いたときのサンプルコード
 　私はTSを書いたことがない人間なので、正しいTSかどうかの保証はしません
 　ですが、一応これで型エラーは出ません
