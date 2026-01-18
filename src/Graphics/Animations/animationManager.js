@@ -50,6 +50,7 @@ export class AnimationManager {
         }
         this.#duration += animation.duration;
         this.#lastValue = animation.endValue;
+        this.#lastAnimation = animation;
         this.#animations.push(animation);
 
         return this;
