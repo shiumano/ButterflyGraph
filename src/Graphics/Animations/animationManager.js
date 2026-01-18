@@ -1,3 +1,4 @@
+import { EaseAnimation, Easing } from "./easeAnimation.js";
 import { LinearAnimation } from "./linearAnimation.js";
 
 /**
@@ -62,6 +63,53 @@ export class AnimationManager {
      */
     to(end, duration) {
         return this.addAnimation(new LinearAnimation(end, duration));
+    }
+
+    /**
+     * @param {number} duration
+     */
+    delay(duration) {
+        return this.addAnimation(new LinearAnimation(this.#lastValue, duration))
+    }
+
+    /**
+     * @param {number} end
+     * @param {number} duration
+     */
+    easeIn(end, duration) {
+        return this.addAnimation(new EaseAnimation(end, duration, Easing.in));
+    }
+
+    /**
+     * @param {number} end
+     * @param {number} duration
+     */
+    easeOut(end, duration) {
+        return this.addAnimation(new EaseAnimation(end, duration, Easing.out));
+    }
+
+    /**
+     * @param {number} end
+     * @param {number} duration
+     */
+    easeInOutQuad(end, duration) {
+        return this.addAnimation(new EaseAnimation(end, duration, Easing.inOutQuad));
+    }
+
+    /**
+     * @param {number} end
+     * @param {number} duration
+     */
+    easeInSine(end, duration) {
+        return this.addAnimation(new EaseAnimation(end, duration, Easing.inSine));
+    }
+
+    /**
+     * @param {number} end
+     * @param {number} duration
+     */
+    easeOutSine(end, duration) {
+        return this.addAnimation(new EaseAnimation(end, duration, Easing.outSine));
     }
 
     /**
