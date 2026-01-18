@@ -14,11 +14,22 @@ export class AnimationBase {
     }
 
     /**
-     * @abstract
      * @param {number} t
      * @returns {number}
      */
     getValue(t) {
+        const moveRange = this.endValue - this.startValue;
+        const norm = t / this.duration;
+
+        return this.startValue + moveRange * this.leap(norm);
+    }
+
+    /**
+     * @abstract
+     * @param {number} norm
+     * @returns {number}
+     */
+    leap(norm) {
         throw new Error("Not implemented");
     }
 }
