@@ -53,7 +53,7 @@ export class EaseAnimation extends AnimationBase{
                 return 1 - Math.cos(Math.PI * norm / 2);
 
             case Easing.outSine:
-                return Math.sin(Math.PI * norm / 2)
+                return Math.sin(Math.PI * norm / 2);
 
             default:
                 return norm;  // だったらもうLinearAnimationいらんくね？？
