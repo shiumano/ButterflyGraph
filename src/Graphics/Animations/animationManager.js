@@ -155,6 +155,7 @@ export class AnimationManager {
 
             // ⭕ 2nd HOTPATH: next animation
             animationIndex++;
+            animationStartTime += latestAnimation.duration;
 
             // ❌ 3rd EXCEPTION: no next
             if (animationIndex >= animationCount || animationIndex < 0) {
@@ -162,16 +163,13 @@ export class AnimationManager {
                 return this.#lastAnimation?.getValue(t) ?? this.#lastValue;
             }
 
-            const nextAnimationStartTime = animationStartTime;
             const nextAnimation = this.#animations[animationIndex];
 
-            animationStartTime += latestAnimation.duration;
-
-            if (t >= nextAnimationStartTime && t < nextAnimationStartTime + nextAnimation.duration) {
+            if (t >= animationStartTime && t < animationStartTime + nextAnimation.duration) {
                 // console.log("next animation");
                 this.#latestAnimationIndex = animationIndex;
                 this.#latestUsedAnimationStartTime = animationStartTime;
-                return nextAnimation.getValue(t - nextAnimationStartTime);
+                return nextAnimation.getValue(t - animationStartTime);
             }
 
             // ⭕ 3rd HOTPATH: reset time
