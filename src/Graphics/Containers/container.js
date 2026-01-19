@@ -186,9 +186,10 @@ export class Container extends DrawObject {
             if (childObjects.length === 1) {
                 childObjects[0].calculateAnimations(t);
             } else {
-                childObjects.map(child => {
+                for (let i = 0; i < childObjects.length; i++) {
+                    const child = childObjects[i];
                     if (child.animated) child.calculateAnimations(t);
-                })
+                }
             }
         }
     }
