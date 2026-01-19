@@ -331,7 +331,9 @@ export class DrawObject {
         this.#animated = true;
         this.requestRecreate("object");
 
-        const manager = new AnimationManager(0, applyer);
+        const startValue = this[target];
+
+        const manager = new AnimationManager(typeof startValue === "number" ? startValue : 0, applyer);
         this.#animations[target] = manager;
 
         return manager;
