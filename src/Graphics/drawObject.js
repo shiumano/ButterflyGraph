@@ -327,8 +327,8 @@ export class DrawObject {
         const childOptions = child.calculateThisOptions(t);
         return {
             ...childOptions,
-            x: childOptions.x + this.width * child.anchor.x,
-            y: childOptions.y + this.height * child.anchor.y
+            x: child.x - child.originOffsetX + this.width * child.anchor.x,
+            y: child.y - child.originOffsetY + this.height * child.anchor.y
         };
     }
 
@@ -417,8 +417,8 @@ export class DrawObject {
         let nodeCache = this.#nodeCache;
         if (nodeCache === null
             || (nodeCache.t !== undefined && nodeCache.t !== t)
-            || this.#transformChanged
-            || this.#objectChanged
+            || this.transformChanged
+            || this.objectChanged
         ) {
             nodeCache = {
                 t: this.timed ? t : undefined,
