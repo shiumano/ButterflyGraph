@@ -209,10 +209,6 @@ ButterflyGraphとは何か
 　2026年にCanvas APIを使うという技術選定をしてしまい、その便利さと可用性に魅入られた人間が作った
 　Canvas APIをCanvas APIのまま便利にするライブラリ
 
-　Immidiate modeをRetained modeに形を変えさせて、アニメーション関数を宣言的にして、キャッシュ最適化もする
-　そうすれば、まるでCanvas APIを使っていると思えないような、自然なコードを書くことが出来る
-
-
     const canvas = document.getElementById("my-canvas");
     if (!(canvas instanceof HTMLCanvasElement)) throw new Error("Canvas not found!!!!!")
     const renderer = new HTMLCanvasRenderer(canvas, true);
