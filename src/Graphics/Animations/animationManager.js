@@ -6,7 +6,6 @@ import { EaseAnimation, Easing } from "./easeAnimation.js";
 
 /**
  * @template T
- * @type {AnimationManager<T>}
  */
 export class AnimationManager {
     /** @type {AnimationBase[]} */
