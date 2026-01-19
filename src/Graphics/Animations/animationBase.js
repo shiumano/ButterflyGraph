@@ -19,7 +19,8 @@ export class AnimationBase {
      */
     getValue(t) {
         const moveRange = this.endValue - this.startValue;
-        const norm = t !== 0 ? Math.min(Math.max(t / this.duration, 0), 1) : 1;  // HACK: なん(NaN)なんだよもう！（小粋なギャグ とにかく0/0は避けよう
+        // duration=0の場合は即座に終了値へ遷移(0/0でNaNが生まれるので)、それ以外は通常の正規化
+        const norm = this.duration === 0 ? 1 : Math.min(Math.max(t / this.duration, 0), 1);
 
         return this.startValue + moveRange * this.leap(norm);
     }
