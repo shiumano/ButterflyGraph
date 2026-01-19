@@ -38,6 +38,14 @@ import { AnimationManager } from "./Animations/animationManager.js"
  * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
  */
 
+// FIXME: get-onlyプロパティは弾くことができてない アニメーションのターゲットにしたら実行時エラーでドボン
+/**
+ * @template T
+ * @typedef {{
+ *   [K in keyof T]: T[K] extends Function ? never : K
+ * }[keyof T]} Properties
+ */
+
 /**
  * @template {GenericDrawNode} T
  */
@@ -314,7 +322,7 @@ export class DrawObject {
     }
 
     /**
-     * @template {keyof this} P
+     * @template {Properties<this>} P
      * @param {P} target
      * @param {(value: number) => this[P]} applyer
      */
