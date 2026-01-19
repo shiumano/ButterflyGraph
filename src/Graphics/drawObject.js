@@ -417,8 +417,8 @@ export class DrawObject {
         let nodeCache = this.#nodeCache;
         if (nodeCache === null
             || (nodeCache.t !== undefined && nodeCache.t !== t)
-            || this.#transformChanged
-            || this.#objectChanged
+            || this.transformChanged
+            || this.objectChanged
         ) {
             nodeCache = {
                 t: this.timed ? t : undefined,
