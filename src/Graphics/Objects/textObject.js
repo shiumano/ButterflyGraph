@@ -28,6 +28,7 @@ import { DrawNode } from "../drawNode.js";
 export class TextObject extends DrawObject {
     static #canvas = new OffscreenCanvas(1, 1);
     static #ctx = this.#canvas.getContext("2d");
+    static #ctxFont = this.#ctx?.font;
 
     #fill;
     #strokeWidth;
@@ -131,7 +132,10 @@ export class TextObject extends DrawObject {
             super.height = 0;
         } else {
             if (TextObject.#ctx == null) return;
-            TextObject.#ctx.font = this.font;
+            if (this.font !== TextObject.#ctxFont) {
+                TextObject.#ctx.font = this.font;
+                TextObject.#ctxFont = this.font;
+            }
             const metrics = TextObject.#ctx.measureText(this.text);
             this.#textWidth = metrics.width;
             if (this.sizeReference === "actual") {
