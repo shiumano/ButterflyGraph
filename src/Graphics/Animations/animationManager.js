@@ -145,7 +145,7 @@ export class AnimationManager {
             const latestUsedAnimationStartTime = animationStartTime;
             const latestAnimation = this.#animations[animationIndex];
 
-            if (t > latestUsedAnimationStartTime && t < latestUsedAnimationStartTime + latestAnimation.duration) {
+            if (t >= latestUsedAnimationStartTime && t < latestUsedAnimationStartTime + latestAnimation.duration) {
                 // console.log("same animation");
                 return latestAnimation.getValue(t - latestUsedAnimationStartTime);
             }
