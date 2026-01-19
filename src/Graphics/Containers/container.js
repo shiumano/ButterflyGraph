@@ -23,6 +23,7 @@ import { DrawObject } from "../drawObject.js";
 export class Container extends DrawObject {
     #children;
     #childrenTimed;
+    #childrenAnimated;
     #childrenPerfectlyOptimized;  // PERF: まったく世話の焼ける子たちねぇ
     #clip;
 
@@ -37,15 +38,18 @@ export class Container extends DrawObject {
         this.#clip = options.clip ?? false;
 
         let childrenTimed = false;
+        let childrenAnimated = false;
         let childrenPerfect = true;  // だったらどれほどいいことか
 
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             child.parent = this;
             childrenTimed ||= child.timed;
+            childrenAnimated ||= child.animated;
             childrenPerfect &&= child.perfectlyOptimized;
         }
         this.#childrenTimed = childrenTimed;
+        this.#childrenAnimated = childrenAnimated;
         this.#childrenPerfectlyOptimized = childrenPerfect;
     }
 
@@ -85,6 +89,8 @@ export class Container extends DrawObject {
     get timed() { return super.timed && this.#childrenTimed; }
     set timed(value) { super.timed = value; }
 
+    get animated() { return super.animated || this.#childrenAnimated; }
+
     get clip() { return this.#clip; }
     set clip(value) {
         if (this.#clip === value) return;
@@ -100,12 +106,16 @@ export class Container extends DrawObject {
         // PERF: reasonにさらに"timed"を追加し、さらにrequester: DrawNodeを追加すればこのforは消せる
         // TODO: やる価値はそこそこありそうかな
         let childrenTimed = false;
+        let childrenAnimated = false;
         let childrenPerfect = true;
         for (let i = 0; i < this.#children.length; i++) {
-            childrenTimed ||= this.#children[i].timed;
-            childrenPerfect &&= this.#children[i].perfectlyOptimized;
+            const child = this.#children[i]
+            childrenTimed ||= child.timed;
+            childrenAnimated ||= child.animated;
+            childrenPerfect &&= child.perfectlyOptimized;
         }
         this.#childrenTimed = childrenTimed;
+        this.#childrenAnimated = childrenAnimated;
         this.#childrenPerfectlyOptimized = childrenPerfect;
 
         super.requestRecreate(reason);
@@ -129,6 +139,8 @@ export class Container extends DrawObject {
         child.parent = this;
         this.#children.push(child);
         this.#childrenTimed ||= child.timed;
+        this.#childrenAnimated ||= child.animated;
+        this.#childrenPerfectlyOptimized &&= child.perfectlyOptimized;
         this.requestRecreate("object");
     }
 
@@ -142,17 +154,23 @@ export class Container extends DrawObject {
         child.parent = null;
         const newChildren = [];
         let childrenTimed = false;
+        let childrenAnimated = false;
+        let childrenPerfect = true;
 
         for (let i = 0; i < this.#children.length; i++) {
             const obj = this.#children[i];
             if (obj !== child) {
                 newChildren.push(obj);
                 childrenTimed ||= obj.timed;
+                childrenAnimated ||= obj.animated;
+                childrenPerfect &&= obj.perfectlyOptimized;
             }
         }
 
         this.#children = newChildren;
         this.#childrenTimed = childrenTimed;
+        this.#childrenAnimated = childrenAnimated;
+        this.#childrenPerfectlyOptimized = childrenPerfect;
 
         this.requestRecreate("object");
     }
@@ -161,7 +179,29 @@ export class Container extends DrawObject {
         this.#children.forEach(child => child.parent = null);  // 関係を切る
         this.#children = []
         this.#childrenTimed = false;
+        this.#childrenAnimated = false;
+        this.#childrenPerfectlyOptimized = true;
         this.requestRecreate("object");
+    }
+
+    /**
+     * @param {number} t
+     */
+    calculateAnimations(t) {
+        super.calculateAnimations(t);
+
+        // FIXME: 2回呼ぶはめになる
+        if (this.#childrenAnimated) {
+            const childObjects = this.getAllChildren();
+            if (childObjects.length === 1) {
+                childObjects[0].calculateAnimations(t);
+            } else {
+                for (let i = 0; i < childObjects.length; i++) {
+                    const child = childObjects[i];
+                    if (child.animated) child.calculateAnimations(t);
+                }
+            }
+        }
     }
 
     /**
@@ -185,8 +225,6 @@ export class Container extends DrawObject {
 
         return {
             ...options,
-            width: this.width,
-            height: this.height,
             children: children,
             clip: this.clip
         }
