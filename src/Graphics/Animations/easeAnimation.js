@@ -36,10 +36,7 @@ export class EaseAnimation extends AnimationBase{
      */
     leap(norm) {
         switch (this.#easing) {
-            default:
-                return norm;
-
-                case Easing.in:
+            case Easing.in:
             case Easing.inQuad:
                 return norm * norm;
 
@@ -57,6 +54,9 @@ export class EaseAnimation extends AnimationBase{
 
             case Easing.outSine:
                 return Math.sin(Math.PI * norm / 2);
+
+            default:
+                return norm;
         }
     }
 }
