@@ -2,9 +2,15 @@
  * @import { GenericDrawNode } from "@core/Graphics/drawNode.js"
  */
 
+const performance = window.performance;  // おまじないすぎる window.performanceはgetter
+
 export class Renderer {
     #width;
     #height;
+
+    perfMeasure = false;
+    renderTime = 0;
+    frameCount = 0;
 
     /**
      * @param {CanvasRenderingContext2D} ctx
@@ -40,8 +46,14 @@ export class Renderer {
      * @param {GenericDrawNode} drawRoot
      */
     render(drawRoot) {
+        if (this.perfMeasure) this.renderTime -= performance.now();
+
         this.ctx.reset();
         drawRoot.render(this.ctx);
+
+        this.frameCount++;
+        if (this.perfMeasure) this.renderTime += performance.now();
+
         // 以上！終わり！お疲れ様！
         // PERF: 理論上dirty rect再描画は可能、おそらくRendererの責務になるだろう
         // TODO: でも脳が死ぬから今はやーらない
