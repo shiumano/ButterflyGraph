@@ -139,6 +139,8 @@ export class Container extends DrawObject {
         child.parent = this;
         this.#children.push(child);
         this.#childrenTimed ||= child.timed;
+        this.#childrenAnimated ||= child.animated;
+        this.#childrenPerfectlyOptimized &&= child.perfectlyOptimized;
         this.requestRecreate("object");
     }
 
@@ -152,17 +154,23 @@ export class Container extends DrawObject {
         child.parent = null;
         const newChildren = [];
         let childrenTimed = false;
+        let childrenAnimated = false;
+        let childrenPerfect = true;
 
         for (let i = 0; i < this.#children.length; i++) {
             const obj = this.#children[i];
             if (obj !== child) {
                 newChildren.push(obj);
                 childrenTimed ||= obj.timed;
+                childrenAnimated ||= obj.animated;
+                childrenPerfect &&= obj.perfectlyOptimized;
             }
         }
 
         this.#children = newChildren;
         this.#childrenTimed = childrenTimed;
+        this.#childrenAnimated = childrenAnimated;
+        this.#childrenPerfectlyOptimized = childrenPerfect;
 
         this.requestRecreate("object");
     }
@@ -171,6 +179,8 @@ export class Container extends DrawObject {
         this.#children.forEach(child => child.parent = null);  // 関係を切る
         this.#children = []
         this.#childrenTimed = false;
+        this.#childrenAnimated = false;
+        this.#childrenPerfectlyOptimized = true;
         this.requestRecreate("object");
     }
 
