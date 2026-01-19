@@ -43,6 +43,7 @@ export class HTMLCanvasRenderer extends Renderer {
         }
 
         this.#canvas = element;
+        this.perfMeasure = debug;
     }
 
     /**
