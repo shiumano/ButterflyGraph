@@ -15,7 +15,7 @@ import { ImageCacheStore } from "./imageCacheStore.js";
  *   image?: Blob
  * }} ImageObjectOptions
  * @typedef {DrawNodeOptions & {
- *   hash: bigint
+ *   hash: bigint | null
  *   offsetX: number
  *   offsetY: number
  *   imageSmoothing: boolean
@@ -114,6 +114,16 @@ export class ImageObject extends DrawObject {
      * @param {Blob[]} blobs
      */
     async load(blobs) {
+        if (blobs.length === 0) {
+            this.#images = [];
+            this.#frameCount = 0;
+            super.width = 0;
+            super.height = 0;
+            this.#updateTimeInfo();
+            this.requestRecreate("object");
+            return;
+        }
+
         const images = await Promise.all(
             blobs.map(blob => ImageCacheStore.loadBlob(blob))
         )
@@ -133,6 +143,16 @@ export class ImageObject extends DrawObject {
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
+
+        if (this.#frameCount === 0) {
+            return {
+                ...options,
+                hash: null,
+                offsetX: 0,
+                offsetY: 0,
+                imageSmoothing: false
+            }
+        }
 
         const time = this.#loop ? t % (this.#length) : t;
 
@@ -200,6 +220,9 @@ class ImageNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
+        if (this.#hash === null)
+            return
+
         const bitmap = ImageCacheStore.getOrOrder(this.#hash);
         if (bitmap !== null) {
             ctx.imageSmoothingEnabled = this.#imageSmoothing;
