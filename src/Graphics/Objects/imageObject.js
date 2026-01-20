@@ -51,12 +51,12 @@ export class ImageObject extends DrawObject {
         this.#imageSmoothing = options.imageSmoothing ?? true;
         this.#loop = options.loop ?? true;
 
-        super.timed = this.#frameCount > 1 && this.fps != 0;
-
         if (options.image != undefined) {
             // awaitじゃないため不安定 できればawait ImageObject.load(blobs)でちゃんとロードして欲しい
             this.load([options.image]);
         }
+
+        this.#updateTimeInfo();
     }
 
     get timed() { return super.timed; }
@@ -73,8 +73,7 @@ export class ImageObject extends DrawObject {
         if (this.#fps === value) return;
 
         this.#fps = value;
-        this.#length = this.#frameCount / this.#fps / 1000;  // ms単位
-        super.timed = this.#frameCount > 1 && this.fps != 0;
+        this.#updateTimeInfo();
         this.requestRecreate("object");
     }
 
@@ -104,6 +103,13 @@ export class ImageObject extends DrawObject {
         this.requestRecreate("object");
     }
 
+    #updateTimeInfo() {
+        this.#length = (this.#fps > 0 && this.#frameCount > 0)
+            ? (this.#frameCount / this.#fps) * 1000
+            : Number.MAX_VALUE;  // ms単位
+        super.timed = this.#frameCount > 1 && this.fps != 0;
+    }
+
     /**
      * @param {Blob[]} blobs
      */
@@ -117,9 +123,8 @@ export class ImageObject extends DrawObject {
 
         this.#images = images;
         this.#frameCount = images.length;
-        this.#length = this.#frameCount / this.#fps * 1000;  // 秒単位→ms単位
 
-        super.timed = this.#frameCount > 1 && this.fps != 0;
+        this.#updateTimeInfo();
         this.requestRecreate("object");
     }
 
