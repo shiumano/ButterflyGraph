@@ -15,7 +15,7 @@ import { ImageCacheStore } from "./imageCacheStore.js";
  *   image?: Blob
  * }} ImageObjectOptions
  * @typedef {DrawNodeOptions & {
- *   hash: number
+ *   hash: bigint
  *   offsetX: number
  *   offsetY: number
  *   imageSmoothing: boolean

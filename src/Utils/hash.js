@@ -2,15 +2,15 @@
  * FNV-1aハッシュを計算する
  * @param {Uint8Array} bytes
  */
-export function fnv1a32(bytes) {
-    let hash = 0x811c9dc5; // offset basis
-    for (let i = 0; i < bytes.length; i++) {
-        hash ^= bytes[i];
-        hash = Math.imul(hash, 0x01000193); // FNV prime
+export function fnv1a64(bytes) {
+    let hash = 0xcbf29ce484222325n;
+    for (let b of bytes) {
+        hash ^= BigInt(b);
+        hash = (hash * 0x100000001b3n) & 0xffffffffffffffffn;
     }
-    // unsigned
-    return hash >>> 0;
+    return hash;
 }
+
 
 // await crypto.subtle.digestは安全なコンテキストじゃないと使えない
 // いらないよね？ただpngのハッシュをキーにしたいだけなんだから

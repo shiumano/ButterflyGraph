@@ -1,11 +1,11 @@
-import { fnv1a32 } from "../../Utils/hash.js";
+import { fnv1a64 } from "../../Utils/hash.js";
 
 /**
  * @typedef {{
  *   width: number
  *   height: number
  *   pixelCount: number
- *   hash: number
+ *   hash: bigint
  * }} ImageInfo
  */
 
@@ -15,29 +15,29 @@ const performance = window.performance;  // PERF: おまじないすぎてエグ
  * 画像キャッシュ管理のためのstaticクラス
  */
 export class ImageCacheStore {
-    /** @type {Map<number, {hash: number, bitmap: ImageBitmap, lastUsed: number}>} */
+    /** @type {Map<bigint, {hash: bigint, bitmap: ImageBitmap, lastUsed: number}>} */
     static #cacheMap = new Map();
-    /** @type {Map<number, Blob>} */
+    /** @type {Map<bigint, Blob>} */
     static #hashBlobMap = new Map();
     static #loadedPixelCount = 0;
 
-    /** @type {WeakMap<Blob, number>} */
+    /** @type {WeakMap<Blob, bigint>} */
     static #blobHash = new WeakMap();
 
-    /** @type {Map<number, Promise<void | ImageBitmap>>} */
+    /** @type {Map<bigint, Promise<void | ImageBitmap>>} */
     static #inflight = new Map();
 
     /**
      * BlobをキーにするためFNV-1aハッシュを生成
      * @param {Blob} blob
-     * @returns {Promise<number>}
+     * @returns {Promise<bigint>}
      */
     static async hashBlob(blob) {
         const cachedHash = this.#blobHash.get(blob);
         if (cachedHash !== undefined) return cachedHash;
 
         const buf = await blob.arrayBuffer();
-        const hash = fnv1a32(new Uint8Array(buf));
+        const hash = fnv1a64(new Uint8Array(buf));
         this.#blobHash.set(blob, hash);
         return hash;
     }
@@ -68,7 +68,7 @@ export class ImageCacheStore {
     }
 
     /**
-     * @param {number} hash
+     * @param {bigint} hash
      */
     static async loadImage(hash) {
         const blob = this.#hashBlobMap.get(hash);
@@ -104,7 +104,7 @@ export class ImageCacheStore {
 
     /**
      * 最終仕様時刻を更新
-     * @param {number} key
+     * @param {bigint} key
      */
     static touch(key) {
         const v = this.#cacheMap.get(key);
@@ -113,7 +113,7 @@ export class ImageCacheStore {
 
     /**
      * キャッシュをアンロード
-     * @param {number} hash
+     * @param {bigint} hash
      */
     static evict(hash) {
         const cache = this.#cacheMap.get(hash);
@@ -131,7 +131,7 @@ export class ImageCacheStore {
     /**
      * キャッシュがある場合はImageBitmapを返す
      * 無ければデコードを開始して終了
-     * @param {number} hash
+     * @param {bigint} hash
      * @returns {ImageBitmap?}
      */
     static getOrOrder(hash) {
