@@ -140,6 +140,7 @@ export class ImageObject extends DrawObject {
 
     /**
      * @param {number} t
+     * @returns {ImageNodeOptions}
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
