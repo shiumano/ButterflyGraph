@@ -24,6 +24,9 @@ export class ImageCacheStore {
     /** @type {WeakMap<Blob, number>} */
     static #blobHash = new WeakMap();
 
+    /** @type {Map<number, Promise<void | ImageBitmap>>} */
+    static #inflight = new Map();
+
     /**
      * BlobをキーにするためFNV-1aハッシュを生成
      * @param {Blob} blob
@@ -138,9 +141,16 @@ export class ImageCacheStore {
             this.touch(hash);
             return cache.bitmap;
         } else {
+            if (!this.#inflight.has(hash)) {
+                const p = this.loadImage(hash)
+                    .catch((err) => {
+                        console.warn("Image decode failed", err);
+                    })
+                    .finally(() => this.#inflight.delete(hash));
+                this.#inflight.set(hash, p);
+            }
             // PERF: nullが返るのは"仕様"、裏でデコードだけは回しとく
             //     : asyncでやるほど時間がかかる処理を1フレームをブロックしてやる方が間違い
-            this.loadImage(hash);
             return null;
         }
     }
