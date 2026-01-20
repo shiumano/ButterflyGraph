@@ -103,7 +103,7 @@ export class ImageCacheStore {
     }
 
     /**
-     * 最終仕様時刻を更新
+     * 最終使用時刻を更新
      * @param {bigint} key
      */
     static touch(key) {
