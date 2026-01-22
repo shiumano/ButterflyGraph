@@ -61,16 +61,6 @@ export class RectangleNode extends DrawNode {
     }
 
     /**
-     * @param {Partial<RectangleNodeOptions>} options
-     */
-    with(options) {
-        if (this.constructor !== RectangleNode)
-            throw new Error(`The ${this.constructor.name}.with(options) is not implemented.`);
-
-        return new RectangleNode({...this.options, ...options}, this);
-    }
-
-    /**
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {

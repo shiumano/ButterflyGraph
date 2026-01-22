@@ -207,16 +207,6 @@ class TextNode extends DrawNode {
     }
 
     /**
-     * @param {Partial<TextNodeOptions>} options
-     */
-    with(options) {
-        if (this.constructor !== TextNode)
-            throw new Error(`The ${this.constructor.name}.with(options) is not implemented.`);
-
-        return new TextNode({...this.options, ...options}, this);
-    }
-
-    /**
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {

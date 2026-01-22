@@ -234,16 +234,6 @@ class BufferedContainerNode extends ContainerNode {
     }
 
     /**
-     * @param {Partial<BufferedContainerNodeOptions>} options
-     */
-    with(options) {
-        if (this.constructor !== BufferedContainerNode)
-            throw new Error(`The ${this.constructor.name}.with(options) is not implemented.`);
-
-        return new BufferedContainerNode({...this.options, ...options}, this)
-    }
-
-    /**
      * @param {DOMMatrix} transform
      * @param {number} canvasWidth
      * @param {number} canvasHeight

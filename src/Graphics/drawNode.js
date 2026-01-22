@@ -126,17 +126,18 @@ export class DrawNode {
             ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
     }
 
-    // 派生クラスで実装する必要があるので、あくまでこれはサンプル実装
     /**
      * 新しいオプションを指定して再生成
-     * @abstract
      * @param {Partial<T>} options
+     * @returns {this}
      */
     with(options) {
-        if (this.constructor !== DrawNode)
-            throw new Error(`The ${this.constructor.name}.with(options) is not implemented.`);
-
-        return new DrawNode({...this.options, ...options}, this)
+        // HACK: TSが理解できない領域
+        //     : this.constructorは自身のクラスのコンストラクタと同一
+        //     : しかしTSはthis.constructorをコンストラクタではない通常の関数として解釈する
+        // 全てのカルマをここで背負う
+        // @ts-expect-error
+        return new this.constructor({...this.options, ...options}, this)
     }
 
     /**
