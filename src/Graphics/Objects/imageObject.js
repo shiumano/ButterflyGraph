@@ -211,13 +211,6 @@ class ImageNode extends DrawNode {
     }
 
     /**
-     * @param {Partial<ImageNodeOptions>} options
-     */
-    with(options) {
-        return new ImageNode({...this.options, ...options}, this)
-    }
-
-    /**
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {

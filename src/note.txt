@@ -271,13 +271,6 @@ class TestNode extends DrawNode<TestNodeOptions> {
         }
     }
 
-    with(options: Partial<TestNodeOptions>): TestNode {
-        if (this.constructor !== TestNode)
-            throw new Error(`The ${this.constructor.name}.with(options) is not implemented.`);
-
-        return new TestNode({...this.options, ...options});
-    }
-
     draw(ctx: CanvasRenderingContext2D): void {
         this._setStrokeStyle(ctx);
         ctx.lineWidth = this.#lineWidth;
