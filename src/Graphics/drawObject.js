@@ -198,8 +198,7 @@ export class DrawObject {
 
     get anchor() { return this.#anchor; }
     set anchor(value) {
-        if (this.#anchor.x === value.x
-            && this.#anchor.y === value.y) return;
+        if (this.#anchor.equals(value)) return;
 
         this.#anchor = value.freeze();
         this.requestRecreate("transform");
@@ -207,8 +206,7 @@ export class DrawObject {
 
     get origin() { return this.#origin; }
     set origin(value) {
-        if (this.#origin.x === value.x
-            && this.#origin.y === value.y) return;
+        if (this.#origin.equals(value)) return;
 
         this.#origin = value.freeze();
         this.#updateOriginOffset();
