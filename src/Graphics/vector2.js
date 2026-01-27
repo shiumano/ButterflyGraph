@@ -43,6 +43,13 @@ export class Vector2 {
     }
 
     /**
+     * @param {Readonly<Vector2>} other
+     */
+    equals(other) {
+        return this.x === other.x && this.y === other.y;
+    }
+
+    /**
      * このVector2オブジェクトの変更不能版を取得する
      */
     freeze() {
