@@ -73,6 +73,9 @@ export class AnimationManager {
                     this.#duration = time;
                     this.#lastAnimation = animation;
                     this.#lastValue = animation.getValue(animation.duration);
+
+                    this.#latestAnimationIndex = i;
+                    this.#latestUsedAnimationStartTime = time - animation.duration;
                     return this;
                 } else {
                     this.#animations.length = i;
