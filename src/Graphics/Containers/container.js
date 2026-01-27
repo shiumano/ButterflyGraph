@@ -126,22 +126,25 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {GenericDrawObject} child
+     * @param {GenericDrawObject[]} children
      */
-    addChild(child) {
-        const index = this.#children.indexOf(child);
-        if (index !== -1) return;  // 既にあるので、追加する意味はない
+    addChild(...children) {
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+            const index = this.#children.indexOf(child);
+            if (index !== -1) return;  // 既にあるので、追加する意味はない
 
-        if (child.parent !== null && child.parent instanceof Container) {
-            child.parent.removeChild(child);  // childを奪う そういう仕様とする
+            if (child.parent !== null && child.parent instanceof Container) {
+                child.parent.removeChild(child);  // childを奪う そういう仕様とする
+            }
+
+            child.parent = this;
+            this.#children.push(child);
+            this.#childrenTimed ||= child.timed;
+            this.#childrenAnimated ||= child.animated;
+            this.#childrenPerfectlyOptimized &&= child.perfectlyOptimized;
+            this.requestRecreate("object");
         }
-
-        child.parent = this;
-        this.#children.push(child);
-        this.#childrenTimed ||= child.timed;
-        this.#childrenAnimated ||= child.animated;
-        this.#childrenPerfectlyOptimized &&= child.perfectlyOptimized;
-        this.requestRecreate("object");
     }
 
     /**
