@@ -22,7 +22,6 @@ export class AnimationManager {
     #latestUsedAnimationStartTime = 0;
 
     #applyer;
-    // ……@typeが多いね
 
     /**
      * @param {number} startValue
@@ -55,6 +54,37 @@ export class AnimationManager {
     }
 
     // TODO: removeAnimationとかinsertAnimationとかも作る！
+
+    /**
+     * @param {number} time
+     */
+    jump(time) {
+        if (time < 0)
+            throw new Error("time must be >= 0");
+
+        let delayTime = time - this.#duration;
+        if (delayTime < 0) {
+            for (let i = this.#animations.length - 1; i >= 0; i--) {
+                const animation = this.#animations[i];
+                delayTime += animation.duration;
+
+                if (delayTime >= 0) {
+                    animation.duration = delayTime;
+                    this.#duration = time;
+                    this.#lastAnimation = animation;
+                    this.#lastValue = animation.getValue(animation.duration);
+
+                    this.#latestAnimationIndex = i;
+                    this.#latestUsedAnimationStartTime = time - animation.duration;
+                    return this;
+                } else {
+                    this.#animations.length = i;
+                }
+            }
+        }
+
+        return this.delay(delayTime);
+    }
 
     /**
      * @param {number} end
@@ -119,7 +149,6 @@ export class AnimationManager {
     }
 
     /**
-     *
      * @param {number} t
      */
     getValue(t) {
