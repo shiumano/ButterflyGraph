@@ -143,8 +143,8 @@ export class Container extends DrawObject {
             this.#childrenTimed ||= child.timed;
             this.#childrenAnimated ||= child.animated;
             this.#childrenPerfectlyOptimized &&= child.perfectlyOptimized;
-            this.requestRecreate("object");
         }
+        this.requestRecreate("object");
     }
 
     /**
