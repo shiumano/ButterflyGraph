@@ -21,7 +21,6 @@ colorSelector.addEventListener("change", (e) => {
 
 /** @type {TestScene?} */
 let currentScene = null;
-let currentStartTime = 0;
 
 Scenes.forEach((SceneClass) => {
     const button = document.createElement("button");
@@ -36,13 +35,13 @@ Scenes.forEach((SceneClass) => {
         location.hash = SceneClass.name;
 
         // create new scene
-        currentScene = new SceneClass(testArea, controlArea);
-        currentStartTime = performance.now() + 500;
+        const startTime = performance.now() + 500;
+        currentScene = new SceneClass(testArea, controlArea, startTime);
     });
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
-        currentScene = new SceneClass(testArea, controlArea);
-        currentStartTime = performance.now() + 500;
+        const startTime = performance.now() + 500;
+        currentScene = new SceneClass(testArea, controlArea, startTime);
     }
 });
 
@@ -50,9 +49,7 @@ Scenes.forEach((SceneClass) => {
  * @param {number} now
  */
 function renderLoop(now) {
-    if (currentScene) {
-        currentScene.loop(Math.max(0, now - currentStartTime));
-    }
+    currentScene?.loop(now);
     requestAnimationFrame(renderLoop);
 }
 

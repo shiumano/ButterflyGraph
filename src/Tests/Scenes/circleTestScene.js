@@ -7,9 +7,10 @@ export class CircleTestScene extends TestScene {
     /**
      * @param {HTMLElement} testArea
      * @param {HTMLElement} controlArea
+     * @param {number} startTime 
      */
-    constructor(testArea, controlArea) {
-        super(testArea, controlArea);
+    constructor(testArea, controlArea, startTime) {
+        super(testArea, controlArea, startTime);
 
         this.addChild(
             this.circle = new Circle({

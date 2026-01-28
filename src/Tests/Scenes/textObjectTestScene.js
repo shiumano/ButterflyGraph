@@ -6,9 +6,10 @@ export class TextObjectTestScene extends TestScene {
     /**
      * @param {HTMLElement} testArea
      * @param {HTMLElement} controlArea
+     * @param {number} startTime
      */
-    constructor(testArea, controlArea) {
-        super(testArea, controlArea);
+    constructor(testArea, controlArea, startTime) {
+        super(testArea, controlArea, startTime);
 
         const textObj = new TextObject({
             anchor: Anchor.centre,

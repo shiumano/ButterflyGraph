@@ -8,9 +8,10 @@ export class AnimationTestScene extends TestScene {
     /**
      * @param {HTMLElement} testArea
      * @param {HTMLElement} controlArea
+     * @param {number} startTime
      */
-    constructor(testArea, controlArea) {
-        super(testArea, controlArea);
+    constructor(testArea, controlArea, startTime) {
+        super(testArea, controlArea, startTime);
 
         const rect = new Rectangle({
             width: 100,

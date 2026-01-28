@@ -13,14 +13,16 @@ export class TestScene extends Container {
     controlArea;
     renderer;
     observer;
+    startTime;
 
     destroyed = false;
 
     /**
      * @param {HTMLElement} testArea
      * @param {HTMLElement} controlArea
+     * @param {number} startTime
      */
-    constructor(testArea, controlArea) {
+    constructor(testArea, controlArea, startTime) {
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
         canvas.height = testArea.clientHeight;
@@ -55,6 +57,7 @@ export class TestScene extends Container {
 
         this.testArea = testArea;
         this.controlArea = controlArea;
+        this.startTime = startTime;
         this.renderer = renderer;
         this.observer = observer;
     }
@@ -184,7 +187,9 @@ export class TestScene extends Container {
     loop(now) {
         if (this.destroyed) return;
 
-        const snapshot = this.getSnapshot(now);
+        const t = Math.max(0, now - this.startTime);
+
+        const snapshot = this.getSnapshot(t);
         this.renderer.render(snapshot);
     }
 
