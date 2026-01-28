@@ -1,0 +1,204 @@
+import { HTMLCanvasRenderer } from "../../Graphics/Rendering/HTMLCanvasRenderer.js";
+import { Container } from "../../Graphics/Containers/container.js";
+
+/**
+ * @import { GenericContainerNode } from "@core/Graphics/Containers/container.js"
+ */
+
+/**
+ * @extends {Container<GenericContainerNode>}
+ */
+export class TestScene extends Container {
+    testArea;
+    controlArea;
+    renderer;
+    observer;
+    startTime;
+
+    destroyed = false;
+
+    /**
+     * @param {HTMLElement} testArea
+     * @param {HTMLElement} controlArea
+     * @param {number} startTime
+     */
+    constructor(testArea, controlArea, startTime) {
+        const canvas = document.createElement("canvas");
+        canvas.width = testArea.clientWidth;
+        canvas.height = testArea.clientHeight;
+
+        const wrapper = document.createElement("div");
+        wrapper.style.width = "100%";
+        wrapper.style.height = "100%";
+        wrapper.style.contain = "strict";
+        wrapper.appendChild(canvas);
+        testArea.appendChild(wrapper);
+
+        const renderer = new HTMLCanvasRenderer(canvas, false);
+        super({
+            width: renderer.width,
+            height: renderer.height,
+        });
+
+        const observer = new ResizeObserver(() => {
+            const rect = wrapper.getBoundingClientRect();
+
+            const w = rect.width;
+            const h = rect.height;
+
+            if (canvas.width !== w || canvas.height !== h) {
+                renderer.width = w;
+                renderer.height = h;
+                this.width = w;
+                this.height = h;
+            }
+        });
+        observer.observe(wrapper);
+
+        this.testArea = testArea;
+        this.controlArea = controlArea;
+        this.startTime = startTime;
+        this.renderer = renderer;
+        this.observer = observer;
+    }
+
+    /**
+     * @param {string} label
+     * @param {(ev: PointerEvent) => void} onClick
+     */
+    addButton(label, onClick) {
+        const button = document.createElement("button");
+        button.textContent = label;
+        button.addEventListener("click", onClick);
+        this.controlArea.appendChild(button);
+    }
+
+    /**
+     * @param {string} label
+     * @param {boolean} initialState
+     * @param {(value: boolean, ev: Event) => void} onChange
+     */
+    addToggle(label, initialState, onChange) {
+        const labelElem = document.createElement("label");
+        const checkbox = document.createElement("input");
+        const textNode = document.createTextNode(`${label}: ${initialState}`);
+        labelElem.style.flexFlow = "row";
+        checkbox.type = "checkbox";
+        checkbox.checked = initialState;
+        checkbox.addEventListener("change", (ev) => {
+            textNode.textContent = `${label}: ${checkbox.checked}`;
+            onChange(checkbox.checked, ev);
+        });
+        labelElem.appendChild(textNode);
+        labelElem.appendChild(checkbox);
+        this.controlArea.appendChild(labelElem);
+    }
+
+    /**
+     * @param {string} label
+     * @param {number} min
+     * @param {number} max
+     * @param {number} initialValue
+     * @param {(value: number, ev?: Event) => void} onChange
+     */
+    addSlider(label, min, max, initialValue, onChange) {
+        const labelElem = document.createElement("label");
+        const textNode = document.createTextNode(`${label}: ${initialValue}`);
+
+        const slider = document.createElement("input");
+        slider.type = "range";
+        slider.min = min.toString();
+        slider.max = max.toString();
+        slider.step = "0.1";
+        slider.value = initialValue.toString();
+        slider.addEventListener("input", (ev) => {
+            textNode.textContent = `${label}: ${slider.value}`;
+            onChange(parseFloat(slider.value), ev);
+        });
+        slider.addEventListener("dblclick", () => {
+            slider.value = initialValue.toString();
+            textNode.textContent = `${label}: ${initialValue}`;
+            onChange(initialValue);
+        });
+
+        labelElem.appendChild(textNode);
+        labelElem.appendChild(slider);
+        this.controlArea.appendChild(labelElem);
+    }
+
+    /**
+     * @param {string} label
+     * @param {string[]} options
+     * @param {string} initialValue
+     * @param {(value: string, ev: Event) => void} onChange
+     */
+    addSelector(label, options, initialValue, onChange) {
+        const labelElem = document.createElement("label");
+        labelElem.textContent = label;
+
+        const select = document.createElement("select");
+        options.forEach((option) => {
+            const optionElem = document.createElement("option");
+            optionElem.value = option;
+            optionElem.textContent = option;
+            if (option === initialValue) {
+                optionElem.selected = true;
+            }
+            select.appendChild(optionElem);
+        });
+        select.addEventListener("change", (ev) => {
+            onChange(select.value, ev);
+        });
+
+        labelElem.appendChild(select);
+        this.controlArea.appendChild(labelElem);
+    }
+
+    /**
+     * @param {string} label
+     * @param {string} initialText
+     * @param {(value: string, ev?: Event) => void} onChange
+     */
+    addTextInput(label, initialText, onChange) {
+        const labelElem = document.createElement("label");
+        const textNode = document.createTextNode(`${label}: ${initialText}`);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = initialText;
+        input.addEventListener("input", (ev) => {
+            textNode.textContent = `${label}: ${input.value}`;
+            onChange(input.value, ev);
+        });
+        input.addEventListener("dblclick", () => {
+            input.value = initialText;
+            textNode.textContent = `${label}: ${initialText}`;
+            onChange(initialText);
+        });
+
+        labelElem.appendChild(textNode);
+        labelElem.appendChild(input);
+        this.controlArea.appendChild(labelElem);
+    }
+
+    /**
+     * @param {number} now - 現在時刻(ミリ秒)
+     */
+    loop(now) {
+        if (this.destroyed) return;
+
+        const t = Math.max(0, now - this.startTime);
+
+        const snapshot = this.getSnapshot(t);
+        this.renderer.render(snapshot);
+    }
+
+    destroy() {
+        this.destroyed = true;
+        this.clearChildren();
+        this.observer.disconnect();
+        this.testArea.innerHTML = "";
+        this.controlArea.innerHTML = "";
+        // simple is best?
+    }
+}

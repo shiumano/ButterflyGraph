@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>ButterflyGraph Test</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            color: white;
+            background: black;
+        }
+
+        button {
+            background: #222;
+            border: none;
+            border-bottom: 2px solid grey;
+            color: white;
+            width: 100%;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            background: #222;
+            font-size: 14px;
+            border-bottom: 2px solid grey;
+        }
+
+        canvas {
+            display: block;  /** 余白を消す マジで数十分沼ったし2回ブラウザを殺した **/
+            overflow: hidden;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* 上部ツールバー */
+        #toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            border-bottom: 2px solid grey;
+        }
+
+        /* メインエリア */
+        #main {
+            display: flex;
+            flex: 1;
+        }
+
+        #tests-list {
+            width: 200px;
+            border-right: 2px solid grey;
+            overflow-y: auto;
+            contain: strict;
+        }
+
+        #control-area {
+            width: 300px;
+            border-right: 2px solid grey;
+            overflow-y: auto;
+            contain: strict;
+        }
+
+        #test-area {
+            flex: 1;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 上部 -->
+        <div id="toolbar">
+            <!-- いったん未実装とする -->
+            <!-- <input id="scale-slider" type="range" /> -->
+            <!-- <input id="time-input" type="time" /> -->
+            <!-- <input id="speed-slider" type="range" /> -->
+            <input id="background-color-picker" type="color" />
+        </div>
+
+        <!-- 下部 -->
+        <div id="main">
+            <div id="tests-list">
+            </div>
+            <div id="control-area">
+            </div>
+            <div id="test-area">
+            </div>
+
+        </div>
+    </div>
+    <script src="./main.js" type="module"></script>
+</body>
+
+</html>

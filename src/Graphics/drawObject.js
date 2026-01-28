@@ -16,8 +16,8 @@ import { AnimationManager } from "./Animations/animationManager.js"
  *   scaleX?: number
  *   scaleY?: number
  *   alpha?: number
- *   anchor?: Vector2
- *   origin?: Vector2
+ *   anchor?: Readonly<Vector2>
+ *   origin?: Readonly<Vector2>
  *   zIndex?: number
  *   visible?: boolean
  *   timed?: boolean
