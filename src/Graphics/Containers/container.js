@@ -132,7 +132,7 @@ export class Container extends DrawObject {
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const index = this.#children.indexOf(child);
-            if (index !== -1) return;  // 既にあるので、追加する意味はない
+            if (index !== -1) continue;  // 既にあるので、追加する意味はない
 
             if (child.parent !== null && child.parent instanceof Container) {
                 child.parent.removeChild(child);  // childを奪う そういう仕様とする
