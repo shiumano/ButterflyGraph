@@ -27,10 +27,7 @@ Scenes.forEach((SceneClass) => {
     button.textContent = SceneClass.name;
     button.addEventListener("click", (e) => {
         // clear previous scene
-        if (currentScene) {
-            currentScene.destroy();
-            currentScene = null;
-        }
+        currentScene?.destroy();
 
         location.hash = SceneClass.name;
 
@@ -44,6 +41,26 @@ Scenes.forEach((SceneClass) => {
         currentScene = new SceneClass(testArea, controlArea, startTime);
     }
 });
+
+window.addEventListener("hashchange", (e) => {
+    const sceneName = location.hash.replace("#", "");
+
+    // シーンの選択解除ってことにする
+    if (sceneName === "") {
+        currentScene?.destroy();
+        currentScene = null;
+        return;
+    }
+
+    const SceneClass = Scenes.find(s => s.name === sceneName)
+
+    if (SceneClass !== undefined) {
+        currentScene?.destroy();
+
+        const startTime = performance.now() + 500;
+        currentScene = new SceneClass(testArea, controlArea, startTime);
+    }
+})
 
 /**
  * @param {number} now
