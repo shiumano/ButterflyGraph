@@ -41,7 +41,7 @@ export class TestScene extends Container {
         this.controlArea = controlArea;
         this.renderer = renderer;
 
-        const obserber = new ResizeObserver(() => {
+        const observer = new ResizeObserver(() => {
             const rect = wrapper.getBoundingClientRect();
 
             const w = rect.width;
@@ -54,7 +54,7 @@ export class TestScene extends Container {
                 this.height = h;
             }
         });
-        obserber.observe(wrapper);
+        observer.observe(wrapper);
     }
 
     /**
