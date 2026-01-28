@@ -64,7 +64,7 @@ export class TestScene extends Container {
 
     /**
      * @param {string} label
-     * @param {() => void} onClick
+     * @param {(ev: PointerEvent) => void} onClick
      */
     addButton(label, onClick) {
         const button = document.createElement("button");
@@ -76,7 +76,7 @@ export class TestScene extends Container {
     /**
      * @param {string} label
      * @param {boolean} initialState
-     * @param {(value: boolean) => void} onChange
+     * @param {(value: boolean, ev: Event) => void} onChange
      */
     addToggle(label, initialState, onChange) {
         const labelElem = document.createElement("label");
@@ -85,9 +85,9 @@ export class TestScene extends Container {
         labelElem.style.flexFlow = "row";
         checkbox.type = "checkbox";
         checkbox.checked = initialState;
-        checkbox.addEventListener("change", () => {
+        checkbox.addEventListener("change", (ev) => {
             textNode.textContent = `${label}: ${checkbox.checked}`;
-            onChange(checkbox.checked);
+            onChange(checkbox.checked, ev);
         });
         labelElem.appendChild(textNode);
         labelElem.appendChild(checkbox);
@@ -99,7 +99,7 @@ export class TestScene extends Container {
      * @param {number} min
      * @param {number} max
      * @param {number} initialValue
-     * @param {(value: number) => void} onChange
+     * @param {(value: number, ev?: Event) => void} onChange
      */
     addSlider(label, min, max, initialValue, onChange) {
         const labelElem = document.createElement("label");
@@ -111,9 +111,9 @@ export class TestScene extends Container {
         slider.max = max.toString();
         slider.step = "0.1";
         slider.value = initialValue.toString();
-        slider.addEventListener("input", () => {
+        slider.addEventListener("input", (ev) => {
             textNode.textContent = `${label}: ${slider.value}`;
-            onChange(parseFloat(slider.value));
+            onChange(parseFloat(slider.value), ev);
         });
         slider.addEventListener("dblclick", () => {
             slider.value = initialValue.toString();
@@ -130,7 +130,7 @@ export class TestScene extends Container {
      * @param {string} label
      * @param {string[]} options
      * @param {string} initialValue
-     * @param {(value: string) => void} onChange
+     * @param {(value: string, ev: Event) => void} onChange
      */
     addSelector(label, options, initialValue, onChange) {
         const labelElem = document.createElement("label");
@@ -146,8 +146,8 @@ export class TestScene extends Container {
             }
             select.appendChild(optionElem);
         });
-        select.addEventListener("change", () => {
-            onChange(select.value);
+        select.addEventListener("change", (ev) => {
+            onChange(select.value, ev);
         });
 
         labelElem.appendChild(select);
@@ -157,7 +157,7 @@ export class TestScene extends Container {
     /**
      * @param {string} label
      * @param {string} initialText
-     * @param {(value: string) => void} onChange
+     * @param {(value: string, ev?: Event) => void} onChange
      */
     addTextInput(label, initialText, onChange) {
         const labelElem = document.createElement("label");
@@ -166,9 +166,9 @@ export class TestScene extends Container {
         const input = document.createElement("input");
         input.type = "text";
         input.value = initialText;
-        input.addEventListener("input", () => {
+        input.addEventListener("input", (ev) => {
             textNode.textContent = `${label}: ${input.value}`;
-            onChange(input.value);
+            onChange(input.value, ev);
         });
         input.addEventListener("dblclick", () => {
             input.value = initialText;
