@@ -126,7 +126,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {GenericDrawObject[]} children
+     * @param {...GenericDrawObject} children
      */
     addChild(...children) {
         for (let i = 0; i < children.length; i++) {
