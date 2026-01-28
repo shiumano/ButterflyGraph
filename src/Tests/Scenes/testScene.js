@@ -12,6 +12,7 @@ export class TestScene extends Container {
     testArea;
     controlArea;
     renderer;
+    observer;
 
     destroyed = false;
 
@@ -37,10 +38,6 @@ export class TestScene extends Container {
             height: renderer.height,
         });
 
-        this.testArea = testArea;
-        this.controlArea = controlArea;
-        this.renderer = renderer;
-
         const observer = new ResizeObserver(() => {
             const rect = wrapper.getBoundingClientRect();
 
@@ -55,6 +52,11 @@ export class TestScene extends Container {
             }
         });
         observer.observe(wrapper);
+
+        this.testArea = testArea;
+        this.controlArea = controlArea;
+        this.renderer = renderer;
+        this.observer = observer;
     }
 
     /**
@@ -189,6 +191,7 @@ export class TestScene extends Container {
     destroy() {
         this.destroyed = true;
         this.clearChildren();
+        this.observer.disconnect();
         this.testArea.innerHTML = "";
         this.controlArea.innerHTML = "";
         // simple is best?
