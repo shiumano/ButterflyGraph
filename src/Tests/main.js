@@ -25,16 +25,10 @@ let currentScene = null;
 Scenes.forEach((SceneClass) => {
     const button = document.createElement("button");
     button.textContent = SceneClass.name;
-    button.addEventListener("click", (e) => {
-        // clear previous scene
-        currentScene?.destroy();
-
-        location.hash = SceneClass.name;
-
-        // create new scene
-        const startTime = performance.now() + 500;
-        currentScene = new SceneClass(testArea, controlArea, startTime);
+    button.addEventListener("click", () => {
+        location.hash = SceneClass.name;  // hashchangeイベントでシーンが切り替わる
     });
+
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
         const startTime = performance.now() + 500;
