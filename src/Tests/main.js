@@ -33,11 +33,17 @@ Scenes.forEach((SceneClass) => {
             currentScene = null;
         }
 
+        location.hash = SceneClass.name;
+
         // create new scene
         currentScene = new SceneClass(testArea, controlArea);
-        currentStartTime = e.timeStamp + 500;
+        currentStartTime = performance.now() + 500;
     });
     testsList.appendChild(button);
+    if (location.hash.replace("#", "") === SceneClass.name) {
+        currentScene = new SceneClass(testArea, controlArea);
+        currentStartTime = performance.now() + 500;
+    }
 });
 
 /**
