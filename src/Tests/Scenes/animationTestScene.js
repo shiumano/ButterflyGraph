@@ -32,6 +32,10 @@ export class AnimationTestScene extends TestScene {
         const textAnim = textObj.registerAnimationFor("text", (v) => v.toFixed(2));
         textAnim.to(10000, 10000);
 
+        this.addButton("Override animation", ev => {
+            xAnim.jump(Math.max(0, ev.timeStamp - this.startTime)).set(0).easeOut(500, 500);
+        })
+
         this.addChild(rect, textObj);
     }
 }
