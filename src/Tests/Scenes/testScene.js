@@ -2,6 +2,7 @@ import { HTMLCanvasRenderer } from "../../Graphics/Rendering/HTMLCanvasRenderer.
 import { Container } from "../../Graphics/Containers/container.js";
 
 /**
+ * @import { GenericDrawObject, Properties } from "@core/Graphics/drawObject.js"
  * @import { GenericContainerNode } from "@core/Graphics/Containers/container.js"
  * @typedef {{
  *   testArea: HTMLElement
@@ -184,6 +185,35 @@ export class TestScene extends Container {
         labelElem.appendChild(textNode);
         labelElem.appendChild(input);
         this.controlArea.appendChild(labelElem);
+    }
+
+    /**
+     * @template {GenericDrawObject} T
+     * @template {Properties<T>} P
+     * @param {string} label
+     * @param {number} min
+     * @param {number} max
+     * @param {T} target
+     * @param {P} property
+     * @param {(value: number) => T[P]} convert
+     */
+    addBindSlider(label, min, max, target, property, convert) {
+        const currentValue = target[property];
+        let initialValue;
+
+        switch (typeof currentValue) {
+            case "number":
+                initialValue = currentValue
+                break;
+            case "string":
+                initialValue = parseFloat(currentValue);
+                break;
+            default:
+                initialValue = 0;
+                break;
+        }
+
+        this.addSlider(label, min, max, initialValue, (value) => target[property] = convert(value));
     }
 
     /**
