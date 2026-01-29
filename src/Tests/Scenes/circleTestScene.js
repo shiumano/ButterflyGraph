@@ -1,6 +1,7 @@
 import { TestScene } from "./testScene.js";
 import { Anchor } from "../../Graphics/anchor.js";
 import { Circle } from "../../Graphics/Shapes/circle.js";
+import { direct } from "../../Utils/unitConversion.js";
 
 /**
  * @import { TestSceneOptions } from "./testScene.js"
@@ -21,17 +22,9 @@ export class CircleTestScene extends TestScene {
             })
         );
 
-        this.addSlider("X Position", -500, 500, this.circle.x, (value) => {
-            this.circle.x = value;
-        });
-
-        this.addSlider("Y Position", -500, 500, this.circle.y, (value) => {
-            this.circle.y = value;
-        });
-
-        this.addSlider("Radius", 10, 200, this.circle.radius, (value) => {
-            this.circle.radius = value;
-        });
+        this.addBindSlider("X Position", -500, 500, this.circle, "x", direct);
+        this.addBindSlider("Y Position", -500, 500, this.circle, "y", direct);
+        this.addBindSlider("Radius", 10, 200, this.circle, "radius", direct);
 
         this.addButton("Random Color", () => {
             this.circle.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
