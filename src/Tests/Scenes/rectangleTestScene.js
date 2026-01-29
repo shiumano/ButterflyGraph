@@ -1,7 +1,7 @@
 import { Rectangle } from "../../Graphics/Shapes/rectangle.js";
 import { TestScene } from "./testScene.js";
 import { Anchor } from "../../Graphics/anchor.js";
-import { direct } from "../../Utils/unitConversion.js";
+import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
 /**
  * @import { TestSceneOptions } from "./testScene.js"
@@ -22,7 +22,7 @@ export class RectangleTestScene extends TestScene {
 
         this.addBindSlider("X position", -500, 500, rectangle, "x", direct);
         this.addBindSlider("Y position", -500, 500, rectangle, "y", direct);
-        this.addBindSlider("Rotation", -10, 10, rectangle, "rotation", direct);
+        this.addBindSlider("Rotation", -360, 360, rectangle, "rotation", degreeToRadian);
         this.addBindSlider("Width", 0, 500, rectangle, "width", direct);
         this.addBindSlider("Height", 0, 500, rectangle, "height", direct);
         this.addBindSlider("X scale", 0, 10, rectangle, "scaleX", direct);

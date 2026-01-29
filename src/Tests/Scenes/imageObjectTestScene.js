@@ -1,4 +1,4 @@
-import { direct } from "../../Utils/unitConversion.js";
+import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 import { Anchor } from "../../Graphics/anchor.js";
 import { ImageObject } from "../../Graphics/Objects/imageObject.js";
 import { TestScene } from "./testScene.js";
@@ -31,7 +31,7 @@ export class ImageObjectTestScene extends TestScene {
         });
 
         this.addBindSlider("Scale", 0.5, 20, imageObj, "scale", direct);
-        this.addBindSlider("Rotation", -10, 10, imageObj, "rotation", direct);
+        this.addBindSlider("Rotation", -360, 360, imageObj, "rotation", degreeToRadian);
         this.addToggle("Image smoothing", imageObj.imageSmoothing, value => imageObj.imageSmoothing = value);
 
         this.addChild(imageObj);
