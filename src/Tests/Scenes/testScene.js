@@ -3,6 +3,11 @@ import { Container } from "../../Graphics/Containers/container.js";
 
 /**
  * @import { GenericContainerNode } from "@core/Graphics/Containers/container.js"
+ * @typedef {{
+ *   testArea: HTMLElement
+ *   controlArea: HTMLElement
+ *   startTime: number
+ * }} TestSceneOptions
  */
 
 /**
@@ -18,11 +23,11 @@ export class TestScene extends Container {
     destroyed = false;
 
     /**
-     * @param {HTMLElement} testArea
-     * @param {HTMLElement} controlArea
-     * @param {number} startTime
+     * @param {TestSceneOptions} options
      */
-    constructor(testArea, controlArea, startTime) {
+    constructor(options) {
+        const { testArea, controlArea, startTime } = options;
+
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
         canvas.height = testArea.clientHeight;

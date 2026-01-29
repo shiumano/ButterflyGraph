@@ -2,14 +2,16 @@ import { Anchor } from "../../Graphics/anchor.js";
 import { TextObject } from "../../Graphics/Objects/textObject.js";
 import { TestScene } from "./testScene.js";
 
+/**
+ * @import { TestSceneOptions } from "./testScene.js"
+ */
+
 export class TextObjectTestScene extends TestScene {
     /**
-     * @param {HTMLElement} testArea
-     * @param {HTMLElement} controlArea
-     * @param {number} startTime
+     * @param {TestSceneOptions} options 
      */
-    constructor(testArea, controlArea, startTime) {
-        super(testArea, controlArea, startTime);
+    constructor(options) {
+        super(options);
 
         const textObj = new TextObject({
             anchor: Anchor.centre,

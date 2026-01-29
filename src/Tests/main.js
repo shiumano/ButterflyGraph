@@ -32,7 +32,7 @@ Scenes.forEach((SceneClass) => {
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
         const startTime = performance.now() + 500;
-        currentScene = new SceneClass(testArea, controlArea, startTime);
+        currentScene = new SceneClass({ testArea, controlArea, startTime });
     }
 });
 
@@ -52,7 +52,7 @@ window.addEventListener("hashchange", (e) => {
         currentScene?.destroy();
 
         const startTime = performance.now() + 500;
-        currentScene = new SceneClass(testArea, controlArea, startTime);
+        currentScene = new SceneClass({ testArea, controlArea, startTime });
     }
 })
 

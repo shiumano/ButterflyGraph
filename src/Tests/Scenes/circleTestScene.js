@@ -2,15 +2,17 @@ import { TestScene } from "./testScene.js";
 import { Anchor } from "../../Graphics/anchor.js";
 import { Circle } from "../../Graphics/Shapes/circle.js";
 
+/**
+ * @import { TestSceneOptions } from "./testScene.js"
+ */
+
 export class CircleTestScene extends TestScene {
     circle;
     /**
-     * @param {HTMLElement} testArea
-     * @param {HTMLElement} controlArea
-     * @param {number} startTime 
+     * @param {TestSceneOptions} options
      */
-    constructor(testArea, controlArea, startTime) {
-        super(testArea, controlArea, startTime);
+    constructor(options) {
+        super(options);
 
         this.addChild(
             this.circle = new Circle({
