@@ -1,5 +1,6 @@
 import { AnimationTestScene } from "./animationTestScene.js";
 import { CircleTestScene } from "./circleTestScene.js";
+import { RectangleTestScene } from "./rectangleTestScene.js";
 import { TextObjectTestScene } from "./textObjectTestScene.js";
 
 /**
@@ -8,7 +9,8 @@ import { TextObjectTestScene } from "./textObjectTestScene.js";
 
 /** @type {typeof TestScene[]} */
 export const Scenes = [
+    RectangleTestScene,
     CircleTestScene,
-    AnimationTestScene,
     TextObjectTestScene,
+    AnimationTestScene,
 ];
