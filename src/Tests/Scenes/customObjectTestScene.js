@@ -56,7 +56,7 @@ class Butterfly extends DrawObject {
     /**
      * @param {number} t
      */
-    getSnapshot(t) {
+    createSnapshot(t) {
         const options = this.calculateOptions(t);
         return this.cachedNode?.with(options) ?? new ButterflyNode(options);
     }
