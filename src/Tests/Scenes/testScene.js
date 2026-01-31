@@ -135,10 +135,11 @@ export class TestScene extends Container {
     }
 
     /**
+     * @template {string} T
      * @param {string} label
-     * @param {string[]} options
-     * @param {string} initialValue
-     * @param {(value: string, ev: Event) => void} onChange
+     * @param {T[]} options
+     * @param {T} initialValue
+     * @param {(value: T, ev: Event) => void} onChange
      */
     addSelector(label, options, initialValue, onChange) {
         const labelElem = document.createElement("label");
@@ -155,7 +156,10 @@ export class TestScene extends Container {
             select.appendChild(optionElem);
         });
         select.addEventListener("change", (ev) => {
-            onChange(select.value, ev);
+            const value = select.value;
+            if (includes(options, value)) {
+                onChange(value, ev);
+            }
         });
 
         labelElem.appendChild(select);
@@ -262,4 +266,16 @@ export class TestScene extends Container {
         this.controlArea.innerHTML = "";
         // simple is best?
     }
+}
+
+// 型ガード関数まで始めちゃったらTSだろ
+/**
+ * @template {string} T
+ * @param {T[]} arr
+ * @param {string} item
+ * @returns {item is T}
+ */
+function includes(arr, item) {
+    // includesの型が少々早すぎる
+    return arr.includes(/** @type {T} */(item));
 }
