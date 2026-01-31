@@ -53,14 +53,7 @@ export class ContainerTestScene extends TestScene {
 
         this.addBindSlider("Green rect X position", -500, 500, greenRect, "x", direct);
         this.addBindSlider("Green rect Y position", -500, 500, greenRect, "y", direct);
-        this.addSelector("Green rect anchor", Object.keys(Anchor), "topLeft", value => {
-            for (const [key, anchor] of Object.entries(Anchor)) {
-                if (key === value) {
-                    greenRect.anchor = anchor;
-                    return;
-                }
-            }
-        });
+        this.addSelector("Green rect anchor", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => greenRect.anchor = Anchor[value]);
         this.addBindSlider("Green rect rotation", -360, 360, greenRect, "rotation", degreeToRadian);
         this.addBindSlider("Green rect alpha", 0, 1, greenRect, "alpha", direct);
 

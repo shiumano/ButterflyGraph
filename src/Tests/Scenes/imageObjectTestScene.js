@@ -88,14 +88,7 @@ export class ImageObjectTestScene extends TestScene {
         this.addBindToggle("Logo image smoothing", imageObj, "imageSmoothing", value => value);
 
         this.addBindSlider("Animation fps", 0, 30, animImageObj, "fps", direct);
-        this.addSelector("Animation image align", Object.keys(Anchor), "topLeft", value => {
-            for (const [key, anchor] of Object.entries(Anchor)) {
-                if (key === value) {
-                    animImageObj.imageAlign = anchor;
-                    return;
-                }
-            }
-        })
+        this.addSelector("Animation image align", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => animImageObj.imageAlign = Anchor[value])
 
         this.addChild(imageObj, animImageObj);
 

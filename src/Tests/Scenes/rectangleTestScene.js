@@ -35,14 +35,7 @@ export class RectangleTestScene extends TestScene {
                 }
             }
         });
-        this.addSelector("Origin", Object.keys(Anchor), "topLeft", value => {
-            for (const [key, anchor] of Object.entries(Anchor)) {
-                if (key === value) {
-                    rectangle.origin = anchor;
-                    return;
-                }
-            }
-        });
+        this.addSelector("Origin", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => rectangle.anchor = Anchor[value]);
         this.addBindSlider("Alpha", 0, 1, rectangle, "alpha", direct);
         this.addTextInput("Fill color", "white", value => rectangle.fillStyle = value);
         this.addBindToggle("Visible", rectangle, "visible", value => value);

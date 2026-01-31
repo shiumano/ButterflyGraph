@@ -32,29 +32,6 @@ export class CircleTestScene extends TestScene {
 
         this.addBindToggle("Show bounding box", this.circle, "showBounds", v => v);
 
-        this.addSelector("Anchor", ["top left", "center", "left", "right", "top", "bottom"], "top left", (value) => {
-            switch (value) {
-                case "top left":
-                    this.circle.anchor = Anchor.topLeft;
-                    break;
-                case "center":
-                    this.circle.anchor = Anchor.centre;
-                    break;
-                case "left":
-                    this.circle.anchor = Anchor.left;
-                    break;
-                case "right":
-                    this.circle.anchor = Anchor.right;
-                    break;
-                case "top":
-                    this.circle.anchor = Anchor.top;
-                    break;
-                case "bottom":
-                    this.circle.anchor = Anchor.bottom;
-                    break;
-                default:
-                    break;
-            }
-        });
+        this.addSelector("Anchor", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => this.circle.anchor = Anchor[value]);
     }
 }
