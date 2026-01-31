@@ -4,14 +4,16 @@ import { direct } from "../../Utils/unitConversion.js";
 import { TextObject } from "../../Graphics/Objects/textObject.js";
 import { Anchor } from "../../Graphics/anchor.js";
 
+/**
+ * @import { TestSceneOptions } from "./testScene.js"
+ */
+
 export class AnimationTestScene extends TestScene {
     /**
-     * @param {HTMLElement} testArea
-     * @param {HTMLElement} controlArea
-     * @param {number} startTime
+     * @param {TestSceneOptions} options 
      */
-    constructor(testArea, controlArea, startTime) {
-        super(testArea, controlArea, startTime);
+    constructor(options) {
+        super(options);
 
         const rect = new Rectangle({
             width: 100,

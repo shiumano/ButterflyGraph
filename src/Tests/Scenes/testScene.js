@@ -2,7 +2,13 @@ import { HTMLCanvasRenderer } from "../../Graphics/Rendering/HTMLCanvasRenderer.
 import { Container } from "../../Graphics/Containers/container.js";
 
 /**
+ * @import { GenericDrawObject, Properties } from "@core/Graphics/drawObject.js"
  * @import { GenericContainerNode } from "@core/Graphics/Containers/container.js"
+ * @typedef {{
+ *   testArea: HTMLElement
+ *   controlArea: HTMLElement
+ *   startTime: number
+ * }} TestSceneOptions
  */
 
 /**
@@ -18,11 +24,11 @@ export class TestScene extends Container {
     destroyed = false;
 
     /**
-     * @param {HTMLElement} testArea
-     * @param {HTMLElement} controlArea
-     * @param {number} startTime
+     * @param {TestSceneOptions} options
      */
-    constructor(testArea, controlArea, startTime) {
+    constructor(options) {
+        const { testArea, controlArea, startTime } = options;
+
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
         canvas.height = testArea.clientHeight;
@@ -61,6 +67,8 @@ export class TestScene extends Container {
         this.renderer = renderer;
         this.observer = observer;
     }
+
+    async load() {}
 
     /**
      * @param {string} label
@@ -127,10 +135,11 @@ export class TestScene extends Container {
     }
 
     /**
+     * @template {string} T
      * @param {string} label
-     * @param {string[]} options
-     * @param {string} initialValue
-     * @param {(value: string, ev: Event) => void} onChange
+     * @param {T[]} options
+     * @param {T} initialValue
+     * @param {(value: T, ev: Event) => void} onChange
      */
     addSelector(label, options, initialValue, onChange) {
         const labelElem = document.createElement("label");
@@ -147,7 +156,10 @@ export class TestScene extends Container {
             select.appendChild(optionElem);
         });
         select.addEventListener("change", (ev) => {
-            onChange(select.value, ev);
+            const value = select.value;
+            if (includes(options, value)) {
+                onChange(value, ev);
+            }
         });
 
         labelElem.appendChild(select);
@@ -182,6 +194,59 @@ export class TestScene extends Container {
     }
 
     /**
+     * @template {GenericDrawObject} T
+     * @template {Properties<T>} P
+     * @param {string} label
+     * @param {number} min
+     * @param {number} max
+     * @param {T} target
+     * @param {P} property
+     * @param {(value: number) => T[P]} convert
+     */
+    addBindSlider(label, min, max, target, property, convert) {
+        const currentValue = target[property];
+        let initialValue;
+
+        switch (typeof currentValue) {
+            case "number":
+                initialValue = currentValue
+                break;
+            case "string":
+                initialValue = parseFloat(currentValue);
+                break;
+            default:
+                initialValue = 0;
+                break;
+        }
+
+        this.addSlider(label, min, max, initialValue, (value) => target[property] = convert(value));
+    }
+
+    /**
+     * @template {GenericDrawObject} T
+     * @template {Properties<T>} P
+     * @param {string} label
+     * @param {T} target
+     * @param {P} property
+     * @param {(value: boolean) => T[P]} convert
+     */
+    addBindToggle(label, target, property, convert) {
+        const currentValue = target[property];
+        let initialValue;
+
+        switch (typeof currentValue) {
+            case "boolean":
+                initialValue = currentValue
+                break;
+            default:
+                initialValue = false;
+                break;
+        }
+
+        this.addToggle(label, initialValue, (value) => target[property] = convert(value));
+    }
+
+    /**
      * @param {number} now - 現在時刻(ミリ秒)
      */
     loop(now) {
@@ -201,4 +266,16 @@ export class TestScene extends Container {
         this.controlArea.innerHTML = "";
         // simple is best?
     }
+}
+
+// 型ガード関数まで始めちゃったらTSだろ
+/**
+ * @template {string} T
+ * @param {T[]} arr
+ * @param {string} item
+ * @returns {item is T}
+ */
+function includes(arr, item) {
+    // includesの型が少々早すぎる
+    return arr.includes(/** @type {T} */(item));
 }

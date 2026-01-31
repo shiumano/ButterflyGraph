@@ -1,5 +1,10 @@
 import { AnimationTestScene } from "./animationTestScene.js";
+import { BufferedContainerTestScene } from "./bufferedContainerTestScene.js";
 import { CircleTestScene } from "./circleTestScene.js";
+import { ContainerTestScene } from "./containerTestScene.js";
+import { CustomObjectTestScene } from "./customObjectTestScene.js";
+import { ImageObjectTestScene } from "./imageObjectTestScene.js";
+import { RectangleTestScene } from "./rectangleTestScene.js";
 import { TextObjectTestScene } from "./textObjectTestScene.js";
 
 /**
@@ -8,7 +13,12 @@ import { TextObjectTestScene } from "./textObjectTestScene.js";
 
 /** @type {typeof TestScene[]} */
 export const Scenes = [
+    RectangleTestScene,
     CircleTestScene,
-    AnimationTestScene,
     TextObjectTestScene,
+    ImageObjectTestScene,
+    ContainerTestScene,
+    BufferedContainerTestScene,
+    AnimationTestScene,
+    CustomObjectTestScene,
 ];
