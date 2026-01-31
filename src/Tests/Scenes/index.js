@@ -1,6 +1,7 @@
 import { AnimationTestScene } from "./animationTestScene.js";
 import { CircleTestScene } from "./circleTestScene.js";
 import { ContainerTestScene } from "./containerTestScene.js";
+import { CustomObjectTestScene } from "./customObjectTestScene.js";
 import { ImageObjectTestScene } from "./imageObjectTestScene.js";
 import { RectangleTestScene } from "./rectangleTestScene.js";
 import { TextObjectTestScene } from "./textObjectTestScene.js";
@@ -17,4 +18,5 @@ export const Scenes = [
     ImageObjectTestScene,
     ContainerTestScene,
     AnimationTestScene,
+    CustomObjectTestScene,
 ];
