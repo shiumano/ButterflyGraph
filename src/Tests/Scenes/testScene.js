@@ -219,6 +219,30 @@ export class TestScene extends Container {
     }
 
     /**
+     * @template {GenericDrawObject} T
+     * @template {Properties<T>} P
+     * @param {string} label
+     * @param {T} target
+     * @param {P} property
+     * @param {(value: boolean) => T[P]} convert
+     */
+    addBindToggle(label, target, property, convert) {
+        const currentValue = target[property];
+        let initialValue;
+
+        switch (typeof currentValue) {
+            case "boolean":
+                initialValue = currentValue
+                break;
+            default:
+                initialValue = false;
+                break;
+        }
+
+        this.addToggle(label, initialValue, (value) => target[property] = convert(value));
+    }
+
+    /**
      * @param {number} now - 現在時刻(ミリ秒)
      */
     loop(now) {
