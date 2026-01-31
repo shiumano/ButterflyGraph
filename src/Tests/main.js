@@ -31,9 +31,11 @@ Scenes.forEach(async (SceneClass) => {
 
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
-        currentScene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
-        await currentScene.load();
-        currentScene.startTime = performance.now() + 500;
+        const scene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
+        currentScene = scene;
+        await scene.load();
+        if (!scene.destroyed)
+            scene.startTime = performance.now() + 500;
     }
 });
 
@@ -47,14 +49,16 @@ window.addEventListener("hashchange", async () => {
         return;
     }
 
-    const SceneClass = Scenes.find(s => s.name === sceneName)
+    const SceneClass = Scenes.find(s => s.name === sceneName);
 
     if (SceneClass !== undefined) {
         currentScene?.destroy();
 
-        currentScene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
-        await currentScene.load();
-        currentScene.startTime = performance.now() + 500;
+        const scene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
+        currentScene = scene;
+        await scene.load();
+        if (!scene.destroyed)
+            scene.startTime = performance.now() + 500;
     }
 })
 
