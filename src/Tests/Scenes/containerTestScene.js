@@ -64,8 +64,8 @@ export class ContainerTestScene extends TestScene {
         this.addBindSlider("Green rect rotation", -360, 360, greenRect, "rotation", degreeToRadian);
         this.addBindSlider("Green rect alpha", 0, 1, greenRect, "alpha", direct);
 
-        this.addToggle("Clipping", testContainer.clip, value => testContainer.clip = value);
-        this.addToggle("Show bounds", testContainer.showBounds, value => testContainer.showBounds = value);
+        this.addBindToggle("Clipping", testContainer, "clip", value => value);
+        this.addBindToggle("Show bounds", testContainer, "showBounds", value => value);
 
         this.addChild(testContainer);
     }

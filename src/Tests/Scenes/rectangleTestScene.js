@@ -45,8 +45,8 @@ export class RectangleTestScene extends TestScene {
         });
         this.addBindSlider("Alpha", 0, 1, rectangle, "alpha", direct);
         this.addTextInput("Fill color", "white", value => rectangle.fillStyle = value);
-        this.addToggle("Visible", rectangle.visible, value => rectangle.visible = value);
-        this.addToggle("Show bounds", rectangle.showBounds, value => rectangle.showBounds = value);
+        this.addBindToggle("Visible", rectangle, "visible", value => value);
+        this.addBindToggle("Show bounds", rectangle, "showBounds", value => value);
 
         this.addChild(rectangle);
     }

@@ -176,8 +176,8 @@ export class CustomObjectTestScene extends TestScene {
         this.addBindSlider("Height", 10, 500, obj, "height", direct);
         this.addBindSlider("X scale", 0.1, 10, obj, "scaleX", direct);
         this.addBindSlider("Y scale", 0.1, 10, obj, "scaleY", direct);
-        this.addToggle("Dark theme", obj.dark, value => obj.dark = value);
-        this.addToggle("Show bounds", obj.showBounds, value => obj.showBounds = value);
+        this.addBindToggle("Dark theme", obj, "dark", value => value);
+        this.addBindToggle("Show bounds", obj, "showBounds", value => value);
 
         this.addChild(obj);
     }

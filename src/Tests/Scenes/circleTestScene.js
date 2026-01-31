@@ -30,9 +30,7 @@ export class CircleTestScene extends TestScene {
             this.circle.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
         });
 
-        this.addToggle("Show bounding box", false, (value) => {
-            this.circle.showBounds = value;
-        });
+        this.addBindToggle("Show bounding box", this.circle, "showBounds", v => v);
 
         this.addSelector("Anchor", ["top left", "center", "left", "right", "top", "bottom"], "top left", (value) => {
             switch (value) {

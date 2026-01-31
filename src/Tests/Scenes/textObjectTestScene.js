@@ -24,8 +24,8 @@ export class TextObjectTestScene extends TestScene {
         this.addTextInput("Text", textObj.text, value => textObj.text = value);
         this.addTextInput("Font", textObj.font, value => textObj.font = value);
         this.addBindSlider("Scale", 0.1, 20, textObj, "scale", direct);
-        this.addToggle("Size reference -> font", textObj.sizeReference === "font", value => textObj.sizeReference = value ? "font" : "actual");
-        this.addToggle("Show bounds", false, value => textObj.showBounds = value);
+        this.addBindToggle("Size reference -> font", textObj, "sizeReference", value => value ? "font" : "actual");
+        this.addBindToggle("Show bounds", textObj, "showBounds", value => value);
 
         this.addChild(textObj);
     }

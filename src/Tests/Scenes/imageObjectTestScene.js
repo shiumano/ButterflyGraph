@@ -85,7 +85,7 @@ export class ImageObjectTestScene extends TestScene {
 
         this.addBindSlider("Logo scale", 0.5, 20, imageObj, "scale", direct);
         this.addBindSlider("Logo rotation", -360, 360, imageObj, "rotation", degreeToRadian);
-        this.addToggle("Logo image smoothing", imageObj.imageSmoothing, value => imageObj.imageSmoothing = value);
+        this.addBindToggle("Logo image smoothing", imageObj, "imageSmoothing", value => value);
 
         this.addBindSlider("Animation fps", 0, 30, animImageObj, "fps", direct);
         this.addSelector("Animation image align", Object.keys(Anchor), "topLeft", value => {
