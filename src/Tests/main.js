@@ -22,7 +22,7 @@ colorSelector.addEventListener("change", (e) => {
 /** @type {TestScene?} */
 let currentScene = null;
 
-Scenes.forEach((SceneClass) => {
+Scenes.forEach(async (SceneClass) => {
     const button = document.createElement("button");
     button.textContent = SceneClass.name;
     button.addEventListener("click", () => {
@@ -31,12 +31,13 @@ Scenes.forEach((SceneClass) => {
 
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
-        const startTime = performance.now() + 500;
-        currentScene = new SceneClass({ testArea, controlArea, startTime });
+        currentScene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
+        await currentScene.load();
+        currentScene.startTime = performance.now() + 500;
     }
 });
 
-window.addEventListener("hashchange", (e) => {
+window.addEventListener("hashchange", async () => {
     const sceneName = location.hash.replace("#", "");
 
     // シーンの選択解除ってことにする
@@ -51,8 +52,9 @@ window.addEventListener("hashchange", (e) => {
     if (SceneClass !== undefined) {
         currentScene?.destroy();
 
-        const startTime = performance.now() + 500;
-        currentScene = new SceneClass({ testArea, controlArea, startTime });
+        currentScene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
+        await currentScene.load();
+        currentScene.startTime = performance.now() + 500;
     }
 })
 

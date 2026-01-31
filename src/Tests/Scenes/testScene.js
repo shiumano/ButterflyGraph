@@ -68,6 +68,8 @@ export class TestScene extends Container {
         this.observer = observer;
     }
 
+    async load() {}
+
     /**
      * @param {string} label
      * @param {(ev: PointerEvent) => void} onClick
