@@ -50,16 +50,6 @@ N8FmerJsrhRhrm3eZr4fDpOFftSCxWK/Biab+8vNZKm/tUym/XUEsAywfmFsFvSqPs7janucx9X+
 OI+7xwe9y+9k4JOCcwO3AO700tC3GxkZGRnZ25lXRInDfshO2J8Tgv3VwRhjjDHGGGOMse/7ADrp
 cp0Mx4CbAAAAAElFTkSuQmCC`;
 
-const shidevLogoBlob = await fetch(shidev_logo_data_base64).then(resp => resp.blob());
-
-const animFrames = [
-    await fetch(frame_0_data_base64).then(resp => resp.blob()),
-    await fetch(frame_1_data_base64).then(resp => resp.blob()),
-    await fetch(frame_2_data_base64).then(resp => resp.blob()),
-    await fetch(frame_3_data_base64).then(resp => resp.blob()),
-    await fetch(frame_4_data_base64).then(resp => resp.blob())
-];
-
 export class ImageObjectTestScene extends TestScene {
     imageObj;
     animImageObj;
@@ -97,6 +87,16 @@ export class ImageObjectTestScene extends TestScene {
     }
 
     async load() {
+        const shidevLogoBlob = await fetch(shidev_logo_data_base64).then(resp => resp.blob());
+
+        const animFrames = [
+            await fetch(frame_0_data_base64).then(resp => resp.blob()),
+            await fetch(frame_1_data_base64).then(resp => resp.blob()),
+            await fetch(frame_2_data_base64).then(resp => resp.blob()),
+            await fetch(frame_3_data_base64).then(resp => resp.blob()),
+            await fetch(frame_4_data_base64).then(resp => resp.blob())
+        ];
+
         await this.imageObj.load([shidevLogoBlob]);
         await this.animImageObj.load(animFrames);
     }
