@@ -57,7 +57,7 @@ export class BufferedContainerTestScene extends TestScene {
         this.addSlider("Position offset", 0, 400, 400, value => {
             bufferedContainer.x = value / -2;
             normalContainer.x = value / 2;
-        })
+        });
         this.addSlider("Scale (both)", 0.5, 5, 1, value => {
             bufferedContainer.scale = value;
             normalContainer.scale = value;
