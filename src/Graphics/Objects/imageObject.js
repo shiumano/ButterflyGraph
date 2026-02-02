@@ -4,12 +4,13 @@ import { DrawObject } from "../drawObject.js";
 import { ImageCacheStore } from "./imageCacheStore.js";
 
 /**
+ * @import { Vector2 } from "@core/Graphics/vector2.js";
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
  * @import { ImageInfo } from "./imageCacheStore.js";
  * @typedef {DrawObjectOptions & {
  *   fps?: number
- *   imageAlign?: Anchor
+ *   imageAlign?: Vector2
  *   imageSmoothing?: boolean
  *   loop?: boolean
  *   image?: Blob
