@@ -14,3 +14,10 @@ export const Anchor = Object.freeze({
     bottom: new Vector2(0.5, 1, false),
     bottomRight: new Vector2(1, 1, false)
 });
+
+/** @type {ReadonlyArray<keyof Anchor>} */
+export const allAnchors = Object.freeze([
+    "topLeft",    "top",    "topRight",
+    "left",       "centre", "right",
+    "bottomLeft", "bottom", "bottomRight"
+]);
