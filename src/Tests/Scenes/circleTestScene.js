@@ -1,5 +1,5 @@
 import { TestScene } from "./testScene.js";
-import { Anchor } from "../../Graphics/anchor.js";
+import { Anchor, allAnchors } from "../../Graphics/anchor.js";
 import { Circle } from "../../Graphics/Shapes/circle.js";
 import { direct } from "../../Utils/unitConversion.js";
 
@@ -32,6 +32,6 @@ export class CircleTestScene extends TestScene {
 
         this.addBindToggle("Show bounding box", this.circle, "showBounds", v => v);
 
-        this.addSelector("Anchor", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => this.circle.anchor = Anchor[value]);
+        this.addSelector("Anchor", allAnchors, "topLeft", value => this.circle.anchor = Anchor[value]);
     }
 }

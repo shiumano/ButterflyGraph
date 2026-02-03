@@ -137,7 +137,7 @@ export class TestScene extends Container {
     /**
      * @template {string} T
      * @param {string} label
-     * @param {T[]} options
+     * @param {readonly T[]} options
      * @param {T} initialValue
      * @param {(value: T, ev: Event) => void} onChange
      */
@@ -271,7 +271,7 @@ export class TestScene extends Container {
 // 型ガード関数まで始めちゃったらTSだろ
 /**
  * @template {string} T
- * @param {T[]} arr
+ * @param {readonly T[]} arr
  * @param {string} item
  * @returns {item is T}
  */

@@ -2,7 +2,7 @@ import { Container } from "../../Graphics/Containers/container.js";
 import { TestScene } from "./testScene.js";
 import { Circle } from "../../Graphics/Shapes/circle.js";
 import { Rectangle } from "../../Graphics/Shapes/rectangle.js";
-import { Anchor } from "../../Graphics/anchor.js";
+import { Anchor, allAnchors } from "../../Graphics/anchor.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
 /**
@@ -53,7 +53,7 @@ export class ContainerTestScene extends TestScene {
 
         this.addBindSlider("Green rect X position", -500, 500, greenRect, "x", direct);
         this.addBindSlider("Green rect Y position", -500, 500, greenRect, "y", direct);
-        this.addSelector("Green rect anchor", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => greenRect.anchor = Anchor[value]);
+        this.addSelector("Green rect anchor", allAnchors, "topLeft", value => greenRect.anchor = Anchor[value]);
         this.addBindSlider("Green rect rotation", -360, 360, greenRect, "rotation", degreeToRadian);
         this.addBindSlider("Green rect alpha", 0, 1, greenRect, "alpha", direct);
 
