@@ -146,7 +146,15 @@ export class ImageObject extends DrawObject {
     calculateOptions(t) {
         const options = super.calculateOptions(t);
 
-        if (this.#frameCount === 0) {
+        const time = this.#loop ? t % (this.#length) : t;
+        const frameIndex = Math.max(Math.min(
+            Math.floor(this.#frameCount * (time / this.#length)),
+            this.#frameCount - 1
+        ), 0);
+
+        const imageInfo = this.#images[frameIndex];
+
+        if (imageInfo === undefined) {
             return {
                 ...options,
                 hash: null,
@@ -155,15 +163,6 @@ export class ImageObject extends DrawObject {
                 imageSmoothing: false
             }
         }
-
-        const time = this.#loop ? t % (this.#length) : t;
-
-        const frameIndex = Math.max(Math.min(
-            Math.floor(this.#frameCount * (time / this.#length)),
-            this.#frameCount - 1
-        ), 0);
-
-        const imageInfo = this.#images[frameIndex];
 
         const offsetX = (this.width - imageInfo.width) * this.#imageAlign.x;
         const offsetY = (this.height - imageInfo.height) * this.#imageAlign.y;
