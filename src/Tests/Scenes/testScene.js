@@ -3,7 +3,6 @@ import { Container } from "../../Graphics/Containers/container.js";
 
 /**
  * @import { GenericDrawObject, Properties } from "@core/Graphics/drawObject.js"
- * @import { GenericContainerNode } from "@core/Graphics/Containers/container.js"
  * @typedef {{
  *   testArea: HTMLElement
  *   controlArea: HTMLElement
@@ -11,10 +10,7 @@ import { Container } from "../../Graphics/Containers/container.js";
  * }} TestSceneOptions
  */
 
-/**
- * @extends {Container<GenericContainerNode>}
- */
-export class TestScene extends Container {
+export class TestScene {
     testArea;
     controlArea;
     renderer;
@@ -22,6 +18,8 @@ export class TestScene extends Container {
     startTime;
 
     destroyed = false;
+
+    root;
 
     /**
      * @param {TestSceneOptions} options
@@ -41,7 +39,7 @@ export class TestScene extends Container {
         testArea.appendChild(wrapper);
 
         const renderer = new HTMLCanvasRenderer(canvas, false);
-        super({
+        const root = new Container({
             width: renderer.width,
             height: renderer.height,
         });
@@ -55,8 +53,8 @@ export class TestScene extends Container {
             if (canvas.width !== w || canvas.height !== h) {
                 renderer.width = w;
                 renderer.height = h;
-                this.width = w;
-                this.height = h;
+                root.width = w;
+                root.height = h;
             }
         });
         observer.observe(wrapper);
@@ -66,6 +64,7 @@ export class TestScene extends Container {
         this.startTime = startTime;
         this.renderer = renderer;
         this.observer = observer;
+        this.root = root;
     }
 
     async load() {}
@@ -254,13 +253,13 @@ export class TestScene extends Container {
 
         const t = Math.max(0, now - this.startTime);
 
-        const snapshot = this.getSnapshot(t);
+        const snapshot = this.root.getSnapshot(t);
         this.renderer.render(snapshot);
     }
 
     destroy() {
         this.destroyed = true;
-        this.clearChildren();
+        this.root.clearChildren();
         this.observer.disconnect();
         this.testArea.innerHTML = "";
         this.controlArea.innerHTML = "";

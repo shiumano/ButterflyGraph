@@ -27,6 +27,6 @@ export class TextObjectTestScene extends TestScene {
         this.addBindToggle("Size reference -> font", textObj, "sizeReference", value => value ? "font" : "actual");
         this.addBindToggle("Show bounds", textObj, "showBounds", value => value);
 
-        this.addChild(textObj);
+        this.root.addChild(textObj);
     }
 }

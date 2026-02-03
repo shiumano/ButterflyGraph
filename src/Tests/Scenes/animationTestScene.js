@@ -38,6 +38,6 @@ export class AnimationTestScene extends TestScene {
             xAnim.jump(Math.max(0, ev.timeStamp - this.startTime)).set(0).easeOut(500, 500);
         });
 
-        this.addChild(rect, textObj);
+        this.root.addChild(rect, textObj);
     }
 }

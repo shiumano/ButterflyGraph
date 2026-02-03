@@ -76,7 +76,7 @@ export class BufferedContainerTestScene extends TestScene {
             normalContainer.showBounds = value;
         });
 
-        this.addChild(bufferedContainer, normalContainer);
+        this.root.addChild(bufferedContainer, normalContainer);
     }
 
 }
