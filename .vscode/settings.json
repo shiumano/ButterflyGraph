@@ -4,12 +4,8 @@
     },
     "editor.formatOnSave": true,
     "editor.trimWhitespaceOnDelete": true,
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "search.exclude": {
         "**/.git": true
-    },
-    "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
     },
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
