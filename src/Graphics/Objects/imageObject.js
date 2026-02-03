@@ -148,7 +148,7 @@ export class ImageObject extends DrawObject {
 
         const time = this.#loop ? t % (this.#length) : t;
         const frameIndex = Math.max(Math.min(
-            Math.floor(this.#frameCount * (time / this.#length)),
+            Math.floor(this.#frameCount * (!isNaN(time) ? time / this.#length : 0)),
             this.#frameCount - 1
         ), 0);
 
