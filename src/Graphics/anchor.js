@@ -2,7 +2,6 @@ import { Vector2 } from "./vector2.js";
 
 /**
  * 矩形状の3x3の配置を表す
- * @enum {Vector2}
  */
 export const Anchor = Object.freeze({
     topLeft: new Vector2(0, 0, false),
@@ -15,3 +14,10 @@ export const Anchor = Object.freeze({
     bottom: new Vector2(0.5, 1, false),
     bottomRight: new Vector2(1, 1, false)
 });
+
+/** @type {ReadonlyArray<keyof Anchor>} */
+export const allAnchors = Object.freeze([
+    "topLeft",    "top",    "topRight",
+    "left",       "centre", "right",
+    "bottomLeft", "bottom", "bottomRight"
+]);
