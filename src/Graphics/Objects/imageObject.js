@@ -164,6 +164,10 @@ export class ImageObject extends DrawObject {
             };
         }
 
+        if (this.cachedNode?.options.hash !== imageInfo.hash) {
+            this.requestRecreate("object");
+        }
+
         const offsetX = (this.width - imageInfo.width) * this.#imageAlign.x;
         const offsetY = (this.height - imageInfo.height) * this.#imageAlign.y;
 
