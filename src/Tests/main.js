@@ -31,7 +31,7 @@ Scenes.forEach(async (SceneClass) => {
 
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
-        const scene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
+        const scene = new SceneClass({ testArea, controlArea, startTime: Infinity });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {
@@ -55,7 +55,7 @@ window.addEventListener("hashchange", async () => {
     if (SceneClass !== undefined) {
         currentScene?.destroy();
 
-        const scene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
+        const scene = new SceneClass({ testArea, controlArea, startTime: Infinity });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {
