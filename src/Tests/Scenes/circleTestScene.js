@@ -15,7 +15,7 @@ export class CircleTestScene extends TestScene {
     constructor(options) {
         super(options);
 
-        this.addChild(
+        this.root.addChild(
             this.circle = new Circle({
                 radius: 50,
                 fillStyle: "red",

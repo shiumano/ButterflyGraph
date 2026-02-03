@@ -60,6 +60,6 @@ export class ContainerTestScene extends TestScene {
         this.addBindToggle("Clipping", testContainer, "clip", value => value);
         this.addBindToggle("Show bounds", testContainer, "showBounds", value => value);
 
-        this.addChild(testContainer);
+        this.root.addChild(testContainer);
     }
 }

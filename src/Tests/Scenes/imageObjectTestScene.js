@@ -80,7 +80,7 @@ export class ImageObjectTestScene extends TestScene {
         this.addBindSlider("Animation fps", 0, 30, animImageObj, "fps", direct);
         this.addSelector("Animation image align", allAnchors, "topLeft", value => animImageObj.imageAlign = Anchor[value]);
 
-        this.addChild(imageObj, animImageObj);
+        this.root.addChild(imageObj, animImageObj);
 
         this.imageObj = imageObj;
         this.animImageObj = animImageObj;

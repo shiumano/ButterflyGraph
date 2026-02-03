@@ -34,6 +34,6 @@ export class RectangleTestScene extends TestScene {
         this.addBindToggle("Visible", rectangle, "visible", value => value);
         this.addBindToggle("Show bounds", rectangle, "showBounds", value => value);
 
-        this.addChild(rectangle);
+        this.root.addChild(rectangle);
     }
 }

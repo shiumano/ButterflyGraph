@@ -179,6 +179,6 @@ export class CustomObjectTestScene extends TestScene {
         this.addBindToggle("Dark theme", obj, "dark", value => value);
         this.addBindToggle("Show bounds", obj, "showBounds", value => value);
 
-        this.addChild(obj);
+        this.root.addChild(obj);
     }
 }
