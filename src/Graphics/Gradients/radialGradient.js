@@ -22,8 +22,7 @@ export class RadialGradient extends Gradient {
      * @param {ColorStop[]} stops
      */
     constructor(x0, y0, r0, x1, y1, r1, stops = []) {
-        if (r0 < 0 || r1 < 0)
-            throw new RangeError("Radius cannot be negative");
+        if (r0 < 0 || r1 < 0) throw new RangeError("Radius cannot be negative");
 
         super(stops);
         this.#x0 = x0;
@@ -41,8 +40,7 @@ export class RadialGradient extends Gradient {
      * @param {number} r
      */
     setInner(x, y, r) {
-        if (r < 0)
-            throw new RangeError("Radius cannot be negative");
+        if (r < 0) throw new RangeError("Radius cannot be negative");
 
         this.#x0 = x;
         this.#y0 = y;
@@ -56,8 +54,7 @@ export class RadialGradient extends Gradient {
      * @param {number} r
      */
     setOuter(x, y, r) {
-        if (r < 0)
-            throw new RangeError("Radius cannot be negative");
+        if (r < 0) throw new RangeError("Radius cannot be negative");
 
         this.#x1 = x;
         this.#y1 = y;

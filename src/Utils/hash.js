@@ -4,7 +4,7 @@
  */
 export function fnv1a64(bytes) {
     let hash = 0xcbf29ce484222325n;
-    for (let b of bytes) {
+    for (const b of bytes) {
         hash ^= BigInt(b);
         hash = (hash * 0x100000001b3n) & 0xffffffffffffffffn;
     }

@@ -56,8 +56,9 @@ export class Gradient {
     requestRecreate(reason) {
         this.#gradientChanged = true;
 
-        if (reason === "stops")
+        if (reason === "stops") {
             this.#stopsChanged = true;
+        }
     }
 
     createGradientBuilder() {

@@ -28,18 +28,22 @@ export class Vector2 {
 
     get x() { return this.#x; }
     set x(value) {
-        if (this.#editable)
+        if (this.#editable) {
             this.#x = value;
-        else
+        }
+        else {
             console.error("This Vector2 is not editable.");
+        }
     }
 
     get y() { return this.#y; }
     set y(value) {
-        if (this.#editable)
+        if (this.#editable) {
             this.#y = value;
-        else
+        }
+        else {
             console.error("This Vector2 is not editable.");
+        }
     }
 
     /**

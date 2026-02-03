@@ -50,7 +50,7 @@ class Butterfly extends DrawObject {
             ...options,
             fillStyle: this.dark ? "#A78BFA" : "#6A5ACD",
             strokeStyle: this.dark ? "#F5F7FA" : "#111"
-        }
+        };
     }
 
     /**
@@ -99,9 +99,9 @@ class ButterflyNode extends DrawNode {
             nodesPath.arc( 60 * ws, 58 * hs, 4, 0, Math.PI * 2);
             nodesPath.moveTo( 40 * ws,  66 * hs);
             nodesPath.arc( 40 * ws,  66 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(118 * ws,  52 * hs)
+            nodesPath.moveTo(118 * ws,  52 * hs);
             nodesPath.arc(118 * ws,  52 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(100 * ws, 58 * hs)
+            nodesPath.moveTo(100 * ws, 58 * hs);
             nodesPath.arc(100 * ws, 58 * hs, 4, 0, Math.PI * 2);
             nodesPath.moveTo(120 * ws,  66 * hs);
             nodesPath.arc(120 * ws,  66 * hs, 4, 0, Math.PI * 2);

@@ -48,8 +48,9 @@ export class TextObject extends DrawObject {
      */
     constructor(options = {}) {
         super(options);
-        if (TextObject.#ctx)
+        if (TextObject.#ctx) {
             TextObject.#ctx.textBaseline = "top";
+        }
 
         this.#fill = options.fill ?? true;
         this.#strokeWidth = Math.max(options.strokeWidth ?? 0, 0);
@@ -131,7 +132,7 @@ export class TextObject extends DrawObject {
             super.width = 0;
             super.height = 0;
         } else {
-            if (TextObject.#ctx == null) return;
+            if (TextObject.#ctx === null) return;
             if (this.font !== TextObject.#ctxFont) {
                 TextObject.#ctx.font = this.font;
                 TextObject.#ctxFont = this.font;
@@ -167,7 +168,7 @@ export class TextObject extends DrawObject {
             fill: this.fill,
             strokeWidth: this.strokeWidth,
             textAscent: this.#textAscent
-        }
+        };
     }
 
     /**

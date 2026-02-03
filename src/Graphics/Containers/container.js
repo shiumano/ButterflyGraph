@@ -109,7 +109,7 @@ export class Container extends DrawObject {
         let childrenAnimated = false;
         let childrenPerfect = true;
         for (let i = 0; i < this.#children.length; i++) {
-            const child = this.#children[i]
+            const child = this.#children[i];
             childrenTimed ||= child.timed;
             childrenAnimated ||= child.animated;
             childrenPerfect &&= child.perfectlyOptimized;
@@ -180,7 +180,7 @@ export class Container extends DrawObject {
 
     clearChildren() {
         this.#children.forEach(child => child.parent = null);  // 関係を切る
-        this.#children = []
+        this.#children = [];
         this.#childrenTimed = false;
         this.#childrenAnimated = false;
         this.#childrenPerfectlyOptimized = true;
@@ -212,7 +212,7 @@ export class Container extends DrawObject {
      * @returns {ContainerNodeOptions}
      */
     calculateOptions(t) {
-        let options = super.calculateOptions(t);
+        const options = super.calculateOptions(t);
 
         let children = this.cachedNode?.options?.children;
         if (children === undefined || this.timed || this.objectChanged) {
@@ -230,7 +230,7 @@ export class Container extends DrawObject {
             ...options,
             children: children,
             clip: this.clip
-        }
+        };
     }
 
     /**
@@ -290,8 +290,9 @@ export class ContainerNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        if (this.#clipPath !== null)
+        if (this.#clipPath !== null) {
             ctx.clip(this.#clipPath);
+        }
 
         if (this.#single) {  // PERF: ループ回す必要がない マイクロ最適化
             this.#children[0].render(ctx);

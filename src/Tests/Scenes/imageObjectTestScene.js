@@ -71,14 +71,14 @@ export class ImageObjectTestScene extends TestScene {
             anchor: Anchor.centre,
             origin: Anchor.centre,
             fps: 1
-        })
+        });
 
         this.addBindSlider("Logo scale", 0.5, 20, imageObj, "scale", direct);
         this.addBindSlider("Logo rotation", -360, 360, imageObj, "rotation", degreeToRadian);
         this.addBindToggle("Logo image smoothing", imageObj, "imageSmoothing", value => value);
 
         this.addBindSlider("Animation fps", 0, 30, animImageObj, "fps", direct);
-        this.addSelector("Animation image align", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => animImageObj.imageAlign = Anchor[value])
+        this.addSelector("Animation image align", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => animImageObj.imageAlign = Anchor[value]);
 
         this.addChild(imageObj, animImageObj);
 

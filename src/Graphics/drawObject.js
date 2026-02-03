@@ -1,7 +1,7 @@
 import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
-import { Gradient } from "./Gradients/gradient.js"
-import { AnimationManager } from "./Animations/animationManager.js"
+import { Gradient } from "./Gradients/gradient.js";
+import { AnimationManager } from "./Animations/animationManager.js";
 
 /**
  * @import { Vector2 } from "./vector2.js";
@@ -351,10 +351,12 @@ export class DrawObject {
      * @param {string | CanvasGradient | CanvasPattern | Gradient} style
      */
     getStyle(style) {
-        if (style instanceof Gradient)
+        if (style instanceof Gradient) {
             return style.getGradientBuilder();
-        else
+        }
+        else {
             return style;
+        }
     }
 
     /**
@@ -412,7 +414,7 @@ export class DrawObject {
             alpha: this.alpha,
             zIndex: this.zIndex,
             visible: this.visible,
-        }
+        };
     }
 
     /**
@@ -440,7 +442,7 @@ export class DrawObject {
         // PERF: 一旦widthとかshowBoundsみたいなobject系もtransformChangedに巻沿い食わせて試したら10~11%→5~7%になった えぐい
         let options;
 
-        if (this.parent != null) {
+        if (this.parent !== null) {
             options = this.parent.calculateChildOptions(this, t);
         } else {
             options = this.calculateThisOptions(t);
@@ -470,8 +472,9 @@ export class DrawObject {
      * @param {number} t
      */
     getSnapshot(t) {
-        if (this.animated)
+        if (this.animated) {
             this.calculateAnimations(t);
+        }
 
         let nodeCache = this.#nodeCache;
         if (nodeCache === null

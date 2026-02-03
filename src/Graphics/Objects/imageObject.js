@@ -52,7 +52,7 @@ export class ImageObject extends DrawObject {
         this.#imageSmoothing = options.imageSmoothing ?? true;
         this.#loop = options.loop ?? true;
 
-        if (options.image != undefined) {
+        if (options.image !== undefined) {
             // awaitじゃないため不安定 できればawait ImageObject.load(blobs)でちゃんとロードして欲しい
             this.load([options.image]);
         }
@@ -108,7 +108,7 @@ export class ImageObject extends DrawObject {
         this.#length = (this.#fps > 0 && this.#frameCount > 0)
             ? (this.#frameCount / this.#fps) * 1000
             : Number.MAX_VALUE;  // ms単位
-        super.timed = this.#frameCount > 1 && this.fps != 0;
+        super.timed = this.#frameCount > 1 && this.fps !== 0;
     }
 
     /**
@@ -127,7 +127,7 @@ export class ImageObject extends DrawObject {
 
         const images = await Promise.all(
             blobs.map(blob => ImageCacheStore.loadBlob(blob))
-        )
+        );
 
         super.width = Math.max(...images.map(image => image.width));
         super.height = Math.max(...images.map(image => image.height));
@@ -161,7 +161,7 @@ export class ImageObject extends DrawObject {
                 offsetX: 0,
                 offsetY: 0,
                 imageSmoothing: false
-            }
+            };
         }
 
         const offsetX = (this.width - imageInfo.width) * this.#imageAlign.x;
@@ -214,8 +214,7 @@ class ImageNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        if (this.#hash === null)
-            return
+        if (this.#hash === null) return;
 
         const bitmap = ImageCacheStore.getOrOrder(this.#hash);
         if (bitmap !== null) {

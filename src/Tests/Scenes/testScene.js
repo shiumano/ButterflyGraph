@@ -209,7 +209,7 @@ export class TestScene extends Container {
 
         switch (typeof currentValue) {
             case "number":
-                initialValue = currentValue
+                initialValue = currentValue;
                 break;
             case "string":
                 initialValue = parseFloat(currentValue);
@@ -236,7 +236,7 @@ export class TestScene extends Container {
 
         switch (typeof currentValue) {
             case "boolean":
-                initialValue = currentValue
+                initialValue = currentValue;
                 break;
             default:
                 initialValue = false;
