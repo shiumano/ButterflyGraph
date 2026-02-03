@@ -34,8 +34,9 @@ Scenes.forEach(async (SceneClass) => {
         const scene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
         currentScene = scene;
         await scene.load();
-        if (!scene.destroyed)
+        if (!scene.destroyed) {
             scene.startTime = performance.now() + 500;
+    }
     }
 });
 
@@ -57,10 +58,11 @@ window.addEventListener("hashchange", async () => {
         const scene = new SceneClass({ testArea, controlArea, startTime: -Infinity });
         currentScene = scene;
         await scene.load();
-        if (!scene.destroyed)
+        if (!scene.destroyed) {
             scene.startTime = performance.now() + 500;
+        }
     }
-})
+});
 
 /**
  * @param {number} now

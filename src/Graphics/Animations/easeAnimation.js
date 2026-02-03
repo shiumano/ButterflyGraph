@@ -1,20 +1,18 @@
 import { AnimationBase } from "./animationBase.js";
 
-var _ = 0;
-
 /**
  * @enum {number}
  */
 export const Easing = Object.freeze({
-    none: _++,
-    in: _++,
-    inQuad: _++,
-    out: _++,
-    outQuad: _++,
-    inOutQuad: _++,
-    inSine: _++,
-    outSine: _++
-})
+    none: 0,
+    in: 1,
+    inQuad: 2,
+    out: 3,
+    outQuad: 4,
+    inOutQuad: 5,
+    inSine: 6,
+    outSine: 7
+});
 
 export class EaseAnimation extends AnimationBase{
     #easing;
@@ -26,7 +24,7 @@ export class EaseAnimation extends AnimationBase{
      * @param {Easing} easing
      */
     constructor(end, duration, easing) {
-        super(end, duration)
+        super(end, duration);
         this.#easing = easing;
     }
 

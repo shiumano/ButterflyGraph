@@ -10,7 +10,7 @@ import { Anchor } from "../../Graphics/anchor.js";
 
 export class AnimationTestScene extends TestScene {
     /**
-     * @param {TestSceneOptions} options 
+     * @param {TestSceneOptions} options
      */
     constructor(options) {
         super(options);
@@ -18,7 +18,7 @@ export class AnimationTestScene extends TestScene {
         const rect = new Rectangle({
             width: 100,
             height: 100,
-            fillStyle: 'blue',
+            fillStyle: "blue",
         });
         const textObj = new TextObject({
             anchor: Anchor.topRight,
@@ -36,7 +36,7 @@ export class AnimationTestScene extends TestScene {
 
         this.addButton("Override animation", ev => {
             xAnim.jump(Math.max(0, ev.timeStamp - this.startTime)).set(0).easeOut(500, 500);
-        })
+        });
 
         this.addChild(rect, textObj);
     }

@@ -73,13 +73,11 @@ export class ImageCacheStore {
     static async loadImage(hash) {
         const blob = this.#hashBlobMap.get(hash);
 
-        if (blob === undefined)
-            throw new Error("The blob associated with the hash was not found.");
+        if (blob === undefined) throw new Error("The blob associated with the hash was not found.");
 
         const bitmap = await createImageBitmap(blob);
 
-        if (bitmap === undefined)
-            throw new Error("Unable to decode data");
+        if (bitmap === undefined) throw new Error("Unable to decode data");
 
         this.#cacheMap.set(hash, {
             hash,
@@ -120,7 +118,7 @@ export class ImageCacheStore {
 
         if (cache === undefined) return;
 
-        const bitmap = cache.bitmap
+        const bitmap = cache.bitmap;
 
         bitmap.close();
         this.#cacheMap.delete(hash);

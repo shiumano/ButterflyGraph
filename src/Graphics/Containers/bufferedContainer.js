@@ -254,7 +254,7 @@ class BufferedContainerNode extends ContainerNode {
         // TODO: AABBだるいからあとでやる 休ませてくれ……
         // const transformRotation = Math.atan2(transform.b, transform.a);
 
-        if (scaleX == 0 || scaleY == 0) return;  // 描画するものは何もない
+        if (scaleX === 0 || scaleY === 0) return;  // 描画するものは何もない
         // FIXME: scaleXまたはscaleYが負の値だとバグる
         // TODO: 一旦逃げるが、左右or上下が反転したものが描画できるようにいつか直す
         if (scaleX < 0 || scaleY < 0) return;
@@ -296,15 +296,17 @@ class BufferedContainerNode extends ContainerNode {
         this.#buffer.width = width;
         this.#buffer.height = height;
         if (this.#redrawRainbow) {
-            this.#bufferCtx.fillStyle = `hsl(${performance.now() / 1000 % 1}turn 100% 50% / 0.5)`
+            this.#bufferCtx.fillStyle = `hsl(${performance.now() / 1000 % 1}turn 100% 50% / 0.5)`;
             this.#bufferCtx.fillRect(0, 0, width, height);
         }
 
-        if (drawOffsetX !== 0 || drawOffsetY !== 0)
+        if (drawOffsetX !== 0 || drawOffsetY !== 0) {
             this.#bufferCtx.translate(drawOffsetX, drawOffsetY);
+        }
 
-        if (scaleX !== 1 || scaleY !== 1)
+        if (scaleX !== 1 || scaleY !== 1) {
             this.#bufferCtx.scale(scaleX, scaleY);
+        }
 
         super.draw(this.#bufferCtx);
 
@@ -325,8 +327,8 @@ class BufferedContainerNode extends ContainerNode {
         if (this.#oldTrasnform === null
             || this.#bitmap === null
             || this.#supersize && (
-                this.#bufferWidth != canvasWidth
-                || this.#bufferHeight != canvasHeight)
+                this.#bufferWidth !== canvasWidth
+                || this.#bufferHeight !== canvasHeight)
             || this.#follow === "all" && !matEquals(transform, this.#oldTrasnform)
             || this.#follow === "scale" && !scaleEquals(transform, this.#oldScaleX, this.#oldScaleY)
         ) {
@@ -335,8 +337,9 @@ class BufferedContainerNode extends ContainerNode {
 
         if (this.#bitmap === null) return;
 
-        if (this.#drawScaleX !== 1 || this.#drawScaleY !== 1)
+        if (this.#drawScaleX !== 1 || this.#drawScaleY !== 1) {
             ctx.scale(this.#drawScaleX, this.#drawScaleY);
+        }
 
         ctx.imageSmoothingEnabled = this.#incompletePosition;
         ctx.drawImage(

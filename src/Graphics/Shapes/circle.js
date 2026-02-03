@@ -92,7 +92,7 @@ class CircleNode extends DrawNode {
         if (oldNode instanceof CircleNode
             && oldNode.options.radius === options.radius
         ) {
-            this.#path = oldNode.#path
+            this.#path = oldNode.#path;
         } else {
             const radius = options.radius;
             const path = new Path2D();

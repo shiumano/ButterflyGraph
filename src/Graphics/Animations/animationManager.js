@@ -9,7 +9,7 @@ import { EaseAnimation, Easing } from "./easeAnimation.js";
  */
 export class AnimationManager {
     /** @type {AnimationBase[]} */
-    #animations = []
+    #animations = [];
     startValue = 0;  // TODO: あとでちゃんとget/setにして最初のｱﾆﾒを書き換えるようにする
     /** @type {AnimationBase?} */
     #firstAnimation = null;
@@ -36,8 +36,9 @@ export class AnimationManager {
      * @param {AnimationBase} animation
      */
     addAnimation(animation) {
-        if (this.#firstAnimation === null)
+        if (this.#firstAnimation === null) {
             this.#firstAnimation = animation;
+        }
 
         const lastEndValue = this.#animations[this.#animations.length - 1]?.endValue;
         if (lastEndValue !== undefined) {
@@ -59,8 +60,7 @@ export class AnimationManager {
      * @param {number} time
      */
     jump(time) {
-        if (time < 0)
-            throw new Error("time must be >= 0");
+        if (time < 0) throw new Error("time must be >= 0");
 
         let delayTime = time - this.#duration;
         if (delayTime < 0) {
@@ -98,14 +98,14 @@ export class AnimationManager {
      * @param {number} duration
      */
     delay(duration) {
-        return this.addAnimation(new EaseAnimation(this.#lastValue, duration, Easing.none))
+        return this.addAnimation(new EaseAnimation(this.#lastValue, duration, Easing.none));
     }
 
     /**
      * @param {number} value
      */
     set(value) {
-        return this.addAnimation(new EaseAnimation(value, 0, Easing.none))
+        return this.addAnimation(new EaseAnimation(value, 0, Easing.none));
     }
 
     /**

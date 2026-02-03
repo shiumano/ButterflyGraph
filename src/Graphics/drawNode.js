@@ -1,4 +1,4 @@
-import { GradientBuilder } from "./Gradients/gradient.js"
+import { GradientBuilder } from "./Gradients/gradient.js";
 
 /**
  * @import { Vector2 } from "./vector2"
@@ -60,8 +60,9 @@ export class DrawNode {
      * @param {DrawNode<T>?} oldNode
      */
     constructor(options, oldNode = null) {
-        if (this.constructor === DrawNode)
+        if (this.constructor === DrawNode) {
             console.warn("Constructing abstract class!");
+        }
 
         this.#options = Object.freeze(options);
 
@@ -78,15 +79,19 @@ export class DrawNode {
         this.#zIndex = options.zIndex;
 
         // type判定は先にやっておく、drawではnullチェックのみとする
-        if (options.fillStyle instanceof GradientBuilder)
+        if (options.fillStyle instanceof GradientBuilder) {
             this.#fillGradient = options.fillStyle;
-        else
+        }
+        else {
             this.#fillStyle = options.fillStyle;
+        }
 
-        if (options.strokeStyle instanceof GradientBuilder)
+        if (options.strokeStyle instanceof GradientBuilder) {
             this.#strokeGradient = options.strokeStyle;
-        else
+        }
+        else {
             this.#strokeStyle = options.strokeStyle;
+        }
 
         this.#visible = options.visible;
 
@@ -109,10 +114,12 @@ export class DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     _setFillStyle(ctx) {
-        if (this.#fillStyle !== undefined)
+        if (this.#fillStyle !== undefined) {
             ctx.fillStyle = this.#fillStyle;
-        else if (this.#fillGradient !== undefined)
+        }
+        else if (this.#fillGradient !== undefined) {
             ctx.fillStyle = this.#fillGradient.getGradient(ctx);
+        }
     }
 
     /**
@@ -120,10 +127,12 @@ export class DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     _setStrokeStyle(ctx) {
-        if (this.#strokeStyle !== undefined)
+        if (this.#strokeStyle !== undefined) {
             ctx.strokeStyle = this.#strokeStyle;
-        else if (this.#strokeGradient !== undefined)
+        }
+        else if (this.#strokeGradient !== undefined) {
             ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
+        }
     }
 
     /**
@@ -137,7 +146,7 @@ export class DrawNode {
         //     : しかしTSはthis.constructorをコンストラクタではない通常の関数として解釈する
         // 全てのカルマをここで背負う
         // @ts-expect-error
-        return new this.constructor({...this.options, ...options}, this)
+        return new this.constructor({...this.options, ...options}, this);
     }
 
     /**
