@@ -1,6 +1,6 @@
 import { Rectangle } from "../../Graphics/Shapes/rectangle.js";
 import { TestScene } from "./testScene.js";
-import { Anchor } from "../../Graphics/anchor.js";
+import { Anchor, allAnchors } from "../../Graphics/anchor.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
 /**
@@ -27,15 +27,8 @@ export class RectangleTestScene extends TestScene {
         this.addBindSlider("Height", 0, 500, rectangle, "height", direct);
         this.addBindSlider("X scale", 0, 10, rectangle, "scaleX", direct);
         this.addBindSlider("Y scale", 0, 10, rectangle, "scaleY", direct);
-        this.addSelector("Anchor", Object.keys(Anchor), "topLeft", value => {
-            for (const [key, anchor] of Object.entries(Anchor)) {
-                if (key === value) {
-                    rectangle.anchor = anchor;
-                    return;
-                }
-            }
-        });
-        this.addSelector("Origin", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => rectangle.anchor = Anchor[value]);
+        this.addSelector("Anchor", allAnchors, "topLeft", value => rectangle.anchor = Anchor[value]);
+        this.addSelector("Origin", allAnchors, "topLeft", value => rectangle.origin = Anchor[value]);
         this.addBindSlider("Alpha", 0, 1, rectangle, "alpha", direct);
         this.addTextInput("Fill color", "white", value => rectangle.fillStyle = value);
         this.addBindToggle("Visible", rectangle, "visible", value => value);

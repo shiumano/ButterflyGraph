@@ -1,5 +1,5 @@
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
-import { Anchor } from "../../Graphics/anchor.js";
+import { Anchor, allAnchors } from "../../Graphics/anchor.js";
 import { ImageObject } from "../../Graphics/Objects/imageObject.js";
 import { TestScene } from "./testScene.js";
 
@@ -78,7 +78,7 @@ export class ImageObjectTestScene extends TestScene {
         this.addBindToggle("Logo image smoothing", imageObj, "imageSmoothing", value => value);
 
         this.addBindSlider("Animation fps", 0, 30, animImageObj, "fps", direct);
-        this.addSelector("Animation image align", ["topLeft", "top", "left", "centre", "right", "bottom"], "topLeft", value => animImageObj.imageAlign = Anchor[value]);
+        this.addSelector("Animation image align", allAnchors, "topLeft", value => animImageObj.imageAlign = Anchor[value]);
 
         this.addChild(imageObj, animImageObj);
 
