@@ -12,5 +12,5 @@
     "files.insertFinalNewline": true,
     "eslint.validate": [
         "javascript"
-    ],
+    ]
 }
