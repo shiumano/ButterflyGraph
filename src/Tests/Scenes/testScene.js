@@ -254,7 +254,11 @@ export class TestScene {
         const t = Math.max(0, now - this.startTime);
 
         const snapshot = this.root.getSnapshot(t);
-        this.renderer.render(snapshot);
+
+        if (this.root.contentChanged) {
+            this.renderer.render(snapshot);
+            this.root.contentChanged = false;
+        }
     }
 
     destroy() {
