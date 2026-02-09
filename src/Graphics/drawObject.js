@@ -27,7 +27,6 @@ import { AnimationManager } from "./Animations/animationManager.js";
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
  * @typedef {"transform" | "object"} RecreateReason
- * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
  */
 
 /**
@@ -47,7 +46,21 @@ import { AnimationManager } from "./Animations/animationManager.js";
  */
 
 /**
+ * @typedef {{
+ *   anchor: Readonly<Vector2>
+ *   parent: IDrawObject | null
+ *   timed: boolean
+ *   animated: boolean
+ *   requestRecreate: (reason: RecreateReason) => void
+ *   calculateAnimations: (t: number) => void
+ *   getSnapshot: (t: number) => GenericDrawNode
+ *   perfectlyOptimized: boolean
+ * }} IDrawObject
+ */
+
+/**
  * @template {GenericDrawNode} T
+ * @implements {IDrawObject}
  */
 export class DrawObject {
     #x;

@@ -3,9 +3,9 @@ import { DrawObject } from "../drawObject.js";
 
 /**
  * @import { DrawNodeOptions, GenericDrawNode } from "@core/Graphics/drawNode.js"
- * @import { DrawObjectOptions, RecreateReason, GenericDrawObject } from "@core/Graphics/drawObject.js"
+ * @import { DrawObjectOptions, RecreateReason, IDrawObject } from "@core/Graphics/drawObject.js"
  * @typedef {DrawObjectOptions & {
- *   children?: readonly GenericDrawObject[]
+ *   children?: readonly IDrawObject[]
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
@@ -126,7 +126,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {...GenericDrawObject} children
+     * @param {...IDrawObject} children
      */
     addChild(...children) {
         for (let i = 0; i < children.length; i++) {
@@ -148,7 +148,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {GenericDrawObject} child
+     * @param {IDrawObject} child
      */
     removeChild(child) {
         const index = this.#children.indexOf(child);
