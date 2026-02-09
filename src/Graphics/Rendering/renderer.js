@@ -1,5 +1,5 @@
 /**
- * @import { GenericDrawNode } from "@core/Graphics/drawNode.js"
+ * @import { GenericIDrawNode } from "@core/Graphics/drawNode.js"
  */
 
 const performance = window.performance;  // おまじないすぎる window.performanceはgetter
@@ -43,7 +43,7 @@ export class Renderer {
     }
 
     /**
-     * @param {GenericDrawNode} drawRoot
+     * @param {GenericIDrawNode} drawRoot
      */
     render(drawRoot) {
         if (this.perfMeasure) this.renderTime -= performance.now();

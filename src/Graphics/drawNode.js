@@ -21,7 +21,7 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  *   visible: boolean
  *   showBounds?: boolean
  * }} DrawNodeOptions
- * @typedef {DrawNode<DrawNodeOptions>} GenericDrawNode
+ * @typedef {IDrawNode<DrawNodeOptions>} GenericIDrawNode
  */
 
 /**
@@ -29,11 +29,21 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  * @typedef {T extends DrawNode<infer U> ? U : never} NodeOptions
  */
 
+/**
+ * @template {DrawNodeOptions} T
+ * @typedef {{
+ *   zIndex: number
+ *   options: T
+ *   render: (ctx: CanvasRenderingContext2D) => void
+ * }} IDrawNode
+ */
+
 // しょうがない: ……そろそろCanvasRenderingContext2Dの再実装になってきたね でも互換レイヤーだから仕方ない
 /**
  * x, yを起点として、オブジェクトを描画するためのクラス。
  * イミュータブルとし、変更があった場合は再作成する。
  * @template {DrawNodeOptions} T
+ * @implements {IDrawNode<T>}
  */
 export class DrawNode {
     #options;

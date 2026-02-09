@@ -5,7 +5,7 @@ import { AnimationManager } from "./Animations/animationManager.js";
 
 /**
  * @import { Vector2 } from "./vector2.js";
- * @import { DrawNodeOptions, GenericDrawNode, NodeOptions } from "./drawNode.js"
+ * @import { DrawNodeOptions, GenericIDrawNode, NodeOptions } from "./drawNode.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -30,7 +30,7 @@ import { AnimationManager } from "./Animations/animationManager.js";
  */
 
 /**
- * @template {GenericDrawNode} T
+ * @template {GenericIDrawNode} T
  * @typedef {{
  *   t: number | undefined
  *   node: T
@@ -53,13 +53,13 @@ import { AnimationManager } from "./Animations/animationManager.js";
  *   animated: boolean
  *   requestRecreate: (reason: RecreateReason) => void
  *   calculateAnimations: (t: number) => void
- *   getSnapshot: (t: number) => GenericDrawNode
+ *   getSnapshot: (t: number) => GenericIDrawNode
  *   perfectlyOptimized: boolean
  * }} IDrawObject
  */
 
 /**
- * @template {GenericDrawNode} T
+ * @template {GenericIDrawNode} T
  * @implements {IDrawObject}
  */
 export class DrawObject {
@@ -374,7 +374,7 @@ export class DrawObject {
 
     /**
      * 子オブジェクトのオプションの計算
-     * @template {GenericDrawNode} N
+     * @template {GenericIDrawNode} N
      * @param {DrawObject<N>} child
      * @param {number} t
      * @returns {NodeOptions<N>}
