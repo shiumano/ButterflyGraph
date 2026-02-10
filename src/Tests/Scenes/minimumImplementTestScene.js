@@ -59,7 +59,10 @@ class MyObj {
      * @param {CanvasRenderingContext2D} ctx
      */
     render(ctx) {
+        ctx.save();
         ctx.fillStyle = this.color;
         ctx.fillRect(0, 0, this.width, this.height);
+        ctx.restore();
+        // 面倒でしょう？君もDrawNode<T>を継承しないかい？
     }
 }
