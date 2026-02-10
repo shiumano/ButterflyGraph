@@ -308,11 +308,9 @@ export class ContainerNode extends DrawNode {
  * @param {IDrawObject} obj
  */
 function isPerfectlyOptimized(obj) {
-    if (
-        "perfectlyOptimized" in obj &&
-        typeof obj.perfectlyOptimized === "boolean"
-    ) {
-        return obj.perfectlyOptimized;
+    if ("perfectlyOptimized" in obj) {
+        const value = obj.perfectlyOptimized;
+        return typeof value === "boolean" ? value : false;
     } else {
         return false;
     }
