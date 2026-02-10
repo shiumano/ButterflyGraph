@@ -21,7 +21,7 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  *   visible: boolean
  *   showBounds?: boolean
  * }} DrawNodeOptions
- * @typedef {IDrawNode<DrawNodeOptions>} GenericIDrawNode
+ * @typedef {DrawNode<DrawNodeOptions>} GenericDrawNode
  */
 
 /**
@@ -30,10 +30,8 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  */
 
 /**
- * @template {DrawNodeOptions} T
  * @typedef {{
  *   zIndex: number
- *   options: T
  *   render: (ctx: CanvasRenderingContext2D) => void
  * }} IDrawNode
  */
@@ -43,7 +41,7 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  * x, yを起点として、オブジェクトを描画するためのクラス。
  * イミュータブルとし、変更があった場合は再作成する。
  * @template {DrawNodeOptions} T
- * @implements {IDrawNode<T>}
+ * @implements {IDrawNode}
  */
 export class DrawNode {
     #options;
