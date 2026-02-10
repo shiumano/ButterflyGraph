@@ -48,8 +48,27 @@ class MyObj {
     height = 200;
     color = "yellow";
 
-    // お前ら本当に必要なのか？？？
+    // お前本当に必要なのか？？？
     requestRecreate() {}
+
+    // calculateAnimationsがDrawObject単体で完結できないせいで
+    // Containerから呼び出しちゃってる
+    //
+    // Container.calculateAnimations(t) {
+    //     super.calculateAnimations(t);
+    //
+    //     if (this.#childrenAnimated) {
+    //         const childObjects = this.getAllChildren();
+    //         if (childObjects.length === 1) {
+    //             childObjects[0].calculateAnimations(t);
+    //         } else {
+    //             for (let i = 0; i < childObjects.length; i++) {
+    //                 const child = childObjects[i];
+    //                 if (child.animated) child.calculateAnimations(t);
+    //             }
+    //         }
+    //     }
+    // }
     calculateAnimations() {}
 
     // スーパー雑実装
