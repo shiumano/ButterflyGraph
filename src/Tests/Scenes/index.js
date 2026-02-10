@@ -4,6 +4,7 @@ import { CircleTestScene } from "./circleTestScene.js";
 import { ContainerTestScene } from "./containerTestScene.js";
 import { CustomObjectTestScene } from "./customObjectTestScene.js";
 import { ImageObjectTestScene } from "./imageObjectTestScene.js";
+import { MinimumImplementTestScene } from "./minimumImplementTestScene.js";
 import { RectangleTestScene } from "./rectangleTestScene.js";
 import { TextObjectTestScene } from "./textObjectTestScene.js";
 
@@ -21,4 +22,5 @@ export const Scenes = [
     BufferedContainerTestScene,
     AnimationTestScene,
     CustomObjectTestScene,
+    MinimumImplementTestScene,
 ];
