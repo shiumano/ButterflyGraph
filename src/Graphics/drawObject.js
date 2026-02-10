@@ -54,7 +54,6 @@ import { AnimationManager } from "./Animations/animationManager.js";
  *   requestRecreate: (reason: RecreateReason) => void
  *   calculateAnimations: (t: number) => void
  *   getSnapshot: (t: number) => GenericIDrawNode
- *   perfectlyOptimized: boolean
  * }} IDrawObject
  */
 

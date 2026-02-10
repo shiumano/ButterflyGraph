@@ -46,7 +46,7 @@ export class Container extends DrawObject {
             child.parent = this;
             childrenTimed ||= child.timed;
             childrenAnimated ||= child.animated;
-            childrenPerfect &&= child.perfectlyOptimized;
+            childrenPerfect &&= isPerfectlyOptimized(child);
         }
         this.#childrenTimed = childrenTimed;
         this.#childrenAnimated = childrenAnimated;
@@ -112,7 +112,7 @@ export class Container extends DrawObject {
             const child = this.#children[i];
             childrenTimed ||= child.timed;
             childrenAnimated ||= child.animated;
-            childrenPerfect &&= child.perfectlyOptimized;
+            childrenPerfect &&= isPerfectlyOptimized(child);
         }
         this.#childrenTimed = childrenTimed;
         this.#childrenAnimated = childrenAnimated;
@@ -142,7 +142,7 @@ export class Container extends DrawObject {
             this.#children.push(child);
             this.#childrenTimed ||= child.timed;
             this.#childrenAnimated ||= child.animated;
-            this.#childrenPerfectlyOptimized &&= child.perfectlyOptimized;
+            this.#childrenPerfectlyOptimized &&= isPerfectlyOptimized(child);
         }
         this.requestRecreate("object");
     }
@@ -166,7 +166,7 @@ export class Container extends DrawObject {
                 newChildren.push(obj);
                 childrenTimed ||= obj.timed;
                 childrenAnimated ||= obj.animated;
-                childrenPerfect &&= obj.perfectlyOptimized;
+                childrenPerfect &&= isPerfectlyOptimized(obj);
             }
         }
 
@@ -301,5 +301,19 @@ export class ContainerNode extends DrawNode {
                 this.#children[i].render(ctx);
             }
         }
+    }
+}
+
+/**
+ * @param {IDrawObject} obj
+ */
+function isPerfectlyOptimized(obj) {
+    if (
+        "perfectlyOptimized" in obj &&
+        typeof obj.perfectlyOptimized === "boolean"
+    ) {
+        return obj.perfectlyOptimized;
+    } else {
+        return false;
     }
 }
