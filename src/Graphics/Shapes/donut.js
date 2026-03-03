@@ -109,7 +109,8 @@ class DonutNode extends DrawNode {
         this.#lineWidth = options.lineWidth;
         if (
             oldNode instanceof DonutNode &&
-            oldNode.options.lineRadius === options.lineRadius
+            oldNode.options.lineRadius === options.lineRadius &&
+            oldNode.options.lineWidth === options.lineWidth
         ) {
             this.#path = oldNode.#path;
         } else {
