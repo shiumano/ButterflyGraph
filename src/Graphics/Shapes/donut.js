@@ -114,7 +114,7 @@ class DonutNode extends DrawNode {
         ) {
             this.#path = oldNode.#path;
         } else {
-            const radius = options.lineRadius;
+            const radius = Math.max(0, options.lineRadius);
             const center = radius + options.lineWidth / 2;
             const path = new Path2D();
             path.arc(center, center, radius, 0, Math.PI * 2);
