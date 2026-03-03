@@ -3,6 +3,7 @@ import { BufferedContainerTestScene } from "./bufferedContainerTestScene.js";
 import { CircleTestScene } from "./circleTestScene.js";
 import { ContainerTestScene } from "./containerTestScene.js";
 import { CustomObjectTestScene } from "./customObjectTestScene.js";
+import { DonutTestScene } from "./donutTestScene.js";
 import { ImageObjectTestScene } from "./imageObjectTestScene.js";
 import { RectangleTestScene } from "./rectangleTestScene.js";
 import { TextObjectTestScene } from "./textObjectTestScene.js";
@@ -15,6 +16,7 @@ import { TextObjectTestScene } from "./textObjectTestScene.js";
 export const Scenes = [
     RectangleTestScene,
     CircleTestScene,
+    DonutTestScene,
     TextObjectTestScene,
     ImageObjectTestScene,
     ContainerTestScene,
