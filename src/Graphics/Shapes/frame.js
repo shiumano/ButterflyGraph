@@ -74,9 +74,10 @@ export class Frame extends DrawObject {
  * @extends {DrawNode<FrameNodeOptions>}
  */
 export class FrameNode extends DrawNode {
-    /** @type {Path2D} */
-    #path;
+    #lineRectWidth;
+    #lineRectHeight;
     #lineWidth;
+    #offset;
     /**
      * @param {FrameNodeOptions} options
      * @param {FrameNode?} oldNode
@@ -84,25 +85,10 @@ export class FrameNode extends DrawNode {
     constructor(options, oldNode = null) {
         super(options, oldNode);
 
+        this.#lineRectWidth = options.lineRectWidth;
+        this.#lineRectHeight = options.lineRectHeight;
         this.#lineWidth = options.lineWidth;
-
-        if (
-            oldNode instanceof FrameNode &&
-            oldNode.options.lineWidth === options.lineWidth &&
-            oldNode.options.lineRectWidth === options.lineRectWidth &&
-            oldNode.options.lineRectHeight === options.lineRectHeight
-        ) {
-            this.#path = oldNode.#path;
-        } else {
-            const path = new Path2D();
-            const offset = options.lineWidth / 2;
-            const w = options.lineRectWidth;
-            const h = options.lineRectHeight;
-
-            path.rect(offset, offset, w, h);
-
-            this.#path = path;
-        }
+        this.#offset = options.lineWidth / 2;
     }
 
     /**
@@ -111,6 +97,7 @@ export class FrameNode extends DrawNode {
     draw(ctx) {
         this._setStrokeStyle(ctx);
         ctx.lineWidth = this.#lineWidth;
-        ctx.stroke(this.#path);
+        ctx.lineJoin = "miter";
+        ctx.strokeRect(this.#offset, this.#offset, this.#lineRectWidth, this.#lineRectHeight);
     }
 }
