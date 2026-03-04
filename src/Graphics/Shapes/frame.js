@@ -50,12 +50,24 @@ export class Frame extends DrawObject {
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
+
+        let lineWidth = this.lineWidth;
+        let lineRectWidth = this.width - lineWidth;
+        let lineRectHeight = this.height - lineWidth;
+
+        // rectの幅or高さが0だと、miterが0の辺を消すので欲しいサイズにならない 0にはしないようにする
+        if (lineRectWidth <= 0 || lineRectHeight <= 0) {
+            lineWidth = Math.min(this.width, this.height) / 2 + 0.5;  // 若干重ねる どうせctx.lineWidthは0だと0.5として扱われるので
+            lineRectWidth = this.width - lineWidth;
+            lineRectHeight = this.height - lineWidth;
+        }
+
         return {
             ...options,
             strokeStyle: this.getStyle(this.strokeStyle),
-            lineRectWidth: this.width - this.lineWidth,
-            lineRectHeight: this.height - this.lineWidth,
-            lineWidth: this.lineWidth
+            lineRectWidth: lineRectWidth,
+            lineRectHeight: lineRectHeight,
+            lineWidth: lineWidth
         };
     }
 

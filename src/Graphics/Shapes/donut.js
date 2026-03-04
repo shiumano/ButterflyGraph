@@ -72,11 +72,20 @@ export class Donut extends DrawObject {
      */
     calculateOptions(t) {
         const options = super.calculateOptions(t);
+
+        let lineWidth = this.lineWidth;
+        let lineRadius = this.radius - (lineWidth / 2);
+
+        if (lineRadius <= lineWidth / 2) {
+            lineWidth = this.radius + 0.5;
+            lineRadius = this.radius - (lineWidth / 2);
+        }
+
         return {
             ...options,
             strokeStyle: this.getStyle(this.strokeStyle),
-            lineRadius: this.radius - (this.lineWidth / 2),
-            lineWidth: this.lineWidth,
+            lineRadius: lineRadius,
+            lineWidth: lineWidth,
         };
     }
 
