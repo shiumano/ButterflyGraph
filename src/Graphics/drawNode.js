@@ -98,9 +98,6 @@ export class DrawNode {
         this.#showBounds = options.showBounds ?? false;
     }
 
-    /**
-     * @type {T}
-     */
     get options() { return this.#options; }
 
     get width() { return this.#width; }
