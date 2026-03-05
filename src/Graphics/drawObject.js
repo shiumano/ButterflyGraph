@@ -251,7 +251,7 @@ export class DrawObject {
     set fillStyle(value) {
         if (this.#fillStyle === value) return;
 
-        if (this.#fillStyle instanceof Gradient) {
+        if (this.#fillStyle instanceof Gradient && this.#fillStyle !== this.#strokeStyle) {
             this.#fillStyle.unmountFrom(this);
         }
         if (value instanceof Gradient) {
@@ -266,7 +266,7 @@ export class DrawObject {
     set strokeStyle(value) {
         if (this.#strokeStyle === value) return;
 
-        if (this.#strokeStyle instanceof Gradient) {
+        if (this.#strokeStyle instanceof Gradient && this.#fillStyle !== this.#strokeStyle) {
             this.#strokeStyle.unmountFrom(this);
         }
         if (value instanceof Gradient) {
