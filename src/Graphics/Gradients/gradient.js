@@ -1,4 +1,5 @@
 /**
+ * @import { GenericDrawObject } from "@core/Graphics/drawObject.js";
  * @typedef {{ position: number, color: string }} ColorStop
  * @typedef {"stops" | "criteria"} GradientRecreateReason
  */
@@ -16,6 +17,9 @@ export class Gradient {
 
     /** @type {Readonly<Readonly<ColorStop[]>>?} */
     #frozenStops = null;
+
+    /** @type {Set<GenericDrawObject>} */
+    #mountedObjects = new Set();
 
     /**
      * @param {ColorStop[]} stops
@@ -51,6 +55,20 @@ export class Gradient {
     }
 
     /**
+     * @param {GenericDrawObject} object
+     */
+    mountTo(object) {
+        this.#mountedObjects.add(object);
+    }
+
+    /**
+     * @param {GenericDrawObject} object
+     */
+    unmountFrom(object) {
+        this.#mountedObjects.delete(object);
+    }
+
+    /**
      * @param {GradientRecreateReason} reason
      */
     requestRecreate(reason) {
@@ -58,6 +76,10 @@ export class Gradient {
 
         if (reason === "stops") {
             this.#stopsChanged = true;
+        }
+
+        for (const obj of this.#mountedObjects) {
+            obj.requestRecreate("object");
         }
     }
 
