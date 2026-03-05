@@ -116,6 +116,13 @@ export class DrawObject {
         this.#fillStyle = options.fillStyle ?? options.color ?? "#000";
         this.#strokeStyle = options.strokeStyle ?? "#000";
 
+        if (this.#fillStyle instanceof Gradient) {
+            this.#fillStyle.mountTo(this);
+        }
+        if (this.#strokeStyle instanceof Gradient) {
+            this.#strokeStyle.mountTo(this);
+        }
+
         this.#updateOriginOffset();
     }
 
@@ -244,6 +251,13 @@ export class DrawObject {
     set fillStyle(value) {
         if (this.#fillStyle === value) return;
 
+        if (this.#fillStyle instanceof Gradient) {
+            this.#fillStyle.unmountFrom(this);
+        }
+        if (value instanceof Gradient) {
+            value.mountTo(this);
+        }
+
         this.#fillStyle = value;
         this.requestRecreate("object");
     }
@@ -251,6 +265,13 @@ export class DrawObject {
     get strokeStyle() { return this.#strokeStyle; }
     set strokeStyle(value) {
         if (this.#strokeStyle === value) return;
+
+        if (this.#strokeStyle instanceof Gradient) {
+            this.#strokeStyle.unmountFrom(this);
+        }
+        if (value instanceof Gradient) {
+            value.mountTo(this);
+        }
 
         this.#strokeStyle = value;
         this.requestRecreate("object");
