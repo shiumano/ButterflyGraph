@@ -87,8 +87,6 @@ export class GradientTestScene extends TestScene {
             conicGradient.setAngle(conicGradAngle.angle);
         });
 
-        this.root.addChild(linearGradRect);
-        this.root.addChild(radialGradCircle);
-        this.root.addChild(conicGradCircle);
+        this.root.addChild(linearGradRect, radialGradCircle, conicGradCircle);
     }
 }
