@@ -4,6 +4,7 @@ import { RadialGradient } from "../../Graphics/Gradients/radialGradient.js";
 import { LinearGradient } from "../../Graphics/Gradients/linearGradient.js";
 import { ConicGradient } from "../../Graphics/Gradients/conicGradient.js";
 import { Rectangle } from "../../Graphics/Shapes/rectangle.js";
+import { degreeToRadian } from "../../Utils/unitConversion.js";
 
 /**
  * @import { TestSceneOptions } from "./testScene.js";
@@ -57,21 +58,21 @@ export class GradientTestScene extends TestScene {
         });
 
         const linearGradStartPos = { x: 100, y: 100 };
-        this.addSlider("Linear gradient start X position", 0, 400, 100, (value) => {
+        this.addSlider("Linear gradient start X position", 0, 200, 0, (value) => {
             linearGradStartPos.x = value;
             linearGradient.setStart(linearGradStartPos.x, linearGradStartPos.y);
         });
-        this.addSlider("Linear gradient start Y position", 0, 400, 100, (value) => {
+        this.addSlider("Linear gradient start Y position", 0, 200, 0, (value) => {
             linearGradStartPos.y = value;
             linearGradient.setStart(linearGradStartPos.x, linearGradStartPos.y);
         });
 
         const radialGradInnerPos = { x: 100, y: 100, r: 0 };
-        this.addSlider("Radial gradient inner circle X position", 0, 400, 100, (value) => {
+        this.addSlider("Radial gradient inner circle X position", 0, 200, 100, (value) => {
             radialGradInnerPos.x = value;
             radialGradient.setInner(radialGradInnerPos.x, radialGradInnerPos.y, radialGradInnerPos.r);
         });
-        this.addSlider("Radial gradient inner circle Y position", 0, 400, 100, (value) => {
+        this.addSlider("Radial gradient inner circle Y position", 0, 200, 100, (value) => {
             radialGradInnerPos.y = value;
             radialGradient.setInner(radialGradInnerPos.x, radialGradInnerPos.y, radialGradInnerPos.r);
         });
@@ -82,7 +83,7 @@ export class GradientTestScene extends TestScene {
 
         const conicGradAngle = { angle: 0 };
         this.addSlider("Conic gradient angle", 0, 360, 0, (value) => {
-            conicGradAngle.angle = value;
+            conicGradAngle.angle = degreeToRadian(value);
             conicGradient.setAngle(conicGradAngle.angle);
         });
 
