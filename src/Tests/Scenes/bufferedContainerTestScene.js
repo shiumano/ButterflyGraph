@@ -6,17 +6,8 @@ import { Anchor } from "../../Graphics/anchor.js";
 import { BufferedContainer } from "../../Graphics/Containers/bufferedContainer.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
-/**
- * @import { TestSceneOptions } from "./testScene.js"
- */
-
 export class BufferedContainerTestScene extends TestScene {
-    /**
-     * @param {TestSceneOptions} options
-     */
-    constructor(options) {
-        super(options);
-
+    async load() {
         const rect1 = new Rectangle({
             width: 100, height: 200,
             color: "red"

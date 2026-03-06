@@ -3,10 +3,6 @@ import { Anchor, allAnchors } from "../../Graphics/anchor.js";
 import { ImageObject } from "../../Graphics/Objects/imageObject.js";
 import { TestScene } from "./testScene.js";
 
-/**
- * @import { TestSceneOptions } from "./testScene.js"
- */
-
 const shidev_logo_data_base64 = `data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAGAAAAAgCAMAAADaHo1mAAAAElBMVEX/5eWqqqraAEkzMzONAMQW
 /wDGjE4cAAAAuUlEQVR42tWW3Q7DIAiFq8j7PzB23ZCt4rJ17uKQ9iS9IEHx4yc0J7DyAtYjwAZU
@@ -51,14 +47,7 @@ OI+7xwe9y+9k4JOCcwO3AO700tC3GxkZGRnZ25lXRInDfshO2J8Tgv3VwRhjjDHGGGOMse/7ADrp
 cp0Mx4CbAAAAAElFTkSuQmCC`;
 
 export class ImageObjectTestScene extends TestScene {
-    imageObj;
-    animImageObj;
-    /**
-     * @param {TestSceneOptions} options
-     */
-    constructor(options) {
-        super(options);
-
+    async load() {
         const imageObj = new ImageObject({
             y: -200,
             anchor: Anchor.centre,
@@ -82,11 +71,6 @@ export class ImageObjectTestScene extends TestScene {
 
         this.root.addChild(imageObj, animImageObj);
 
-        this.imageObj = imageObj;
-        this.animImageObj = animImageObj;
-    }
-
-    async load() {
         const shidevLogoBlob = await fetch(shidev_logo_data_base64).then(resp => resp.blob());
 
         const animFrames = [
@@ -97,7 +81,7 @@ export class ImageObjectTestScene extends TestScene {
             await fetch(frame_4_data_base64).then(resp => resp.blob())
         ];
 
-        await this.imageObj.load([shidevLogoBlob]);
-        await this.animImageObj.load(animFrames);
+        await imageObj.load([shidevLogoBlob]);
+        await animImageObj.load(animFrames);
     }
 }

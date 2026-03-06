@@ -6,18 +6,8 @@ import { ConicGradient } from "../../Graphics/Gradients/conicGradient.js";
 import { Rectangle } from "../../Graphics/Shapes/rectangle.js";
 import { degreeToRadian } from "../../Utils/unitConversion.js";
 
-/**
- * @import { TestSceneOptions } from "./testScene.js";
- */
-
 export class GradientTestScene extends TestScene {
-    /**
-     *
-     * @param {TestSceneOptions} options
-     */
-    constructor(options) {
-        super(options);
-
+    async load() {
         const linearGradient = new LinearGradient(0, 0, 200, 200, [
             { position: 0, color: "yellow" },
             { position: 1, color: "blue" }

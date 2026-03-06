@@ -2,17 +2,8 @@ import { direct } from "../../Utils/unitConversion.js";
 import { Donut } from "../../Graphics/Shapes/donut.js";
 import { TestScene } from "./testScene.js";
 
-/**
- * @import { TestSceneOptions } from "./testScene.js"
- */
-
 export class DonutTestScene extends TestScene {
-    /**
-     * @param {TestSceneOptions} options
-     */
-    constructor(options) {
-        super(options);
-
+    async load() {
         const donut = new Donut({
             x: 100,
             y: 100,
