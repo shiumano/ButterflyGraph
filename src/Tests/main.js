@@ -7,6 +7,8 @@ import { Scenes } from "./Scenes/index.js";
 const testArea = document.getElementById("test-area");
 const controlArea = document.getElementById("control-area");
 const testsList = document.getElementById("tests-list");
+const speedLabel = document.getElementById("speed-label");
+const speedSlider = document.getElementById("speed-slider");
 const fpsDisplay = document.getElementById("fps-display");
 const dpiDisplay = document.getElementById("dpi-display");
 const colorSelector = document.getElementById("background-color-picker");
@@ -15,17 +17,22 @@ if (
     testArea === null ||
     controlArea === null ||
     testsList === null ||
+    speedLabel === null ||
+    !(speedSlider instanceof HTMLInputElement) ||
     fpsDisplay === null ||
     dpiDisplay === null ||
-    colorSelector === null
+    !(colorSelector instanceof HTMLInputElement)
 ) {
     throw new Error("Missing required HTML elements");
 }
 
 colorSelector.addEventListener("change", (e) => {
-    if (!(e.target instanceof HTMLInputElement)) return;
+    testArea.style.backgroundColor = colorSelector.value;
+});
 
-    testArea.style.backgroundColor = e.target.value;
+speedSlider.addEventListener("input", (e) => {
+    const value = parseFloat(speedSlider.value);
+    speedLabel.textContent = `Speed: ${value.toFixed(1)}x`;
 });
 
 /** @type {TestScene?} */
@@ -40,7 +47,7 @@ Scenes.forEach(async (SceneClass) => {
 
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
-        const scene = new SceneClass({ testArea, controlArea, fpsDisplay, dpiDisplay, startTime: Infinity });
+        const scene = new SceneClass({ testArea, controlArea, speedSlider, fpsDisplay, dpiDisplay, startTime: Infinity });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {
@@ -64,7 +71,7 @@ window.addEventListener("hashchange", async () => {
     if (SceneClass !== undefined) {
         currentScene?.destroy();
 
-        const scene = new SceneClass({ testArea, controlArea, fpsDisplay, dpiDisplay, startTime: Infinity });
+        const scene = new SceneClass({ testArea, controlArea, speedSlider, fpsDisplay, dpiDisplay, startTime: Infinity });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {

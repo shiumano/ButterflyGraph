@@ -6,6 +6,7 @@ import { Container } from "../../Graphics/Containers/container.js";
  * @typedef {{
  *   testArea: HTMLElement
  *   controlArea: HTMLElement
+ *   speedSlider: HTMLInputElement
  *   fpsDisplay: HTMLElement
  *   dpiDisplay: HTMLElement
  *   startTime: number
@@ -19,6 +20,10 @@ export class TestScene {
     renderer;
     observer;
     startTime;
+
+    speed;
+    current = 0;  // あくまでオフセット計算用 これをdelta加算していくわけではない！
+    timeOffset = 0;
 
     wrapper;
     canvas;
@@ -36,7 +41,7 @@ export class TestScene {
      * @param {TestSceneOptions} options
      */
     constructor(options) {
-        const { testArea, controlArea, fpsDisplay, dpiDisplay, startTime } = options;
+        const { testArea, controlArea, speedSlider, fpsDisplay, dpiDisplay, startTime } = options;
 
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
@@ -52,6 +57,22 @@ export class TestScene {
 
         const renderer = new HTMLCanvasRenderer(canvas, false);
         renderer.perfMeasure = true;
+
+        const speed = parseFloat(speedSlider.value);
+        speedSlider.addEventListener("input", (ev) => {
+            const now = ev.timeStamp;
+            // 途中で速度を変えても自然に見えるように、開始時間をずらす
+            const elapsed = now - this.startTime - this.timeOffset;
+            const current = this.speed !== 0 ? elapsed * this.speed : this.current;
+            const newSpeed = parseFloat(speedSlider.value);
+            this.speed = newSpeed;
+            this.current = current;
+            if (newSpeed === 0) {
+                this.timeOffset = now - this.startTime;
+                return;
+            }
+            this.timeOffset = now - this.startTime - current / newSpeed;
+        });
 
         const dpr = window.devicePixelRatio;
 
@@ -84,6 +105,7 @@ export class TestScene {
         this.controlArea = controlArea;
         this.dpiDisplay = dpiDisplay;
         this.startTime = startTime;
+        this.speed = speed;
         this.wrapper = wrapper;
         this.canvas = canvas;
         this.renderer = renderer;
@@ -306,7 +328,8 @@ export class TestScene {
 
         this.animationFrameCount++;
 
-        const t = Math.max(0, now - this.startTime);
+        const t = this.speed !== 0 ?
+            Math.max(0, (now - this.startTime - this.timeOffset) * this.speed) : this.current;
 
         const snapshot = this.root.getSnapshot(t);
 
