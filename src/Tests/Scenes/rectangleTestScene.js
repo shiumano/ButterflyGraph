@@ -3,17 +3,8 @@ import { TestScene } from "./testScene.js";
 import { Anchor, allAnchors } from "../../Graphics/anchor.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
-/**
- * @import { TestSceneOptions } from "./testScene.js"
- */
-
 export class RectangleTestScene extends TestScene {
-    /**
-     * @param {TestSceneOptions} options
-     */
-    constructor(options) {
-        super(options);
-
+    async load() {
         const rectangle = new Rectangle({
             width: 100,
             height: 100,

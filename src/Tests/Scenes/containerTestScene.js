@@ -5,17 +5,8 @@ import { Rectangle } from "../../Graphics/Shapes/rectangle.js";
 import { Anchor, allAnchors } from "../../Graphics/anchor.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
-/**
- * @import { TestSceneOptions } from "./testScene.js"
- */
-
 export class ContainerTestScene extends TestScene {
-    /**
-     * @param {TestSceneOptions} options
-     */
-    constructor(options) {
-        super(options);
-
+    async load() {
         const testContainer = new Container({
             x: 200, y: 200,
             width: 500, height: 500,

@@ -3,17 +3,8 @@ import { Anchor } from "../../Graphics/anchor.js";
 import { TextObject } from "../../Graphics/Objects/textObject.js";
 import { TestScene } from "./testScene.js";
 
-/**
- * @import { TestSceneOptions } from "./testScene.js"
- */
-
 export class TextObjectTestScene extends TestScene {
-    /**
-     * @param {TestSceneOptions} options
-     */
-    constructor(options) {
-        super(options);
-
+    async load() {
         const textObj = new TextObject({
             anchor: Anchor.centre,
             origin: Anchor.centre,

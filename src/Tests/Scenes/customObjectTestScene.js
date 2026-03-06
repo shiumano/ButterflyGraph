@@ -5,7 +5,6 @@ import { Anchor } from "../../Graphics/anchor.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
 /**
- * @import { TestSceneOptions } from "./testScene.js"
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
  * @typedef { DrawObjectOptions & {
@@ -94,40 +93,40 @@ class ButterflyNode extends DrawNode {
             const hs = this.height / 110;  // height scale
 
             const nodesPath = new Path2D();
-            nodesPath.arc( 42 * ws,  52 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo( 60 * ws, 58 * hs);
-            nodesPath.arc( 60 * ws, 58 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo( 40 * ws,  66 * hs);
-            nodesPath.arc( 40 * ws,  66 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(118 * ws,  52 * hs);
-            nodesPath.arc(118 * ws,  52 * hs, 4, 0, Math.PI * 2);
+            nodesPath.arc(42 * ws, 52 * hs, 4, 0, Math.PI * 2);
+            nodesPath.moveTo(60 * ws, 58 * hs);
+            nodesPath.arc(60 * ws, 58 * hs, 4, 0, Math.PI * 2);
+            nodesPath.moveTo(40 * ws, 66 * hs);
+            nodesPath.arc(40 * ws, 66 * hs, 4, 0, Math.PI * 2);
+            nodesPath.moveTo(118 * ws, 52 * hs);
+            nodesPath.arc(118 * ws, 52 * hs, 4, 0, Math.PI * 2);
             nodesPath.moveTo(100 * ws, 58 * hs);
             nodesPath.arc(100 * ws, 58 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(120 * ws,  66 * hs);
-            nodesPath.arc(120 * ws,  66 * hs, 4, 0, Math.PI * 2);
+            nodesPath.moveTo(120 * ws, 66 * hs);
+            nodesPath.arc(120 * ws, 66 * hs, 4, 0, Math.PI * 2);
 
             const bodyPath = new Path2D();
             bodyPath.roundRect(78 * ws, 30 * hs, 4 * ws, 36 * hs, 2);
 
             const strokePath = new Path2D();
             strokePath.moveTo(98 * ws, 18 * hs);
-            strokePath.bezierCurveTo( 92 * ws,  15 * hs,  82 * ws,  20 * hs,  80 * ws,  30 * hs);
-            strokePath.bezierCurveTo( 78 * ws,  20 * hs,  68 * ws,  15 * hs,  62 * ws,  18 * hs);
+            strokePath.bezierCurveTo(92 * ws, 15 * hs, 82 * ws, 20 * hs, 80 * ws, 30 * hs);
+            strokePath.bezierCurveTo(78 * ws, 20 * hs, 68 * ws, 15 * hs, 62 * ws, 18 * hs);
             strokePath.moveTo(76 * ws, 70 * hs);
-            strokePath.bezierCurveTo( 68 * ws,  85 * hs,  53 * ws, 110 * hs,  30 * ws, 105 * hs);
-            strokePath.bezierCurveTo( 15 * ws, 100 * hs,  25 * ws,  80 * hs,  48 * ws,  70 * hs);
-            strokePath.bezierCurveTo( 20 * ws,  65 * hs,   0 * ws,  40 * hs,   5 * ws,  20 * hs);
-            strokePath.bezierCurveTo( 10 * ws,  -5 * hs,  40 * ws,   0 * hs,  70 * ws,  40 * hs);
+            strokePath.bezierCurveTo(68 * ws, 85 * hs, 53 * ws, 110 * hs, 30 * ws, 105 * hs);
+            strokePath.bezierCurveTo(15 * ws, 100 * hs, 25 * ws, 80 * hs, 48 * ws, 70 * hs);
+            strokePath.bezierCurveTo(20 * ws, 65 * hs, 0 * ws, 40 * hs, 5 * ws, 20 * hs);
+            strokePath.bezierCurveTo(10 * ws, -5 * hs, 40 * ws, 0 * hs, 70 * ws, 40 * hs);
             strokePath.closePath();
             strokePath.moveTo(84 * ws, 70 * hs);
-            strokePath.bezierCurveTo( 92 * ws,  85 * hs, 107 * ws, 110 * hs, 130 * ws, 105 * hs);
-            strokePath.bezierCurveTo(145 * ws, 100 * hs, 135 * ws,  80 * hs, 112 * ws,  70 * hs);
-            strokePath.bezierCurveTo(140 * ws,  65 * hs, 160 * ws,  40 * hs, 155 * ws,  20 * hs);
-            strokePath.bezierCurveTo(150 * ws,  -5 * hs, 120 * ws,   0 * hs,  90 * ws,  40 * hs);
+            strokePath.bezierCurveTo(92 * ws, 85 * hs, 107 * ws, 110 * hs, 130 * ws, 105 * hs);
+            strokePath.bezierCurveTo(145 * ws, 100 * hs, 135 * ws, 80 * hs, 112 * ws, 70 * hs);
+            strokePath.bezierCurveTo(140 * ws, 65 * hs, 160 * ws, 40 * hs, 155 * ws, 20 * hs);
+            strokePath.bezierCurveTo(150 * ws, -5 * hs, 120 * ws, 0 * hs, 90 * ws, 40 * hs);
             strokePath.closePath();
-            strokePath.moveTo( 42 * ws, 52 * hs);
-            strokePath.lineTo( 60 * ws, 58 * hs);
-            strokePath.lineTo( 40 * ws, 66 * hs);
+            strokePath.moveTo(42 * ws, 52 * hs);
+            strokePath.lineTo(60 * ws, 58 * hs);
+            strokePath.lineTo(40 * ws, 66 * hs);
             strokePath.moveTo(118 * ws, 52 * hs);
             strokePath.lineTo(100 * ws, 58 * hs);
             strokePath.lineTo(120 * ws, 66 * hs);
@@ -157,12 +156,7 @@ class ButterflyNode extends DrawNode {
 }
 
 export class CustomObjectTestScene extends TestScene {
-    /**
-     * @param {TestSceneOptions} options
-     */
-    constructor(options) {
-        super(options);
-
+    async load() {
         const obj = new Butterfly({
             anchor: Anchor.centre,
             origin: Anchor.centre,
