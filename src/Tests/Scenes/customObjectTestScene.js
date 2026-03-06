@@ -53,6 +53,9 @@ class Butterfly extends DrawObject {
         this.#dark = options.dark ?? true;
     }
 
+    get timed() { return false; }
+    set timed(_) { }
+
     get dark() { return this.#dark; }
     set dark(value) {
         if (this.#dark === value) return;
