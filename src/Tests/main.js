@@ -7,9 +7,16 @@ import { Scenes } from "./Scenes/index.js";
 const testArea = document.getElementById("test-area");
 const controlArea = document.getElementById("control-area");
 const testsList = document.getElementById("tests-list");
+const fpsDisplay = document.getElementById("fps-display");
 const colorSelector = document.getElementById("background-color-picker");
 
-if (testArea === null || controlArea === null || testsList === null || colorSelector === null) {
+if (
+    testArea === null ||
+    controlArea === null ||
+    testsList === null ||
+    fpsDisplay === null ||
+    colorSelector === null
+) {
     throw new Error("Missing required HTML elements");
 }
 
@@ -31,12 +38,12 @@ Scenes.forEach(async (SceneClass) => {
 
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
-        const scene = new SceneClass({ testArea, controlArea, startTime: Infinity });
+        const scene = new SceneClass({ testArea, controlArea, fpsDisplay, startTime: Infinity });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {
             scene.startTime = performance.now() + 500;
-    }
+        }
     }
 });
 
@@ -55,7 +62,7 @@ window.addEventListener("hashchange", async () => {
     if (SceneClass !== undefined) {
         currentScene?.destroy();
 
-        const scene = new SceneClass({ testArea, controlArea, startTime: Infinity });
+        const scene = new SceneClass({ testArea, controlArea, fpsDisplay, startTime: Infinity });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {

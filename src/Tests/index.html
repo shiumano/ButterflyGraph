@@ -51,6 +51,11 @@
             border-bottom: 2px solid grey;
         }
 
+        #fps-display {
+            font-family: 'MS UI Gothic', 'Courier New', monospace;
+            width: 100px;
+        }
+
         /* メインエリア */
         #main {
             display: flex;
@@ -86,6 +91,7 @@
             <!-- <input id="scale-slider" type="range" /> -->
             <!-- <input id="time-input" type="time" /> -->
             <!-- <input id="speed-slider" type="range" /> -->
+            <div id="fps-display">FPS: -- / --</div>
             <input id="background-color-picker" type="color" />
         </div>
 
@@ -97,7 +103,6 @@
             </div>
             <div id="test-area">
             </div>
-
         </div>
     </div>
     <script src="./main.js" type="module"></script>

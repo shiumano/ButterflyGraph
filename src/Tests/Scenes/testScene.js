@@ -6,6 +6,7 @@ import { Container } from "../../Graphics/Containers/container.js";
  * @typedef {{
  *   testArea: HTMLElement
  *   controlArea: HTMLElement
+ *   fpsDisplay: HTMLElement
  *   startTime: number
  * }} TestSceneOptions
  */
@@ -17,6 +18,9 @@ export class TestScene {
     observer;
     startTime;
 
+    fpsUpdateIntervalId;
+    animationFrameCount = 0;
+
     destroyed = false;
 
     root;
@@ -25,7 +29,7 @@ export class TestScene {
      * @param {TestSceneOptions} options
      */
     constructor(options) {
-        const { testArea, controlArea, startTime } = options;
+        const { testArea, controlArea, fpsDisplay, startTime } = options;
 
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
@@ -39,6 +43,8 @@ export class TestScene {
         testArea.appendChild(wrapper);
 
         const renderer = new HTMLCanvasRenderer(canvas, false);
+        renderer.perfMeasure = true;
+
         const root = new Container({
             width: renderer.width,
             height: renderer.height,
@@ -58,6 +64,18 @@ export class TestScene {
             }
         });
         observer.observe(wrapper);
+
+        this.fpsUpdateIntervalId = setInterval(() => {
+            if (this.destroyed) {
+                clearInterval(this.fpsUpdateIntervalId);
+                return;
+            }
+
+            const fps = renderer.frameCount;
+            fpsDisplay.textContent = `FPS: ${fps} / ${this.animationFrameCount}`;
+            renderer.frameCount = 0;
+            this.animationFrameCount = 0;
+        }, 1000);
 
         this.testArea = testArea;
         this.controlArea = controlArea;
@@ -250,6 +268,8 @@ export class TestScene {
      */
     loop(now) {
         if (this.destroyed) return;
+
+        this.animationFrameCount++;
 
         const t = Math.max(0, now - this.startTime);
 
