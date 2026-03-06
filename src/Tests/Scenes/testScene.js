@@ -158,6 +158,34 @@ export class TestScene {
     }
 
     /**
+     * @param {number} now - 現在時刻(ミリ秒)
+     */
+    loop(now) {
+        if (this.destroyed) return;
+
+        this.animationFrameCount++;
+
+        const t = this.toLocalTime(now);
+
+        const snapshot = this.root.getSnapshot(t);
+
+        if (this.root.contentChanged || this.forceRedraw) {
+            this.renderer.render(snapshot);
+            this.root.contentChanged = false;
+            this.forceRedraw = false;
+        }
+    }
+
+    destroy() {
+        this.destroyed = true;
+        this.root.clearChildren();
+        this.observer.disconnect();
+        this.testArea.innerHTML = "";
+        this.controlArea.innerHTML = "";
+        // simple is best?
+    }
+
+    /**
      * @param {string} label
      * @param {(ev: PointerEvent) => void} onClick
      */
@@ -331,34 +359,6 @@ export class TestScene {
         }
 
         this.addToggle(label, initialValue, (value) => target[property] = convert(value));
-    }
-
-    /**
-     * @param {number} now - 現在時刻(ミリ秒)
-     */
-    loop(now) {
-        if (this.destroyed) return;
-
-        this.animationFrameCount++;
-
-        const t = this.toLocalTime(now);
-
-        const snapshot = this.root.getSnapshot(t);
-
-        if (this.root.contentChanged || this.forceRedraw) {
-            this.renderer.render(snapshot);
-            this.root.contentChanged = false;
-            this.forceRedraw = false;
-        }
-    }
-
-    destroy() {
-        this.destroyed = true;
-        this.root.clearChildren();
-        this.observer.disconnect();
-        this.testArea.innerHTML = "";
-        this.controlArea.innerHTML = "";
-        // simple is best?
     }
 }
 
