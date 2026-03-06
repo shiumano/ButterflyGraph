@@ -4,6 +4,28 @@ import { TestScene } from "./testScene.js";
 import { Anchor } from "../../Graphics/anchor.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
+export class CustomObjectTestScene extends TestScene {
+    async load() {
+        const obj = new Butterfly({
+            anchor: Anchor.centre,
+            origin: Anchor.centre,
+            width: 220, height: 160,
+        });
+
+        this.addBindSlider("X position", -500, 500, obj, "x", direct);
+        this.addBindSlider("Y position", -500, 500, obj, "y", direct);
+        this.addBindSlider("Rotation", -360, 360, obj, "rotation", degreeToRadian);
+        this.addBindSlider("Width", 10, 500, obj, "width", direct);
+        this.addBindSlider("Height", 10, 500, obj, "height", direct);
+        this.addBindSlider("X scale", 0.1, 10, obj, "scaleX", direct);
+        this.addBindSlider("Y scale", 0.1, 10, obj, "scaleY", direct);
+        this.addBindToggle("Dark theme", obj, "dark", value => value);
+        this.addBindToggle("Show bounds", obj, "showBounds", value => value);
+
+        this.root.addChild(obj);
+    }
+}
+
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
@@ -30,6 +52,9 @@ class Butterfly extends DrawObject {
 
         this.#dark = options.dark ?? true;
     }
+
+    get timed() { return false; }
+    set timed(_) { }
 
     get dark() { return this.#dark; }
     set dark(value) {
@@ -152,27 +177,5 @@ class ButterflyNode extends DrawNode {
 
         this._setFillStyle(ctx);
         ctx.fill(this.#nodesPath);
-    }
-}
-
-export class CustomObjectTestScene extends TestScene {
-    async load() {
-        const obj = new Butterfly({
-            anchor: Anchor.centre,
-            origin: Anchor.centre,
-            width: 220, height: 160,
-        });
-
-        this.addBindSlider("X position", -500, 500, obj, "x", direct);
-        this.addBindSlider("Y position", -500, 500, obj, "y", direct);
-        this.addBindSlider("Rotation", -360, 360, obj, "rotation", degreeToRadian);
-        this.addBindSlider("Width", 10, 500, obj, "width", direct);
-        this.addBindSlider("Height", 10, 500, obj, "height", direct);
-        this.addBindSlider("X scale", 0.1, 10, obj, "scaleX", direct);
-        this.addBindSlider("Y scale", 0.1, 10, obj, "scaleY", direct);
-        this.addBindToggle("Dark theme", obj, "dark", value => value);
-        this.addBindToggle("Show bounds", obj, "showBounds", value => value);
-
-        this.root.addChild(obj);
     }
 }
