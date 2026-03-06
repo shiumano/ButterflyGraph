@@ -62,8 +62,7 @@ export class TestScene {
         speedSlider.addEventListener("input", (ev) => {
             const now = ev.timeStamp;
             // 途中で速度を変えても自然に見えるように、開始時間をずらす
-            const elapsed = now - this.startTime - this.timeOffset;
-            const current = this.speed !== 0 ? elapsed * this.speed : this.current;
+            const current = this.toLocalTime(now);
             const newSpeed = parseFloat(speedSlider.value);
             this.speed = newSpeed;
             this.current = current;
@@ -142,6 +141,17 @@ export class TestScene {
         const media = matchMedia(mqString);
         media.addEventListener("change", this.updateDevicePixelRatio.bind(this), { once: true });
         this.resizeCanvas();
+    }
+
+    /**
+     * @param {number} globalTime
+     */
+    toLocalTime(globalTime) {
+        if (this.speed !== 0) {
+            return Math.max(0, (globalTime - this.startTime - this.timeOffset) * this.speed);
+        } else {
+            return this.current;
+        }
     }
 
     /**
@@ -328,8 +338,7 @@ export class TestScene {
 
         this.animationFrameCount++;
 
-        const t = this.speed !== 0 ?
-            Math.max(0, (now - this.startTime - this.timeOffset) * this.speed) : this.current;
+        const t = this.toLocalTime(now);
 
         const snapshot = this.root.getSnapshot(t);
 
