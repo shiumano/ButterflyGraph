@@ -8,6 +8,7 @@ const testArea = document.getElementById("test-area");
 const controlArea = document.getElementById("control-area");
 const testsList = document.getElementById("tests-list");
 const fpsDisplay = document.getElementById("fps-display");
+const dpiDisplay = document.getElementById("dpi-display");
 const colorSelector = document.getElementById("background-color-picker");
 
 if (
@@ -15,6 +16,7 @@ if (
     controlArea === null ||
     testsList === null ||
     fpsDisplay === null ||
+    dpiDisplay === null ||
     colorSelector === null
 ) {
     throw new Error("Missing required HTML elements");
@@ -38,7 +40,7 @@ Scenes.forEach(async (SceneClass) => {
 
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
-        const scene = new SceneClass({ testArea, controlArea, fpsDisplay, startTime: Infinity });
+        const scene = new SceneClass({ testArea, controlArea, fpsDisplay, dpiDisplay, startTime: Infinity });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {
@@ -62,7 +64,7 @@ window.addEventListener("hashchange", async () => {
     if (SceneClass !== undefined) {
         currentScene?.destroy();
 
-        const scene = new SceneClass({ testArea, controlArea, fpsDisplay, startTime: Infinity });
+        const scene = new SceneClass({ testArea, controlArea, fpsDisplay, dpiDisplay, startTime: Infinity });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {

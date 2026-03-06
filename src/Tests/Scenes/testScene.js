@@ -7,6 +7,7 @@ import { Container } from "../../Graphics/Containers/container.js";
  *   testArea: HTMLElement
  *   controlArea: HTMLElement
  *   fpsDisplay: HTMLElement
+ *   dpiDisplay: HTMLElement
  *   startTime: number
  * }} TestSceneOptions
  */
@@ -14,9 +15,15 @@ import { Container } from "../../Graphics/Containers/container.js";
 export class TestScene {
     testArea;
     controlArea;
+    dpiDisplay;
     renderer;
     observer;
     startTime;
+
+    wrapper;
+    canvas;
+
+    forceRedraw = false;
 
     fpsUpdateIntervalId;
     animationFrameCount = 0;
@@ -29,11 +36,12 @@ export class TestScene {
      * @param {TestSceneOptions} options
      */
     constructor(options) {
-        const { testArea, controlArea, fpsDisplay, startTime } = options;
+        const { testArea, controlArea, fpsDisplay, dpiDisplay, startTime } = options;
 
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
         canvas.height = testArea.clientHeight;
+        canvas.style.transformOrigin = "0px 0px";
 
         const wrapper = document.createElement("div");
         wrapper.style.width = "100%";
@@ -45,25 +53,20 @@ export class TestScene {
         const renderer = new HTMLCanvasRenderer(canvas, false);
         renderer.perfMeasure = true;
 
+        const dpr = window.devicePixelRatio;
+
         const root = new Container({
             width: renderer.width,
             height: renderer.height,
         });
 
-        const observer = new ResizeObserver(() => {
-            const rect = wrapper.getBoundingClientRect();
-
-            const w = rect.width;
-            const h = rect.height;
-
-            if (canvas.width !== w || canvas.height !== h) {
-                renderer.width = w;
-                renderer.height = h;
-                root.width = w;
-                root.height = h;
-            }
-        });
+        const observer = new ResizeObserver(this.resizeCanvas.bind(this));
         observer.observe(wrapper);
+
+        const mqString = `(resolution: ${dpr}dppx)`;
+        const media = matchMedia(mqString);
+        media.addEventListener("change", this.updateDevicePixelRatio.bind(this), { once: true });
+
 
         this.fpsUpdateIntervalId = setInterval(() => {
             if (this.destroyed) {
@@ -79,13 +82,45 @@ export class TestScene {
 
         this.testArea = testArea;
         this.controlArea = controlArea;
+        this.dpiDisplay = dpiDisplay;
         this.startTime = startTime;
+        this.wrapper = wrapper;
+        this.canvas = canvas;
         this.renderer = renderer;
         this.observer = observer;
         this.root = root;
     }
 
     async load() {}
+
+    resizeCanvas() {
+        const rect = this.wrapper.getBoundingClientRect();
+
+        const dpr = window.devicePixelRatio;
+
+        const w = rect.width;
+        const h = rect.height;
+
+        if (this.canvas.width !== w || this.canvas.height !== h) {
+            this.renderer.resize(w * dpr, h * dpr);
+            this.canvas.style.scale = `${1 / dpr}`;
+            this.root.width = w;
+            this.root.height = h;
+            this.root.scale = dpr;
+            // リサイズするとなにもかもがリセットされるので再描画が必要
+            this.forceRedraw = true;
+
+            this.dpiDisplay.textContent = `DPI: ${dpr.toFixed(2)}x`;
+        }
+    }
+
+    updateDevicePixelRatio() {
+        const dpr = window.devicePixelRatio;
+        const mqString = `(resolution: ${dpr}dppx)`;
+        const media = matchMedia(mqString);
+        media.addEventListener("change", this.updateDevicePixelRatio.bind(this), { once: true });
+        this.resizeCanvas();
+    }
 
     /**
      * @param {string} label
@@ -275,9 +310,10 @@ export class TestScene {
 
         const snapshot = this.root.getSnapshot(t);
 
-        if (this.root.contentChanged) {
+        if (this.root.contentChanged || this.forceRedraw) {
             this.renderer.render(snapshot);
             this.root.contentChanged = false;
+            this.forceRedraw = false;
         }
     }
 
