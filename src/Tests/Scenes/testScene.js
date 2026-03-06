@@ -65,6 +65,9 @@ export class TestScene {
             const current = this.toLocalTime(now);
             const newSpeed = parseFloat(speedSlider.value);
             this.speed = newSpeed;
+
+            if (this.startTime === Infinity) return;
+
             this.current = current;
             if (newSpeed === 0) {
                 this.timeOffset = now - this.startTime;
