@@ -24,13 +24,7 @@
             text-align: left;
         }
 
-        label {
-            display: flex;
-            flex-direction: column;
-            background: #222;
-            font-size: 14px;
-            border-bottom: 2px solid grey;
-        }
+
 
         canvas {
             display: block; /** 余白を消す マジで数十分沼ったし2回ブラウザを殺した **/
@@ -53,7 +47,7 @@
 
         #fps-display, #dpi-display {
             font-family: 'MS UI Gothic', 'Courier New', monospace;
-            width: 100px;
+            width: 120px;
         }
 
         /* メインエリア */
@@ -74,6 +68,13 @@
             border-right: 2px solid grey;
             overflow-y: auto;
             contain: strict;
+            label {
+                display: flex;
+                flex-direction: column;
+                background: #222;
+                font-size: 14px;
+                border-bottom: 2px solid grey;
+            }
         }
 
         #test-area {
