@@ -69,9 +69,9 @@ export class TestScene {
             this.current = current;
             if (newSpeed === 0) {
                 this.timeOffset = now - this.startTime;
-                return;
+            } else {
+                this.timeOffset = now - this.startTime - current / newSpeed;
             }
-            this.timeOffset = now - this.startTime - current / newSpeed;
         });
 
         const dpr = window.devicePixelRatio;
