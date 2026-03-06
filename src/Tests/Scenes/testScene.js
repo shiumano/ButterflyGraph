@@ -6,6 +6,9 @@ import { Container } from "../../Graphics/Containers/container.js";
  * @typedef {{
  *   testArea: HTMLElement
  *   controlArea: HTMLElement
+ *   speedSlider: HTMLInputElement
+ *   fpsDisplay: HTMLElement
+ *   dpiDisplay: HTMLElement
  *   startTime: number
  * }} TestSceneOptions
  */
@@ -13,9 +16,22 @@ import { Container } from "../../Graphics/Containers/container.js";
 export class TestScene {
     testArea;
     controlArea;
+    dpiDisplay;
     renderer;
     observer;
     startTime;
+
+    speed;
+    current = 0;  // あくまでオフセット計算用 これをdelta加算していくわけではない！
+    timeOffset = 0;
+
+    wrapper;
+    canvas;
+
+    forceRedraw = false;
+
+    fpsUpdateIntervalId;
+    animationFrameCount = 0;
 
     destroyed = false;
 
@@ -25,11 +41,12 @@ export class TestScene {
      * @param {TestSceneOptions} options
      */
     constructor(options) {
-        const { testArea, controlArea, startTime } = options;
+        const { testArea, controlArea, speedSlider, fpsDisplay, dpiDisplay, startTime } = options;
 
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
         canvas.height = testArea.clientHeight;
+        canvas.style.transformOrigin = "0px 0px";
 
         const wrapper = document.createElement("div");
         wrapper.style.width = "100%";
@@ -39,35 +56,134 @@ export class TestScene {
         testArea.appendChild(wrapper);
 
         const renderer = new HTMLCanvasRenderer(canvas, false);
+        renderer.perfMeasure = true;
+
+        const speed = parseFloat(speedSlider.value);
+        speedSlider.addEventListener("input", (ev) => {
+            const now = ev.timeStamp;
+            // 途中で速度を変えても自然に見えるように、開始時間をずらす
+            const current = this.toLocalTime(now);
+            const newSpeed = parseFloat(speedSlider.value);
+            this.speed = newSpeed;
+
+            if (this.startTime === Infinity) return;
+
+            this.current = current;
+            if (newSpeed === 0) {
+                this.timeOffset = now - this.startTime;
+            } else {
+                this.timeOffset = now - this.startTime - current / newSpeed;
+            }
+        });
+
+        const dpr = window.devicePixelRatio;
+
         const root = new Container({
             width: renderer.width,
             height: renderer.height,
         });
 
-        const observer = new ResizeObserver(() => {
-            const rect = wrapper.getBoundingClientRect();
-
-            const w = rect.width;
-            const h = rect.height;
-
-            if (canvas.width !== w || canvas.height !== h) {
-                renderer.width = w;
-                renderer.height = h;
-                root.width = w;
-                root.height = h;
-            }
-        });
+        const observer = new ResizeObserver(this.resizeCanvas.bind(this));
         observer.observe(wrapper);
+
+        const mqString = `(resolution: ${dpr}dppx)`;
+        const media = matchMedia(mqString);
+        media.addEventListener("change", this.updateDevicePixelRatio.bind(this), { once: true });
+
+
+        this.fpsUpdateIntervalId = setInterval(() => {
+            if (this.destroyed) {
+                clearInterval(this.fpsUpdateIntervalId);
+                return;
+            }
+
+            const fps = renderer.frameCount;
+            fpsDisplay.textContent = `FPS: ${fps} / ${this.animationFrameCount}`;
+            renderer.frameCount = 0;
+            this.animationFrameCount = 0;
+        }, 1000);
 
         this.testArea = testArea;
         this.controlArea = controlArea;
+        this.dpiDisplay = dpiDisplay;
         this.startTime = startTime;
+        this.speed = speed;
+        this.wrapper = wrapper;
+        this.canvas = canvas;
         this.renderer = renderer;
         this.observer = observer;
         this.root = root;
     }
 
     async load() {}
+
+    resizeCanvas() {
+        const rect = this.wrapper.getBoundingClientRect();
+
+        const dpr = window.devicePixelRatio;
+
+        const w = rect.width;
+        const h = rect.height;
+
+        if (this.canvas.width !== w || this.canvas.height !== h) {
+            this.renderer.resize(w * dpr, h * dpr);
+            this.canvas.style.scale = `${1 / dpr}`;
+            this.root.width = w;
+            this.root.height = h;
+            this.root.scale = dpr;
+            // リサイズするとなにもかもがリセットされるので再描画が必要
+            this.forceRedraw = true;
+
+            this.dpiDisplay.textContent = `DPI: ${dpr.toFixed(2)}x`;
+        }
+    }
+
+    updateDevicePixelRatio() {
+        const dpr = window.devicePixelRatio;
+        const mqString = `(resolution: ${dpr}dppx)`;
+        const media = matchMedia(mqString);
+        media.addEventListener("change", this.updateDevicePixelRatio.bind(this), { once: true });
+        this.resizeCanvas();
+    }
+
+    /**
+     * @param {number} globalTime
+     */
+    toLocalTime(globalTime) {
+        if (this.speed !== 0) {
+            return Math.max(0, (globalTime - this.startTime - this.timeOffset) * this.speed);
+        } else {
+            return this.current;
+        }
+    }
+
+    /**
+     * @param {number} now - 現在時刻(ミリ秒)
+     */
+    loop(now) {
+        if (this.destroyed) return;
+
+        this.animationFrameCount++;
+
+        const t = this.toLocalTime(now);
+
+        const snapshot = this.root.getSnapshot(t);
+
+        if (this.root.contentChanged || this.forceRedraw) {
+            this.renderer.render(snapshot);
+            this.root.contentChanged = false;
+            this.forceRedraw = false;
+        }
+    }
+
+    destroy() {
+        this.destroyed = true;
+        this.root.clearChildren();
+        this.observer.disconnect();
+        this.testArea.innerHTML = "";
+        this.controlArea.innerHTML = "";
+        // simple is best?
+    }
 
     /**
      * @param {string} label
@@ -243,31 +359,6 @@ export class TestScene {
         }
 
         this.addToggle(label, initialValue, (value) => target[property] = convert(value));
-    }
-
-    /**
-     * @param {number} now - 現在時刻(ミリ秒)
-     */
-    loop(now) {
-        if (this.destroyed) return;
-
-        const t = Math.max(0, now - this.startTime);
-
-        const snapshot = this.root.getSnapshot(t);
-
-        if (this.root.contentChanged) {
-            this.renderer.render(snapshot);
-            this.root.contentChanged = false;
-        }
-    }
-
-    destroy() {
-        this.destroyed = true;
-        this.root.clearChildren();
-        this.observer.disconnect();
-        this.testArea.innerHTML = "";
-        this.controlArea.innerHTML = "";
-        // simple is best?
     }
 }
 

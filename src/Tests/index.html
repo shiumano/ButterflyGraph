@@ -24,16 +24,10 @@
             text-align: left;
         }
 
-        label {
-            display: flex;
-            flex-direction: column;
-            background: #222;
-            font-size: 14px;
-            border-bottom: 2px solid grey;
-        }
+
 
         canvas {
-            display: block;  /** 余白を消す マジで数十分沼ったし2回ブラウザを殺した **/
+            display: block; /** 余白を消す マジで数十分沼ったし2回ブラウザを殺した **/
             overflow: hidden;
         }
 
@@ -49,6 +43,11 @@
             gap: 8px;
             padding: 8px;
             border-bottom: 2px solid grey;
+        }
+
+        #fps-display, #dpi-display {
+            font-family: 'MS UI Gothic', 'Courier New', monospace;
+            width: 120px;
         }
 
         /* メインエリア */
@@ -69,13 +68,20 @@
             border-right: 2px solid grey;
             overflow-y: auto;
             contain: strict;
+            label {
+                display: flex;
+                flex-direction: column;
+                background: #222;
+                font-size: 14px;
+                border-bottom: 2px solid grey;
+            }
         }
 
         #test-area {
             flex: 1;
         }
-
     </style>
+    <link rel="icon" href="data:image/svg+xml,<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><text x='12' y='12' text-anchor='middle' dominant-baseline='central'>🦋</text></svg>" />
 </head>
 
 <body>
@@ -83,9 +89,11 @@
         <!-- 上部 -->
         <div id="toolbar">
             <!-- いったん未実装とする -->
-            <!-- <input id="scale-slider" type="range" /> -->
             <!-- <input id="time-input" type="time" /> -->
-            <!-- <input id="speed-slider" type="range" /> -->
+            <label id="speed-label" for="speed-slider">Speed: 1.0x</label>
+            <input id="speed-slider" type="range" min="-1" max="5" step="0.1" value="1" />
+            <div id="fps-display">FPS: -- / --</div>
+            <div id="dpi-display">DPI: 1.00x</div>
             <input id="background-color-picker" type="color" />
         </div>
 
@@ -97,7 +105,6 @@
             </div>
             <div id="test-area">
             </div>
-
         </div>
     </div>
     <script src="./main.js" type="module"></script>

@@ -26,7 +26,7 @@ export class AnimationTestScene extends TestScene {
         textAnim.to(10000, 10000);
 
         this.addButton("Override animation", ev => {
-            xAnim.jump(Math.max(0, ev.timeStamp - this.startTime)).set(0).easeOut(500, 500);
+            xAnim.jump(this.toLocalTime(ev.timeStamp)).set(0).easeOut(500, 500);
         });
 
         this.root.addChild(rect, textObj);
