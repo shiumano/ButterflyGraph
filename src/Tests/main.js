@@ -34,6 +34,11 @@ speedSlider.addEventListener("input", (e) => {
     const value = parseFloat(speedSlider.value);
     speedLabel.textContent = `Speed: ${value.toFixed(1)}x`;
 });
+speedSlider.addEventListener("dblclick", (e) => {
+    speedSlider.value = "1";
+    speedLabel.textContent = "Speed: 1.0x";
+    speedSlider.dispatchEvent(new Event("input"));
+});
 
 /** @type {TestScene?} */
 let currentScene = null;
