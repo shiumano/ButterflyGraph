@@ -7,6 +7,7 @@ import { Container } from "../../Graphics/Containers/container.js";
  *   testArea: HTMLElement
  *   controlArea: HTMLElement
  *   speedSlider: HTMLInputElement
+ *   zoomSlider: HTMLInputElement
  *   fpsDisplay: HTMLElement
  *   dpiDisplay: HTMLElement
  *   startTime: number
@@ -25,6 +26,8 @@ export class TestScene {
     current = 0;  // あくまでオフセット計算用 これをdelta加算していくわけではない！
     timeOffset = 0;
 
+    zoomScale = 1;
+
     wrapper;
     canvas;
 
@@ -41,7 +44,7 @@ export class TestScene {
      * @param {TestSceneOptions} options
      */
     constructor(options) {
-        const { testArea, controlArea, speedSlider, fpsDisplay, dpiDisplay, startTime } = options;
+        const { testArea, controlArea, speedSlider, zoomSlider, fpsDisplay, dpiDisplay, startTime } = options;
 
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
@@ -76,6 +79,13 @@ export class TestScene {
             }
         });
 
+        const zoomScale = parseFloat(zoomSlider.value);
+        zoomSlider.addEventListener("input", (ev) => {
+            const newScale = parseFloat(zoomSlider.value);
+            this.zoomScale = newScale;
+            this.resizeCanvas();
+        });
+
         const dpr = window.devicePixelRatio;
 
         const root = new Container({
@@ -108,6 +118,7 @@ export class TestScene {
         this.dpiDisplay = dpiDisplay;
         this.startTime = startTime;
         this.speed = speed;
+        this.zoomScale = zoomScale;
         this.wrapper = wrapper;
         this.canvas = canvas;
         this.renderer = renderer;
@@ -128,14 +139,15 @@ export class TestScene {
         if (this.canvas.width !== w || this.canvas.height !== h) {
             this.renderer.resize(w * dpr, h * dpr);
             this.canvas.style.scale = `${1 / dpr}`;
-            this.root.width = w;
-            this.root.height = h;
-            this.root.scale = dpr;
             // リサイズするとなにもかもがリセットされるので再描画が必要
             this.forceRedraw = true;
 
             this.dpiDisplay.textContent = `DPI: ${dpr.toFixed(2)}x`;
         }
+
+        this.root.width = w / this.zoomScale;
+        this.root.height = h / this.zoomScale;
+        this.root.scale = dpr * this.zoomScale;
     }
 
     updateDevicePixelRatio() {
