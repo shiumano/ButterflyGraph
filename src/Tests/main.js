@@ -1,3 +1,4 @@
+import { waitVsync } from "../Utils/tasks.js";
 import { Scenes } from "./Scenes/index.js";
 
 /**
@@ -99,12 +100,11 @@ window.addEventListener("hashchange", async () => {
     }
 });
 
-/**
- * @param {number} now
- */
-function renderLoop(now) {
-    currentScene?.loop(now);
-    requestAnimationFrame(renderLoop);
+async function mainLoop() {
+    while (true) {
+        const now = await waitVsync();
+        currentScene?.loop(now);
+    }
 }
 
-requestAnimationFrame(renderLoop);
+mainLoop();
