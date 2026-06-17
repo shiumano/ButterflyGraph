@@ -1,5 +1,6 @@
 import { DrawObject } from "../drawObject.js";
 import { DrawNode } from "../drawNode.js";
+import { createCanvas } from "../../Utils/canvas.js";
 
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
@@ -26,7 +27,7 @@ import { DrawNode } from "../drawNode.js";
  * @extends {DrawObject<TextNode>}
  */
 export class TextObject extends DrawObject {
-    static #canvas = new OffscreenCanvas(1, 1);
+    static #canvas = createCanvas(1, 1);
     static #ctx = this.#canvas.getContext("2d");
     static #ctxFont = this.#ctx?.font;
 
@@ -89,10 +90,10 @@ export class TextObject extends DrawObject {
     }
 
     get width() { return super.width; }
-    set width(_) {};
+    set width(_) { };
 
     get height() { return super.height; }
-    set height(_) {};
+    set height(_) { };
 
     get font() { return this.#font; }
     set font(value) {
