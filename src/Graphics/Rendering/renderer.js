@@ -2,8 +2,6 @@
  * @import { GenericDrawNode } from "@core/Graphics/drawNode.js"
  */
 
-const performance = window.performance;  // おまじないすぎる window.performanceはgetter
-
 export class Renderer {
     #width;
     #height;
