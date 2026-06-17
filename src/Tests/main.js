@@ -58,6 +58,8 @@ zoomSlider.addEventListener("dblclick", (e) => {
 /** @type {TestScene?} */
 let currentScene = null;
 
+let pause = false;
+
 Scenes.forEach(async (SceneClass) => {
     const button = document.createElement("button");
     button.textContent = SceneClass.name;
@@ -97,13 +99,22 @@ window.addEventListener("hashchange", async () => {
         if (!scene.destroyed) {
             scene.startTime = performance.now() + 500;
         }
+        pause = false;
     }
 });
 
 async function mainLoop() {
     while (true) {
         const now = await waitVsync();
-        currentScene?.loop(now);
+        if (!pause) {
+            try {
+                currentScene?.loop(now);
+            } catch (e) {
+                // TODO: コンソールじゃなくて画面上にエラーを表示するようにする
+                console.error("Error in loop:", e);
+                pause = true;
+            }
+        }
     }
 }
 
