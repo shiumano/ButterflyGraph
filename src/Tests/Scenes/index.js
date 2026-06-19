@@ -6,6 +6,7 @@ import { CustomObjectTestScene } from "./customObjectTestScene.js";
 import { DonutTestScene } from "./donutTestScene.js";
 import { FrameTestScene } from "./frameTestScene.js";
 import { ImageObjectTestScene } from "./imageObjectTestScene.js";
+import { MinimumImplementTestScene } from "./minimumImplementTestScene.js";
 import { RectangleTestScene } from "./rectangleTestScene.js";
 import { TextObjectTestScene } from "./textObjectTestScene.js";
 import { GradientTestScene } from "./gradientTestScene.js";
@@ -27,4 +28,5 @@ export const Scenes = [
     GradientTestScene,
     AnimationTestScene,
     CustomObjectTestScene,
+    MinimumImplementTestScene,
 ];

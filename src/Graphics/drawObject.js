@@ -5,7 +5,7 @@ import { AnimationManager } from "./Animations/animationManager.js";
 
 /**
  * @import { Vector2 } from "./vector2.js";
- * @import { DrawNodeOptions, GenericDrawNode, NodeOptions } from "./drawNode.js"
+ * @import { DrawNodeOptions, GenericDrawNode, IDrawNode, NodeOptions } from "./drawNode.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -27,7 +27,6 @@ import { AnimationManager } from "./Animations/animationManager.js";
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
  * @typedef {"transform" | "object"} RecreateReason
- * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
  */
 
 /**
@@ -47,7 +46,20 @@ import { AnimationManager } from "./Animations/animationManager.js";
  */
 
 /**
+ * @typedef {{
+ *   anchor: Readonly<Vector2>
+ *   parent: IDrawObject | null
+ *   timed: boolean
+ *   animated: boolean
+ *   requestRecreate: (reason: RecreateReason) => void
+ *   calculateAnimations: (t: number) => void
+ *   getSnapshot: (t: number) => IDrawNode
+ * }} IDrawObject
+ */
+
+/**
  * @template {GenericDrawNode} T
+ * @implements {IDrawObject}
  */
 export class DrawObject {
     #x;

@@ -2,7 +2,7 @@ import { HTMLCanvasRenderer } from "../../Graphics/Rendering/HTMLCanvasRenderer.
 import { Container } from "../../Graphics/Containers/container.js";
 
 /**
- * @import { GenericDrawObject, Properties } from "@core/Graphics/drawObject.js"
+ * @import { IDrawObject, Properties } from "@core/Graphics/drawObject.js"
  * @typedef {{
  *   testArea: HTMLElement
  *   controlArea: HTMLElement
@@ -321,7 +321,7 @@ export class TestScene {
     }
 
     /**
-     * @template {GenericDrawObject} T
+     * @template {IDrawObject} T
      * @template {Properties<T>} P
      * @param {string} label
      * @param {number} min
@@ -350,7 +350,7 @@ export class TestScene {
     }
 
     /**
-     * @template {GenericDrawObject} T
+     * @template {IDrawObject} T
      * @template {Properties<T>} P
      * @param {string} label
      * @param {T} target

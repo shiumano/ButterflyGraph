@@ -2,14 +2,14 @@ import { DrawNode } from "../drawNode.js";
 import { DrawObject } from "../drawObject.js";
 
 /**
- * @import { DrawNodeOptions, GenericDrawNode } from "@core/Graphics/drawNode.js"
- * @import { DrawObjectOptions, RecreateReason, GenericDrawObject } from "@core/Graphics/drawObject.js"
+ * @import { DrawNodeOptions, IDrawNode } from "@core/Graphics/drawNode.js"
+ * @import { DrawObjectOptions, RecreateReason, IDrawObject } from "@core/Graphics/drawObject.js"
  * @typedef {DrawObjectOptions & {
- *   children?: readonly GenericDrawObject[]
+ *   children?: readonly IDrawObject[]
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
- *   children: readonly GenericDrawNode[]
+ *   children: readonly IDrawNode[]
  *   clip: boolean
  * }} ContainerNodeOptions
  * @typedef {ContainerNode<ContainerNodeOptions>} GenericContainerNode
@@ -46,7 +46,7 @@ export class Container extends DrawObject {
             child.parent = this;
             childrenTimed ||= child.timed;
             childrenAnimated ||= child.animated;
-            childrenPerfect &&= child.perfectlyOptimized;
+            childrenPerfect &&= isPerfectlyOptimized(child);
         }
         this.#childrenTimed = childrenTimed;
         this.#childrenAnimated = childrenAnimated;
@@ -112,7 +112,7 @@ export class Container extends DrawObject {
             const child = this.#children[i];
             childrenTimed ||= child.timed;
             childrenAnimated ||= child.animated;
-            childrenPerfect &&= child.perfectlyOptimized;
+            childrenPerfect &&= isPerfectlyOptimized(child);
         }
         this.#childrenTimed = childrenTimed;
         this.#childrenAnimated = childrenAnimated;
@@ -126,7 +126,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {...GenericDrawObject} children
+     * @param {...IDrawObject} children
      */
     addChild(...children) {
         for (let i = 0; i < children.length; i++) {
@@ -142,13 +142,13 @@ export class Container extends DrawObject {
             this.#children.push(child);
             this.#childrenTimed ||= child.timed;
             this.#childrenAnimated ||= child.animated;
-            this.#childrenPerfectlyOptimized &&= child.perfectlyOptimized;
+            this.#childrenPerfectlyOptimized &&= isPerfectlyOptimized(child);
         }
         this.requestRecreate("object");
     }
 
     /**
-     * @param {GenericDrawObject} child
+     * @param {IDrawObject} child
      */
     removeChild(child) {
         const index = this.#children.indexOf(child);
@@ -166,7 +166,7 @@ export class Container extends DrawObject {
                 newChildren.push(obj);
                 childrenTimed ||= obj.timed;
                 childrenAnimated ||= obj.animated;
-                childrenPerfect &&= obj.perfectlyOptimized;
+                childrenPerfect &&= isPerfectlyOptimized(obj);
             }
         }
 
@@ -301,5 +301,17 @@ export class ContainerNode extends DrawNode {
                 this.#children[i].render(ctx);
             }
         }
+    }
+}
+
+/**
+ * @param {IDrawObject} obj
+ */
+function isPerfectlyOptimized(obj) {
+    if ("perfectlyOptimized" in obj) {
+        const value = obj.perfectlyOptimized;
+        return typeof value === "boolean" ? value : false;
+    } else {
+        return false;
     }
 }
