@@ -407,14 +407,13 @@ export class DrawObject {
         const transforms = (!hasCache || this.transformChanged) ? this.calculateTransforms(t) : {};
 
         // TOOBAD: 実際の流れとしては正しいんだけど、TSが理解できる領域ではないらしい
-        // @ts-expect-error
-        return {
+        return /** @type {NodeOptions<T>} */ ({
             ...cacheOptions,
             ...transforms,
             width: this.width,
             height: this.height,
             showBounds: this.showBounds
-        };
+        });
     }
 
     /**
@@ -483,8 +482,7 @@ export class DrawObject {
         const options = this.calculateOptions(t);
         // new DrawNodeの出処を探してここに来たのかい？本当は別のNodeを返したかったのかな
         // 残念、あんたがcreateSnapshot(t)を定義しなかったせいでDrawNodeが返ってきたんだよ
-        // @ts-expect-error
-        return this.cachedNode?.with(options) ?? new DrawNode(options);
+        return /** @type {T} */ (this.cachedNode?.with(options) ?? new DrawNode(options));
     }
 
     /**

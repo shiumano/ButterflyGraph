@@ -241,8 +241,7 @@ export class Container extends DrawObject {
         const options = this.calculateOptions(t);
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
         // BufferedContainerを見習いなさい
-        // @ts-expect-error
-        return this.cachedNode?.with(options) ?? new ContainerNode(options);
+        return /** @type {T} */ (this.cachedNode?.with(options) ?? new ContainerNode(options));
     }
 
     get childrenPerfectlyOptimized() { return this.#childrenPerfectlyOptimized; }  // 永遠の負債 世話が焼けるわね！
