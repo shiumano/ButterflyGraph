@@ -142,8 +142,8 @@ export class DrawNode {
         //     : this.constructorは自身のクラスのコンストラクタと同一
         //     : しかしTSはthis.constructorをコンストラクタではない通常の関数として解釈する
         // 全てのカルマをここで背負う
-        // @ts-expect-error
-        return new this.constructor({...this.options, ...options}, this);
+        /** @typedef {new (options: Partial<T>, oldNode?: this) => this} ThisNodeConstructor */
+        return new /** @type {ThisNodeConstructor} */ (this.constructor)({...this.options, ...options}, this);
     }
 
     /**
