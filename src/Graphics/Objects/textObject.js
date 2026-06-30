@@ -11,9 +11,7 @@ import { DrawNode } from "../drawNode.js";
  *   strokeWidth?: number
  *   sizeReference?: "actual" | "font"
  * }} TextOptions
- * @typedef {Omit<DrawNodeOptions, "fillStyle" | "strokeStyle"> & {
- *   fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
- *   strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  *   text: string
  *   font: string
  *   fill: boolean

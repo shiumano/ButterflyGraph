@@ -113,8 +113,8 @@ export class DrawObject {
 
         this.#showBounds = options.showBounds ?? false;
 
-        this.#fillStyle = options.fillStyle ?? options.color ?? "#000";
-        this.#strokeStyle = options.strokeStyle ?? "#000";
+        this.#fillStyle = options.fillStyle ?? options.color;
+        this.#strokeStyle = options.strokeStyle;
 
         if (this.#fillStyle instanceof Gradient) {
             this.#fillStyle.mountTo(this);
@@ -369,7 +369,7 @@ export class DrawObject {
 
     /**
      * CanvasのstyleもしくはGradientBuilderを取得
-     * @param {string | CanvasGradient | CanvasPattern | Gradient} style
+     * @param {string | CanvasGradient | CanvasPattern | Gradient | undefined} style
      */
     getStyle(style) {
         if (style instanceof Gradient) {

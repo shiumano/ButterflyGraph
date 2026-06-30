@@ -9,8 +9,7 @@ import { DrawNode } from "../drawNode.js";
  *   radius?: number
  *   lineWidth?: number
  * }} DonutOptions
- * @typedef {Omit<DrawNodeOptions, "strokeStyle"> & {
- *   strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  *   lineRadius: number
  *   lineWidth: number
  * }} DonutNodeOptions

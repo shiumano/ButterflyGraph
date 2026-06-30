@@ -7,8 +7,7 @@ import { DrawNode } from "../drawNode.js";
  * @typedef {DrawObjectOptions & {
  *   radius?: number
  * }} CircleOptions
- * @typedef {Omit<DrawNodeOptions, "fillStyle"> & {
- *    fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  *   radius: number
  * }} CircleNodeOptions
  */

@@ -7,8 +7,7 @@ import { DrawNode } from "../drawNode.js";
  * @typedef {DrawObjectOptions & {
  *   lineWidth?: number
  * }} FrameOptions
- * @typedef {Omit<DrawNodeOptions, "strokeStyle"> & {
- *    strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  *    lineWidth: number
  *    lineRectWidth: number
  *    lineRectHeight: number

@@ -6,8 +6,7 @@ import { DrawNode } from "../drawNode.js";
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
  * @typedef {DrawObjectOptions & {
  * }} RectangleOptions
- * @typedef {Omit<DrawNodeOptions, "fillStyle"> & {
- *    fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  * }} RectangleNodeOptions
  */
 
