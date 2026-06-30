@@ -133,7 +133,6 @@ class DonutNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        this._setStrokeStyle(ctx);
         ctx.lineWidth = this.#lineWidth;
         ctx.stroke(this.#path);
     }

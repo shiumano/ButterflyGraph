@@ -103,7 +103,6 @@ class CircleNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        this._setFillStyle(ctx);
         ctx.fill(this.#path);
     }
 }

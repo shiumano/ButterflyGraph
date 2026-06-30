@@ -62,7 +62,6 @@ export class RectangleNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        this._setFillStyle(ctx);
         ctx.fillRect(0, 0, this.width, this.height);
     }
 }

@@ -125,33 +125,6 @@ export class DrawNode {
 
     get zIndex() { return this.#zIndex; }
 
-    // いつかグラデーションの設定の処理を追加しようと思うと、こうしておくほうが良い
-    /**
-     * ctxに塗りつぶしの色を設定する
-     * @param {CanvasRenderingContext2D} ctx
-     */
-    _setFillStyle(ctx) {
-        if (this.#fillStyle !== undefined) {
-            ctx.fillStyle = this.#fillStyle;
-        }
-        else if (this.#fillGradient !== undefined) {
-            ctx.fillStyle = this.#fillGradient.getGradient(ctx);
-        }
-    }
-
-    /**
-     * ctxに線の色を設定する
-     * @param {CanvasRenderingContext2D} ctx
-     */
-    _setStrokeStyle(ctx) {
-        if (this.#strokeStyle !== undefined) {
-            ctx.strokeStyle = this.#strokeStyle;
-        }
-        else if (this.#strokeGradient !== undefined) {
-            ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
-        }
-    }
-
     /**
      * 新しいオプションを指定して再生成
      * @param {Partial<T>} options
@@ -189,6 +162,20 @@ export class DrawNode {
             ctx.fillStyle = "#fdd";
             ctx.fillRect(0, 0, this.#width, this.#height);
             ctx.restore();
+        }
+
+        if (this.#fillStyle !== undefined) {
+            ctx.fillStyle = this.#fillStyle;
+        }
+        else if (this.#fillGradient !== undefined) {
+            ctx.fillStyle = this.#fillGradient.getGradient(ctx);
+        }
+
+        if (this.#strokeStyle !== undefined) {
+            ctx.strokeStyle = this.#strokeStyle;
+        }
+        else if (this.#strokeGradient !== undefined) {
+            ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
         }
 
         this.draw(ctx);

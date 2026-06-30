@@ -216,14 +216,12 @@ class TextNode extends DrawNode {
         // 縁取りの上から塗りつぶしが重なる
         // 描画順序を選択できるようにする？
         if (this.#strokeWidth > 0) {
-            this._setStrokeStyle(ctx);
             ctx.lineWidth = this.#strokeWidth;
             ctx.lineJoin = "round";  // miterはやってらんない
             ctx.strokeText(this.#text, this.#offsetX, this.#offsetY);
         }
 
         if (this.#fill) {
-            this._setFillStyle(ctx);
             ctx.fillText(this.#text, this.#offsetX, this.#offsetY);
         }
     }
