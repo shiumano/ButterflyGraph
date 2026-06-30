@@ -123,8 +123,6 @@ export class DrawObject {
             this.#strokeStyle.mountTo(this);
         }
 
-        this.#perfectlyOptimized = this.isPerfectlyOptimized();
-
         this.#updateOriginOffset();
     }
 
@@ -512,6 +510,6 @@ export class DrawObject {
      */
     isPerfectlyOptimized() { return this.constructor === DrawObject; }
 
-    #perfectlyOptimized;
+    #perfectlyOptimized = this.isPerfectlyOptimized();
     get perfectlyOptimized() { return this.#perfectlyOptimized; }
 }
