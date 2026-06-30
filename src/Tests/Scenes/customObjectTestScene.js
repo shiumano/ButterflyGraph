@@ -32,9 +32,7 @@ export class CustomObjectTestScene extends TestScene {
  * @typedef { DrawObjectOptions & {
  *   dark?: boolean
  * }} ButterflyOptions
- * @typedef {Omit<DrawNodeOptions, "fillStyle" | "strokeStyle"> & {
- *   fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
- *   strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  * }} ButterflyNodeOptions
  */
 
@@ -166,7 +164,7 @@ class ButterflyNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        this._setStrokeStyle(ctx);
+        const fillStyle = ctx.fillStyle;
         ctx.fillStyle = ctx.strokeStyle;
 
         ctx.lineWidth = 2.6;
@@ -175,7 +173,7 @@ class ButterflyNode extends DrawNode {
         ctx.fill(this.#bodyPath);
         ctx.stroke(this.#strokePath);
 
-        this._setFillStyle(ctx);
+        ctx.fillStyle = fillStyle;
         ctx.fill(this.#nodesPath);
     }
 }
