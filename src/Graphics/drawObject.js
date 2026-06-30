@@ -123,6 +123,8 @@ export class DrawObject {
             this.#strokeStyle.mountTo(this);
         }
 
+        this.#perfectlyOptimized = this.isPerfectlyOptimized();
+
         this.#updateOriginOffset();
     }
 
@@ -505,6 +507,11 @@ export class DrawObject {
         return nodeCache.node;
     }
 
-    // requestRecreate(reason)を確実に呼び出し、キャッシュが再利用可能であると保証しますか？
-    get perfectlyOptimized() { return this.constructor === DrawObject; }
+    /**
+     * requestRecreate(reason)を確実に呼び出し、キャッシュが再利用可能であると保証しますか？
+     */
+    isPerfectlyOptimized() { return this.constructor === DrawObject; }
+
+    #perfectlyOptimized;
+    get perfectlyOptimized() { return this.#perfectlyOptimized; }
 }

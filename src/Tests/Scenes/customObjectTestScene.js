@@ -83,7 +83,7 @@ class Butterfly extends DrawObject {
         return this.cachedNode?.with(options) ?? new ButterflyNode(options);
     }
 
-    get perfectlyOptimized() { return this.constructor === Butterfly; }
+    isPerfectlyOptimized() { return this.constructor === Butterfly; }
 }
 
 /**
