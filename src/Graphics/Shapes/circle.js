@@ -70,7 +70,7 @@ export class Circle extends DrawObject {
         return this.cachedNode?.with(options) ?? new CircleNode(options);
     }
 
-    get perfectlyOptimized() { return this.constructor === Circle; }
+    isPerfectlyOptimized() { return this.constructor === Circle; }
 }
 
 /**

@@ -24,7 +24,6 @@ export class Container extends DrawObject {
     #children;
     #childrenTimed;
     #childrenAnimated;
-    #childrenPerfectlyOptimized;  // PERF: まったく世話の焼ける子たちねぇ
     #clip;
 
     /**
@@ -50,7 +49,7 @@ export class Container extends DrawObject {
         }
         this.#childrenTimed = childrenTimed;
         this.#childrenAnimated = childrenAnimated;
-        this.#childrenPerfectlyOptimized = childrenPerfect;
+        this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;  // 世話が焼けるわね！
     }
 
     get width() { return super.width; }
@@ -116,7 +115,7 @@ export class Container extends DrawObject {
         }
         this.#childrenTimed = childrenTimed;
         this.#childrenAnimated = childrenAnimated;
-        this.#childrenPerfectlyOptimized = childrenPerfect;
+        this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
 
         super.requestRecreate(reason);
     }
@@ -142,7 +141,7 @@ export class Container extends DrawObject {
             this.#children.push(child);
             this.#childrenTimed ||= child.timed;
             this.#childrenAnimated ||= child.animated;
-            this.#childrenPerfectlyOptimized &&= child.perfectlyOptimized;
+            this.#perfectlyOptimized &&= child.perfectlyOptimized;
         }
         this.requestRecreate("object");
     }
@@ -173,7 +172,7 @@ export class Container extends DrawObject {
         this.#children = newChildren;
         this.#childrenTimed = childrenTimed;
         this.#childrenAnimated = childrenAnimated;
-        this.#childrenPerfectlyOptimized = childrenPerfect;
+        this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
 
         this.requestRecreate("object");
     }
@@ -183,7 +182,7 @@ export class Container extends DrawObject {
         this.#children = [];
         this.#childrenTimed = false;
         this.#childrenAnimated = false;
-        this.#childrenPerfectlyOptimized = true;
+        this.#perfectlyOptimized = this.isPerfectlyOptimized();
         this.requestRecreate("object");
     }
 
@@ -222,7 +221,7 @@ export class Container extends DrawObject {
                 children = [childNode];
             } else {
                 children = childObjects.map(child => child.getSnapshot(t))
-                            .sort((a, b) => a.zIndex - b.zIndex);
+                    .sort((a, b) => a.zIndex - b.zIndex);
             }
         }
 
@@ -244,8 +243,10 @@ export class Container extends DrawObject {
         return /** @type {T} */ (this.cachedNode?.with(options) ?? new ContainerNode(options));
     }
 
-    get childrenPerfectlyOptimized() { return this.#childrenPerfectlyOptimized; }  // 永遠の負債 世話が焼けるわね！
-    get perfectlyOptimized() { return this.constructor === Container && this.childrenPerfectlyOptimized; }
+    isPerfectlyOptimized() { return this.constructor === Container; }
+
+    #perfectlyOptimized;
+    get perfectlyOptimized() { return this.#perfectlyOptimized; }
 }
 
 /**

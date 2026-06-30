@@ -43,7 +43,7 @@ export class Rectangle extends DrawObject {
         return this.cachedNode?.with(options) ?? new RectangleNode(options);
     }
 
-    get perfectlyOptimized() { return this.constructor === Rectangle; }
+    isPerfectlyOptimized() { return this.constructor === Rectangle; }
 }
 
 /**

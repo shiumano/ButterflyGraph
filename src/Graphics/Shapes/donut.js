@@ -95,7 +95,7 @@ export class Donut extends DrawObject {
         return this.cachedNode?.with(options) ?? new DonutNode(options);
     }
 
-    get perfectlyOptimized() { return this.constructor === Donut; }
+    isPerfectlyOptimized() { return this.constructor === Donut; }
 }
 
 /**

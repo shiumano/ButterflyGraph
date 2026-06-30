@@ -118,7 +118,7 @@ export class BufferedContainer extends Container {
         return this.cachedNode?.with(options) ?? new BufferedContainerNode(options);
     }
 
-    get perfectlyOptimized() { return this.constructor === BufferedContainer && this.childrenPerfectlyOptimized; }
+    isPerfectlyOptimized() { return this.constructor === BufferedContainer; }
 }
 
 // WARN: お前ごときがGCになるのか？

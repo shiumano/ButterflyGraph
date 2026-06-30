@@ -175,7 +175,7 @@ export class TextObject extends DrawObject {
         return this.cachedNode?.with(options) ?? new TextNode(options);
     }
 
-    get perfectlyOptimized() { return this.constructor === TextObject; }
+    isPerfectlyOptimized() { return this.constructor === TextObject; }
 }
 
 /**

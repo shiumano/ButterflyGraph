@@ -77,7 +77,7 @@ export class Frame extends DrawObject {
         return this.cachedNode?.with(options) ?? new FrameNode(options);
     }
 
-    get perfectlyOptimized() { return this.constructor === Frame; }
+    isPerfectlyOptimized() { return this.constructor === Frame; }
 }
 
 /**
