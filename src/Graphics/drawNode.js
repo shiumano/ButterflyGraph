@@ -37,15 +37,8 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  */
 export class DrawNode {
     #options;
-    #x;
-    #y;
-    #rotation;
-    #rotationCenterX;
-    #rotationCenterY;
     #width;
     #height;
-    #scaleX;
-    #scaleY;
     #alpha;
     #zIndex;
     #fillStyle;
@@ -54,6 +47,12 @@ export class DrawNode {
     #strokeGradient;
     #visible;
     #showBounds;
+
+    /**
+     * null: transformなし
+     * @type {[number, number, number, number, number, number]?}
+     */
+    #transformMatrix;
 
     /**
      * @param {T} options
@@ -66,15 +65,8 @@ export class DrawNode {
 
         this.#options = Object.freeze(options);
 
-        this.#x = options.x;
-        this.#y = options.y;
-        this.#rotation = options.rotation;
-        this.#rotationCenterX = options.originOffsetX;
-        this.#rotationCenterY = options.originOffsetY;
         this.#width = options.width;
         this.#height = options.height;
-        this.#scaleX = options.scaleX;
-        this.#scaleY = options.scaleY;
         this.#alpha = options.alpha;
         this.#zIndex = options.zIndex;
 
@@ -96,6 +88,34 @@ export class DrawNode {
         this.#visible = options.visible;
 
         this.#showBounds = options.showBounds ?? false;
+
+        const x = options.x;
+        const y = options.y;
+        const originOffsetX = options.originOffsetX;
+        const originOffsetY = options.originOffsetY;
+        const rotation = options.rotation;
+        const scaleX = options.scaleX;
+        const scaleY = options.scaleY;
+
+        const hasTransform = x !== 0 || y !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
+        if (hasTransform) {
+            // 回転のサイン・コサインを計算
+            const rCos = Math.cos(rotation);
+            const rSin = Math.sin(rotation);
+
+            // 行列の各成分を計算
+            const a = scaleX * rCos;
+            const b = scaleX * rSin;
+            const c = -scaleY * rSin;
+            const d = scaleY * rCos;
+            const e = x + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
+            const f = y + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
+
+            this.#transformMatrix = [a, b, c, d, e, f];
+            // クソややこしいね！translateとrotateとscaleが恋しいよ
+        } else {
+            this.#transformMatrix = null;
+        }
     }
 
     get options() { return this.#options; }
@@ -155,23 +175,10 @@ export class DrawNode {
 
         ctx.save();
 
-        // PERF: ctxへの操作は死ぬほど重い ifで避けたほうが圧倒的に得
-        // PERF: あとこのifはJITが(たぶん)消してくれます
-        if (this.#x || this.#y) {
-            ctx.translate(this.#x, this.#y);
+        if (this.#transformMatrix !== null) {
+            ctx.transform(...this.#transformMatrix);
         }
-        if (this.#rotation !== 0) {
-            if (this.#rotationCenterX !== 0 || this.#rotationCenterY !== 0) {
-                ctx.translate(this.#rotationCenterX, this.#rotationCenterY);
-                ctx.rotate(this.#rotation);
-                ctx.translate(-this.#rotationCenterX, -this.#rotationCenterY);
-            } else {
-                ctx.rotate(this.#rotation);
-            }
-        }
-        if (this.#scaleX !== 1 || this.#scaleY !== 1) {
-            ctx.scale(this.#scaleX, this.#scaleY);
-        }
+
         if (this.#alpha !== 1) {
             ctx.globalAlpha *= this.#alpha;
         }
