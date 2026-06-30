@@ -63,7 +63,6 @@ export class Frame extends DrawObject {
 
         return {
             ...options,
-            strokeStyle: this.getStyle(this.strokeStyle),
             lineRectWidth: lineRectWidth,
             lineRectHeight: lineRectHeight,
             lineWidth: lineWidth

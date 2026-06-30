@@ -82,7 +82,6 @@ export class Donut extends DrawObject {
 
         return {
             ...options,
-            strokeStyle: this.getStyle(this.strokeStyle),
             lineRadius: lineRadius,
             lineWidth: lineWidth,
         };

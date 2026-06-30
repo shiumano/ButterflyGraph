@@ -159,8 +159,6 @@ export class TextObject extends DrawObject {
         const options = super.calculateOptions(t);
         return {
             ...options,
-            fillStyle: this.getStyle(this.fillStyle),
-            strokeStyle: this.getStyle(this.strokeStyle),
             text: this.text,
             font: this.font,
             fill: this.fill,

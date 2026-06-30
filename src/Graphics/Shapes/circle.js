@@ -58,7 +58,6 @@ export class Circle extends DrawObject {
         const options = super.calculateOptions(t);
         return {
             ...options,
-            fillStyle: this.getStyle(this.fillStyle),
             radius: this.radius
         };
     }
