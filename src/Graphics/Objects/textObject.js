@@ -87,10 +87,10 @@ export class TextObject extends DrawObject {
     }
 
     get width() { return super.width; }
-    set width(_) {};
+    set width(_) { };
 
     get height() { return super.height; }
-    set height(_) {};
+    set height(_) { };
 
     get font() { return this.#font; }
     set font(value) {

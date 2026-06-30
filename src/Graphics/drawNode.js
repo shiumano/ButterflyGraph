@@ -136,7 +136,7 @@ export class DrawNode {
         //     : しかしTSはthis.constructorをコンストラクタではない通常の関数として解釈する
         // 全てのカルマをここで背負う
         /** @typedef {new (options: Partial<T>, oldNode?: this) => this} ThisNodeConstructor */
-        return new /** @type {ThisNodeConstructor} */ (this.constructor)({...this.options, ...options}, this);
+        return new /** @type {ThisNodeConstructor} */(this.constructor)({ ...this.options, ...options }, this);
     }
 
     /**
@@ -187,7 +187,7 @@ export class DrawNode {
      * 派生クラスで実装
      * @param {CanvasRenderingContext2D} ctx
      */
-    draw(ctx) {}
+    draw(ctx) { }
 
     // スーパー簡易グローバルID
     static #globalCreatedCount = 0;
