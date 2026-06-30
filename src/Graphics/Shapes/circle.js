@@ -7,8 +7,7 @@ import { DrawNode } from "../drawNode.js";
  * @typedef {DrawObjectOptions & {
  *   radius?: number
  * }} CircleOptions
- * @typedef {Omit<DrawNodeOptions, "fillStyle"> & {
- *    fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  *   radius: number
  * }} CircleNodeOptions
  */
@@ -59,7 +58,6 @@ export class Circle extends DrawObject {
         const options = super.calculateOptions(t);
         return {
             ...options,
-            fillStyle: this.getStyle(this.fillStyle),
             radius: this.radius
         };
     }
@@ -105,7 +103,6 @@ class CircleNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        this._setFillStyle(ctx);
         ctx.fill(this.#path);
     }
 }

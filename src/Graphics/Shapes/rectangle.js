@@ -6,8 +6,7 @@ import { DrawNode } from "../drawNode.js";
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
  * @typedef {DrawObjectOptions & {
  * }} RectangleOptions
- * @typedef {Omit<DrawNodeOptions, "fillStyle"> & {
- *    fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  * }} RectangleNodeOptions
  */
 
@@ -33,7 +32,6 @@ export class Rectangle extends DrawObject {
         const options = super.calculateOptions(t);
         return {
             ...options,
-            fillStyle: this.getStyle(this.fillStyle),
         };
     }
 
@@ -64,7 +62,6 @@ export class RectangleNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        this._setFillStyle(ctx);
         ctx.fillRect(0, 0, this.width, this.height);
     }
 }

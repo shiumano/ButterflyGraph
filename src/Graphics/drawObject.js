@@ -113,8 +113,8 @@ export class DrawObject {
 
         this.#showBounds = options.showBounds ?? false;
 
-        this.#fillStyle = options.fillStyle ?? options.color ?? "#000";
-        this.#strokeStyle = options.strokeStyle ?? "#000";
+        this.#fillStyle = options.fillStyle ?? options.color;
+        this.#strokeStyle = options.strokeStyle;
 
         if (this.#fillStyle instanceof Gradient) {
             this.#fillStyle.mountTo(this);
@@ -368,19 +368,6 @@ export class DrawObject {
     }
 
     /**
-     * CanvasのstyleもしくはGradientBuilderを取得
-     * @param {string | CanvasGradient | CanvasPattern | Gradient} style
-     */
-    getStyle(style) {
-        if (style instanceof Gradient) {
-            return style.getGradientBuilder();
-        }
-        else {
-            return style;
-        }
-    }
-
-    /**
      * 子オブジェクトのオプションの計算
      * @template {GenericDrawNode} N
      * @param {DrawObject<N>} child
@@ -406,13 +393,18 @@ export class DrawObject {
         const cacheOptions = hasCache ? this.cachedNode.options : {};
         const transforms = (!hasCache || this.transformChanged) ? this.calculateTransforms(t) : {};
 
+        const fillStyle = this.fillStyle instanceof Gradient ? this.fillStyle.getGradientBuilder() : this.fillStyle;
+        const strokeStyle = this.strokeStyle instanceof Gradient ? this.strokeStyle.getGradientBuilder() : this.strokeStyle;
+
         // TOOBAD: 実際の流れとしては正しいんだけど、TSが理解できる領域ではないらしい
         return /** @type {NodeOptions<T>} */ ({
             ...cacheOptions,
             ...transforms,
             width: this.width,
             height: this.height,
-            showBounds: this.showBounds
+            showBounds: this.showBounds,
+            fillStyle: fillStyle,
+            strokeStyle: strokeStyle,
         });
     }
 

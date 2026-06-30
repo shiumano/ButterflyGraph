@@ -11,9 +11,7 @@ import { DrawNode } from "../drawNode.js";
  *   strokeWidth?: number
  *   sizeReference?: "actual" | "font"
  * }} TextOptions
- * @typedef {Omit<DrawNodeOptions, "fillStyle" | "strokeStyle"> & {
- *   fillStyle: Exclude<DrawNodeOptions["fillStyle"], undefined>
- *   strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  *   text: string
  *   font: string
  *   fill: boolean
@@ -89,10 +87,10 @@ export class TextObject extends DrawObject {
     }
 
     get width() { return super.width; }
-    set width(_) {};
+    set width(_) { };
 
     get height() { return super.height; }
-    set height(_) {};
+    set height(_) { };
 
     get font() { return this.#font; }
     set font(value) {
@@ -161,8 +159,6 @@ export class TextObject extends DrawObject {
         const options = super.calculateOptions(t);
         return {
             ...options,
-            fillStyle: this.getStyle(this.fillStyle),
-            strokeStyle: this.getStyle(this.strokeStyle),
             text: this.text,
             font: this.font,
             fill: this.fill,
@@ -220,14 +216,12 @@ class TextNode extends DrawNode {
         // 縁取りの上から塗りつぶしが重なる
         // 描画順序を選択できるようにする？
         if (this.#strokeWidth > 0) {
-            this._setStrokeStyle(ctx);
             ctx.lineWidth = this.#strokeWidth;
             ctx.lineJoin = "round";  // miterはやってらんない
             ctx.strokeText(this.#text, this.#offsetX, this.#offsetY);
         }
 
         if (this.#fill) {
-            this._setFillStyle(ctx);
             ctx.fillText(this.#text, this.#offsetX, this.#offsetY);
         }
     }

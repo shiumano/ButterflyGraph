@@ -9,8 +9,7 @@ import { DrawNode } from "../drawNode.js";
  *   radius?: number
  *   lineWidth?: number
  * }} DonutOptions
- * @typedef {Omit<DrawNodeOptions, "strokeStyle"> & {
- *   strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  *   lineRadius: number
  *   lineWidth: number
  * }} DonutNodeOptions
@@ -83,7 +82,6 @@ export class Donut extends DrawObject {
 
         return {
             ...options,
-            strokeStyle: this.getStyle(this.strokeStyle),
             lineRadius: lineRadius,
             lineWidth: lineWidth,
         };
@@ -135,7 +133,6 @@ class DonutNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        this._setStrokeStyle(ctx);
         ctx.lineWidth = this.#lineWidth;
         ctx.stroke(this.#path);
     }

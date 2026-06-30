@@ -125,33 +125,6 @@ export class DrawNode {
 
     get zIndex() { return this.#zIndex; }
 
-    // いつかグラデーションの設定の処理を追加しようと思うと、こうしておくほうが良い
-    /**
-     * ctxに塗りつぶしの色を設定する
-     * @param {CanvasRenderingContext2D} ctx
-     */
-    _setFillStyle(ctx) {
-        if (this.#fillStyle !== undefined) {
-            ctx.fillStyle = this.#fillStyle;
-        }
-        else if (this.#fillGradient !== undefined) {
-            ctx.fillStyle = this.#fillGradient.getGradient(ctx);
-        }
-    }
-
-    /**
-     * ctxに線の色を設定する
-     * @param {CanvasRenderingContext2D} ctx
-     */
-    _setStrokeStyle(ctx) {
-        if (this.#strokeStyle !== undefined) {
-            ctx.strokeStyle = this.#strokeStyle;
-        }
-        else if (this.#strokeGradient !== undefined) {
-            ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
-        }
-    }
-
     /**
      * 新しいオプションを指定して再生成
      * @param {Partial<T>} options
@@ -163,7 +136,7 @@ export class DrawNode {
         //     : しかしTSはthis.constructorをコンストラクタではない通常の関数として解釈する
         // 全てのカルマをここで背負う
         /** @typedef {new (options: Partial<T>, oldNode?: this) => this} ThisNodeConstructor */
-        return new /** @type {ThisNodeConstructor} */ (this.constructor)({...this.options, ...options}, this);
+        return new /** @type {ThisNodeConstructor} */(this.constructor)({ ...this.options, ...options }, this);
     }
 
     /**
@@ -191,6 +164,20 @@ export class DrawNode {
             ctx.restore();
         }
 
+        if (this.#fillStyle !== undefined) {
+            ctx.fillStyle = this.#fillStyle;
+        }
+        else if (this.#fillGradient !== undefined) {
+            ctx.fillStyle = this.#fillGradient.getGradient(ctx);
+        }
+
+        if (this.#strokeStyle !== undefined) {
+            ctx.strokeStyle = this.#strokeStyle;
+        }
+        else if (this.#strokeGradient !== undefined) {
+            ctx.strokeStyle = this.#strokeGradient.getGradient(ctx);
+        }
+
         this.draw(ctx);
 
         ctx.restore();
@@ -200,7 +187,7 @@ export class DrawNode {
      * 派生クラスで実装
      * @param {CanvasRenderingContext2D} ctx
      */
-    draw(ctx) {}
+    draw(ctx) { }
 
     // スーパー簡易グローバルID
     static #globalCreatedCount = 0;

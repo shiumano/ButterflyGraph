@@ -7,8 +7,7 @@ import { DrawNode } from "../drawNode.js";
  * @typedef {DrawObjectOptions & {
  *   lineWidth?: number
  * }} FrameOptions
- * @typedef {Omit<DrawNodeOptions, "strokeStyle"> & {
- *    strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>
+ * @typedef {DrawNodeOptions & {
  *    lineWidth: number
  *    lineRectWidth: number
  *    lineRectHeight: number
@@ -64,7 +63,6 @@ export class Frame extends DrawObject {
 
         return {
             ...options,
-            strokeStyle: this.getStyle(this.strokeStyle),
             lineRectWidth: lineRectWidth,
             lineRectHeight: lineRectHeight,
             lineWidth: lineWidth
@@ -107,7 +105,6 @@ export class FrameNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        this._setStrokeStyle(ctx);
         ctx.lineWidth = this.#lineWidth;
         ctx.lineJoin = "miter";
         ctx.strokeRect(this.#offset, this.#offset, this.#lineRectWidth, this.#lineRectHeight);
