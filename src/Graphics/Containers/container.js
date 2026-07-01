@@ -103,20 +103,29 @@ export class Container extends DrawObject {
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {
-        // PERF: reasonにさらに"timed"を追加し、さらにrequester: DrawNodeを追加すればこのforは消せる
-        // TODO: やる価値はそこそこありそうかな
-        let childrenTimed = false;
-        let childrenAnimated = false;
-        let childrenPerfect = true;
-        for (let i = 0; i < this.#children.length; i++) {
-            const child = this.#children[i];
-            childrenTimed ||= child.timed;
-            childrenAnimated ||= child.animated;
-            childrenPerfect &&= child.perfectlyOptimized;
+        if (this.getAllChildren().includes(sender) || true) {
+            if (this.#childrenTimed && !sender.timed ||
+                this.#childrenAnimated && !sender.animated ||
+                !this.perfectlyOptimized && sender.perfectlyOptimized
+            ) {
+                let childrenTimed = false;
+                let childrenAnimated = false;
+                let childrenPerfect = true;
+                for (let i = 0; i < this.#children.length; i++) {
+                    const child = this.#children[i];
+                    childrenTimed ||= child.timed;
+                    childrenAnimated ||= child.animated;
+                    childrenPerfect &&= child.perfectlyOptimized;
+                }
+                this.#childrenTimed = childrenTimed;
+                this.#childrenAnimated = childrenAnimated;
+                this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
+            } else {
+                this.#childrenTimed ||= sender.timed;
+                this.#childrenAnimated ||= sender.animated;
+                this.#perfectlyOptimized &&= sender.perfectlyOptimized;
+            }
         }
-        this.#childrenTimed = childrenTimed;
-        this.#childrenAnimated = childrenAnimated;
-        this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
 
         super.requestRecreate(sender, reason);
     }
@@ -138,11 +147,12 @@ export class Container extends DrawObject {
                 child.parent.removeChild(child);  // childを奪う そういう仕様とする
             }
 
-            child.parent = this;
             this.#children.push(child);
             this.#childrenTimed ||= child.timed;
             this.#childrenAnimated ||= child.animated;
             this.#perfectlyOptimized &&= child.perfectlyOptimized;
+
+            child.parent = this;
         }
         this.requestRecreate(this, "object");
     }
