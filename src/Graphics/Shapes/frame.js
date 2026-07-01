@@ -37,7 +37,7 @@ export class Frame extends DrawObject {
         if (value === this.#lineWidth) return;
 
         this.#lineWidth = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get color() { return this.strokeStyle; }

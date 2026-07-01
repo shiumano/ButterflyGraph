@@ -40,7 +40,7 @@ export class Circle extends DrawObject {
         this.#radius = value;
         super.width = value * 2;
         super.height = value * 2;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     // ゲロ甘ったるい糖衣構文

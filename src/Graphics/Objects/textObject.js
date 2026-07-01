@@ -69,7 +69,7 @@ export class TextObject extends DrawObject {
         if (this.#fill === value) return;
 
         this.#fill = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get strokeWidth() { return this.#strokeWidth; }
@@ -82,7 +82,7 @@ export class TextObject extends DrawObject {
         if (this.text.length !== 0) {
             super.width = this.#textWidth + this.strokeWidth;
             super.height = this.#textHeight + this.strokeWidth;
-            this.requestRecreate("object");
+            this.requestRecreate(this, "object");
         }
     }
 
@@ -98,7 +98,7 @@ export class TextObject extends DrawObject {
 
         this.#font = value;
         this.#updateMetrics();
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get text() { return this.#text; }
@@ -107,7 +107,7 @@ export class TextObject extends DrawObject {
 
         this.#text = value;
         this.#updateMetrics();
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get sizeReference() { return this.#sizeReference; }
@@ -116,7 +116,7 @@ export class TextObject extends DrawObject {
 
         this.#sizeReference = value;
         this.#updateMetrics();
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     };
 
     #updateMetrics() {

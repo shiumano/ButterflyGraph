@@ -61,7 +61,7 @@ export class Container extends DrawObject {
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (child.anchor.x !== 0) {
-                child.requestRecreate("transform");
+                child.requestRecreate(this, "transform");
             }
         }
     }
@@ -76,7 +76,7 @@ export class Container extends DrawObject {
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (child.anchor.y !== 0) {
-                child.requestRecreate("transform");
+                child.requestRecreate(this, "transform");
             }
         }
     }
@@ -95,13 +95,14 @@ export class Container extends DrawObject {
         if (this.#clip === value) return;
 
         this.#clip = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**
+     * @param {GenericDrawObject} sender
      * @param {RecreateReason} reason
      */
-    requestRecreate(reason) {
+    requestRecreate(sender, reason) {
         // PERF: reasonにさらに"timed"を追加し、さらにrequester: DrawNodeを追加すればこのforは消せる
         // TODO: やる価値はそこそこありそうかな
         let childrenTimed = false;
@@ -117,7 +118,7 @@ export class Container extends DrawObject {
         this.#childrenAnimated = childrenAnimated;
         this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
 
-        super.requestRecreate(reason);
+        super.requestRecreate(sender, reason);
     }
 
     getAllChildren() {
@@ -143,7 +144,7 @@ export class Container extends DrawObject {
             this.#childrenAnimated ||= child.animated;
             this.#perfectlyOptimized &&= child.perfectlyOptimized;
         }
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**
@@ -174,7 +175,7 @@ export class Container extends DrawObject {
         this.#childrenAnimated = childrenAnimated;
         this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
 
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     clearChildren() {
@@ -183,7 +184,7 @@ export class Container extends DrawObject {
         this.#childrenTimed = false;
         this.#childrenAnimated = false;
         this.#perfectlyOptimized = this.isPerfectlyOptimized();
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**
