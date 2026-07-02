@@ -26,6 +26,9 @@ export class Container extends DrawObject {
     #childrenAnimated;
     #clip;
 
+    /** @type {readonly GenericDrawObject[] | null} */
+    #frozenChildren = null;
+
     /**
      * @param {ContainerOptions} options
      */
@@ -131,13 +134,20 @@ export class Container extends DrawObject {
     }
 
     getAllChildren() {
-        return Object.freeze(this.#children.slice());  // PERF: 配列コピーすんのコストなんだわ やめていい？
+        let frozenChildren = this.#frozenChildren;
+
+        if (frozenChildren === null) {
+            frozenChildren = Object.freeze(this.#children.slice());
+        }
+
+        return frozenChildren;
     }
 
     /**
      * @param {...GenericDrawObject} children
      */
     addChild(...children) {
+        this.#frozenChildren = null;
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const index = this.#children.indexOf(child);
@@ -161,6 +171,8 @@ export class Container extends DrawObject {
      * @param {GenericDrawObject} child
      */
     removeChild(child) {
+        this.#frozenChildren = null;
+
         const index = this.#children.indexOf(child);
         if (index === -1) return;  // この Container の子ではない
 
@@ -194,6 +206,7 @@ export class Container extends DrawObject {
         this.#childrenTimed = false;
         this.#childrenAnimated = false;
         this.#perfectlyOptimized = this.isPerfectlyOptimized();
+        this.#frozenChildren = [];  // 何もないなら最初から空配列でいい
         this.requestRecreate(this, "object");
     }
 
