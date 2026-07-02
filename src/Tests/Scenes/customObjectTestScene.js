@@ -59,7 +59,7 @@ class Butterfly extends DrawObject {
         if (this.#dark === value) return;
 
         this.#dark = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**

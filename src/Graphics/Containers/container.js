@@ -26,6 +26,9 @@ export class Container extends DrawObject {
     #childrenAnimated;
     #clip;
 
+    /** @type {readonly GenericDrawObject[] | null} */
+    #frozenChildren = null;
+
     /**
      * @param {ContainerOptions} options
      */
@@ -61,7 +64,7 @@ export class Container extends DrawObject {
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (child.anchor.x !== 0) {
-                child.requestRecreate("transform");
+                child.requestRecreate(this, "transform");
             }
         }
     }
@@ -76,7 +79,7 @@ export class Container extends DrawObject {
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (child.anchor.y !== 0) {
-                child.requestRecreate("transform");
+                child.requestRecreate(this, "transform");
             }
         }
     }
@@ -95,39 +98,56 @@ export class Container extends DrawObject {
         if (this.#clip === value) return;
 
         this.#clip = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**
+     * @param {GenericDrawObject} sender
      * @param {RecreateReason} reason
      */
-    requestRecreate(reason) {
-        // PERF: reasonにさらに"timed"を追加し、さらにrequester: DrawNodeを追加すればこのforは消せる
-        // TODO: やる価値はそこそこありそうかな
-        let childrenTimed = false;
-        let childrenAnimated = false;
-        let childrenPerfect = true;
-        for (let i = 0; i < this.#children.length; i++) {
-            const child = this.#children[i];
-            childrenTimed ||= child.timed;
-            childrenAnimated ||= child.animated;
-            childrenPerfect &&= child.perfectlyOptimized;
+    requestRecreate(sender, reason) {
+        if (this.getAllChildren().includes(sender) || true) {
+            if (this.#childrenTimed && !sender.timed ||
+                this.#childrenAnimated && !sender.animated ||
+                !this.perfectlyOptimized && sender.perfectlyOptimized
+            ) {
+                let childrenTimed = false;
+                let childrenAnimated = false;
+                let childrenPerfect = true;
+                for (let i = 0; i < this.#children.length; i++) {
+                    const child = this.#children[i];
+                    childrenTimed ||= child.timed;
+                    childrenAnimated ||= child.animated;
+                    childrenPerfect &&= child.perfectlyOptimized;
+                }
+                this.#childrenTimed = childrenTimed;
+                this.#childrenAnimated = childrenAnimated;
+                this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
+            } else {
+                this.#childrenTimed ||= sender.timed;
+                this.#childrenAnimated ||= sender.animated;
+                this.#perfectlyOptimized &&= sender.perfectlyOptimized;
+            }
         }
-        this.#childrenTimed = childrenTimed;
-        this.#childrenAnimated = childrenAnimated;
-        this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
 
-        super.requestRecreate(reason);
+        super.requestRecreate(sender, reason);
     }
 
     getAllChildren() {
-        return Object.freeze(this.#children.slice());  // PERF: 配列コピーすんのコストなんだわ やめていい？
+        let frozenChildren = this.#frozenChildren;
+
+        if (frozenChildren === null) {
+            frozenChildren = Object.freeze(this.#children.slice());
+        }
+
+        return frozenChildren;
     }
 
     /**
      * @param {...GenericDrawObject} children
      */
     addChild(...children) {
+        this.#frozenChildren = null;
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const index = this.#children.indexOf(child);
@@ -137,19 +157,22 @@ export class Container extends DrawObject {
                 child.parent.removeChild(child);  // childを奪う そういう仕様とする
             }
 
-            child.parent = this;
             this.#children.push(child);
             this.#childrenTimed ||= child.timed;
             this.#childrenAnimated ||= child.animated;
             this.#perfectlyOptimized &&= child.perfectlyOptimized;
+
+            child.parent = this;
         }
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**
      * @param {GenericDrawObject} child
      */
     removeChild(child) {
+        this.#frozenChildren = null;
+
         const index = this.#children.indexOf(child);
         if (index === -1) return;  // この Container の子ではない
 
@@ -174,7 +197,7 @@ export class Container extends DrawObject {
         this.#childrenAnimated = childrenAnimated;
         this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
 
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     clearChildren() {
@@ -183,7 +206,8 @@ export class Container extends DrawObject {
         this.#childrenTimed = false;
         this.#childrenAnimated = false;
         this.#perfectlyOptimized = this.isPerfectlyOptimized();
-        this.requestRecreate("object");
+        this.#frozenChildren = [];  // 何もないなら最初から空配列でいい
+        this.requestRecreate(this, "object");
     }
 
     /**

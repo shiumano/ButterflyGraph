@@ -131,7 +131,7 @@ export class DrawObject {
         if (this.#x === value) return;
 
         this.#x = value;
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get y() { return this.#y; }
@@ -139,7 +139,7 @@ export class DrawObject {
         if (this.#y === value) return;
 
         this.#y = value;
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get rotation() { return this.#rotation; }
@@ -147,7 +147,7 @@ export class DrawObject {
         if (this.#rotation === value) return;
 
         this.#rotation = value;
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get width() { return this.#width; }
@@ -156,8 +156,8 @@ export class DrawObject {
 
         this.#width = value;
         this.#updateOriginOffset();
-        this.requestRecreate("transform");  // PERF: requestRecreateは安易に呼ばないほうが良いよ width, heightはtransformとobject両方に関わるってのはわかるけども
-        this.requestRecreate("object");
+        this.requestRecreate(this, "transform");  // PERF: requestRecreateは安易に呼ばないほうが良いよ width, heightはtransformとobject両方に関わるってのはわかるけども
+        this.requestRecreate(this, "object");
     }
 
     get height() { return this.#height; }
@@ -166,8 +166,8 @@ export class DrawObject {
 
         this.#height = value;
         this.#updateOriginOffset();
-        this.requestRecreate("transform");
-        this.requestRecreate("object");
+        this.requestRecreate(this, "transform");
+        this.requestRecreate(this, "object");
     }
 
     // HACK: 縦横スケールが1:1じゃなかったらどうせ違う 適当に平均を返してあげよう
@@ -183,7 +183,7 @@ export class DrawObject {
 
         this.#scaleX = value;
         this.#updateOriginOffset();
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get scaleY() { return this.#scaleY; }
@@ -192,7 +192,7 @@ export class DrawObject {
 
         this.#scaleY = value;
         this.#updateOriginOffset();
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get alpha() { return this.#alpha; }
@@ -200,7 +200,7 @@ export class DrawObject {
         if (this.#alpha === value) return;
 
         this.#alpha = value;
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get anchor() { return this.#anchor; }
@@ -208,7 +208,7 @@ export class DrawObject {
         if (this.#anchor.equals(value)) return;
 
         this.#anchor = value.freeze();
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get origin() { return this.#origin; }
@@ -217,7 +217,7 @@ export class DrawObject {
 
         this.#origin = value.freeze();
         this.#updateOriginOffset();
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get zIndex() { return this.#zIndex; }
@@ -225,7 +225,7 @@ export class DrawObject {
         if (this.#zIndex === value) return;
 
         this.#zIndex = value;
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get visible() { return this.#visible; }
@@ -233,7 +233,7 @@ export class DrawObject {
         if (this.#visible === value) return;
 
         this.#visible = value;
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get showBounds() { return this.#showBounds; }
@@ -241,7 +241,7 @@ export class DrawObject {
         if (this.#showBounds === value) return;
 
         this.#showBounds = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get color() { return this.fillStyle; }
@@ -259,7 +259,7 @@ export class DrawObject {
         }
 
         this.#fillStyle = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get strokeStyle() { return this.#strokeStyle; }
@@ -274,7 +274,7 @@ export class DrawObject {
         }
 
         this.#strokeStyle = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get parent() { return this.#parent; }
@@ -283,7 +283,7 @@ export class DrawObject {
 
         this.#parent = value;
         this.#updateOriginOffset();
-        this.requestRecreate("transform");
+        this.requestRecreate(this, "transform");
     }
 
     get timed() { return this.#timed; }
@@ -291,7 +291,7 @@ export class DrawObject {
         if (this.#timed === value) return;
 
         this.#timed = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get animated() { return this.#animated; }
@@ -314,9 +314,10 @@ export class DrawObject {
 
     /**
      * オブジェクトの再生性を要求、情報を親に伝播
+     * @param {GenericDrawObject} sender
      * @param {RecreateReason} reason
      */
-    requestRecreate(reason) {
+    requestRecreate(sender, reason) {
         this.#contentChanged = true;
         // console.log(reason, "changed by", this.constructor.name, performance.now())
         switch (reason) {
@@ -328,7 +329,7 @@ export class DrawObject {
                 break;
         }
 
-        this.parent?.requestRecreate("object");
+        this.parent?.requestRecreate(sender, "object");
     }
 
     // IDK: いつか#を_にして半公開するかも
@@ -348,7 +349,7 @@ export class DrawObject {
      */
     registerAnimationFor(target, applyer) {
         this.#animated = true;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
 
         const startValue = this[target];
 
@@ -506,7 +507,7 @@ export class DrawObject {
     }
 
     /**
-     * requestRecreate(reason)を確実に呼び出し、キャッシュが再利用可能であると保証しますか？
+     * requestRecreate(sender, reason)を確実に呼び出し、キャッシュが再利用可能であると保証しますか？
      */
     isPerfectlyOptimized() { return this.constructor === DrawObject; }
 

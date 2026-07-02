@@ -79,7 +79,7 @@ export class Gradient {
         }
 
         for (const obj of this.#mountedObjects) {
-            obj.requestRecreate("object");
+            obj.requestRecreate(obj, "object");
         }
     }
 

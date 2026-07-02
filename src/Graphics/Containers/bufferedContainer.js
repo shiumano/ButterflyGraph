@@ -60,7 +60,7 @@ export class BufferedContainer extends Container {
         if (this.#supersize === value) return;
 
         this.#supersize = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**
@@ -74,7 +74,7 @@ export class BufferedContainer extends Container {
         if (this.#follow === value) return;
 
         this.#follow = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get redrawRainbow() { return this.#redrawRainbow; }
@@ -82,7 +82,7 @@ export class BufferedContainer extends Container {
         if (this.#redrawRainbow === value) return;
 
         this.#redrawRainbow = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get resolutionScale() { return this.#resolutionScale; }
@@ -90,7 +90,7 @@ export class BufferedContainer extends Container {
         if (this.#resolutionScale === value) return;
 
         this.#resolutionScale = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**

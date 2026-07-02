@@ -45,7 +45,7 @@ export class Donut extends DrawObject {
         this.#radius = value;
         super.width = value * 2;
         super.height = value * 2;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get lineWidth() { return this.#lineWidth; }
@@ -53,7 +53,7 @@ export class Donut extends DrawObject {
         if (value === this.#lineWidth) return;
 
         this.#lineWidth = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get width() { return super.width; }

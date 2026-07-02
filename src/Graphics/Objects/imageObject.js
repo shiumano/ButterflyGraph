@@ -75,7 +75,7 @@ export class ImageObject extends DrawObject {
 
         this.#fps = value;
         this.#updateTimeInfo();
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get imageAlign() { return this.#imageAlign; }
@@ -85,7 +85,7 @@ export class ImageObject extends DrawObject {
         ) return;
 
         this.#imageAlign = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get imageSmoothing() { return this.#imageSmoothing; }
@@ -93,7 +93,7 @@ export class ImageObject extends DrawObject {
         if (this.#imageSmoothing === value) return;
 
         this.#imageSmoothing = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     get loop() { return this.#loop; }
@@ -101,7 +101,7 @@ export class ImageObject extends DrawObject {
         if (this.#loop === value) return;
 
         this.#loop = value;
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     #updateTimeInfo() {
@@ -121,7 +121,7 @@ export class ImageObject extends DrawObject {
             super.width = 0;
             super.height = 0;
             this.#updateTimeInfo();
-            this.requestRecreate("object");
+            this.requestRecreate(this, "object");
             return;
         }
 
@@ -136,7 +136,7 @@ export class ImageObject extends DrawObject {
         this.#frameCount = images.length;
 
         this.#updateTimeInfo();
-        this.requestRecreate("object");
+        this.requestRecreate(this, "object");
     }
 
     /**
@@ -165,7 +165,7 @@ export class ImageObject extends DrawObject {
         }
 
         if (this.cachedNode?.options.hash !== imageInfo.hash) {
-            this.requestRecreate("object");
+            this.requestRecreate(this, "object");
         }
 
         const offsetX = (this.width - imageInfo.width) * this.#imageAlign.x;
