@@ -51,6 +51,23 @@ export class ContainerTestScene extends TestScene {
         this.addBindToggle("Clipping", testContainer, "clip", value => value);
         this.addBindToggle("Show bounds", testContainer, "showBounds", value => value);
 
+        /** @type {Circle[]} */
+        const addedChild = [];
+        this.addButton("Add child", () => {
+            const circle = new Circle({
+                x: Math.random() * 500, y: Math.random() * 500,
+                radius: 50, color: "cyan"
+            });
+            testContainer.addChild(circle);
+            addedChild.push(circle);
+        });
+
+        this.addButton("Remove child", () => {
+            const circle = addedChild.pop();
+            if (circle === undefined) return;
+            testContainer.removeChild(circle);
+        });
+
         this.root.addChild(testContainer);
     }
 }
