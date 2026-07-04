@@ -99,24 +99,28 @@ export class DrawNode {
         const scaleX = options.scaleX;
         const scaleY = options.scaleY;
 
-        const hasTransform = x !== 0 || y !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
-        if (hasTransform) {
-            // 回転のサイン・コサインを計算
-            const rCos = Math.cos(rotation);
-            const rSin = Math.sin(rotation);
-
-            // 行列の各成分を計算
-            const a = scaleX * rCos;
-            const b = scaleX * rSin;
-            const c = -scaleY * rSin;
-            const d = scaleY * rCos;
-            const e = x + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
-            const f = y + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
-
-            this.#transformMatrix = [a, b, c, d, e, f];
-            // クソややこしいね！translateとrotateとscaleが恋しいよ
+        if (!options.transformChanged && oldNode !== null) {
+            this.#transformMatrix = oldNode.#transformMatrix;
         } else {
-            this.#transformMatrix = null;
+            const hasTransform = x !== 0 || y !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
+            if (hasTransform) {
+                // 回転のサイン・コサインを計算
+                const rCos = Math.cos(rotation);
+                const rSin = Math.sin(rotation);
+
+                // 行列の各成分を計算
+                const a = scaleX * rCos;
+                const b = scaleX * rSin;
+                const c = -scaleY * rSin;
+                const d = scaleY * rCos;
+                const e = x + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
+                const f = y + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
+
+                this.#transformMatrix = [a, b, c, d, e, f];
+                // クソややこしいね！translateとrotateとscaleが恋しいよ
+            } else {
+                this.#transformMatrix = null;
+            }
         }
     }
 
