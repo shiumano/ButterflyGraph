@@ -406,6 +406,7 @@ export class DrawObject {
             showBounds: this.showBounds,
             fillStyle: fillStyle,
             strokeStyle: strokeStyle,
+            objectChanged: this.objectChanged,
         });
     }
 
@@ -427,6 +428,7 @@ export class DrawObject {
             alpha: this.alpha,
             zIndex: this.zIndex,
             visible: this.visible,
+            transformChanged: this.transformChanged,
         };
     }
 

@@ -19,7 +19,9 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  *   fillStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
  *   visible: boolean
- *   showBounds?: boolean
+ *   showBounds: boolean
+ *   transformChanged: boolean
+ *   objectChanged: boolean
  * }} DrawNodeOptions
  * @typedef {DrawNode<DrawNodeOptions>} GenericDrawNode
  */
