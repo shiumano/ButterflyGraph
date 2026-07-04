@@ -1,0 +1,28 @@
+{
+  "name": "butterflygraph",
+  "version": "0.0.0",
+  "description": "個人的欲求のために作ったJavaScript/Canvas API用シーングラフライブラリ",
+  "homepage": "https://github.com/shiumano/ButterflyGraph#readme",
+  "bugs": {
+    "url": "https://github.com/shiumano/ButterflyGraph/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shiumano/ButterflyGraph.git"
+  },
+  "license": "Unlicense",
+  "author": "Shiumano",
+  "type": "module",
+  "main": "",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p ./jsconfig.json",
+    "build-tests": "esbuild ./src/Tests/main.js --bundle --format=esm --minify --sourcemap --keep-names --outfile=./dist/main.js && cp ./src/Tests/index.html ./dist/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "esbuild": "^0.28.1",
+    "eslint": "^10.6.0",
+    "typescript": "^6.0.3"
+  }
+}
