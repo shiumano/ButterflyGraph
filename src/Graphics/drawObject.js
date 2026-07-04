@@ -329,7 +329,7 @@ export class DrawObject {
                 break;
         }
 
-        this.parent?.requestRecreate(sender, "object");
+        this.parent?.requestRecreate(this, reason);
     }
 
     // IDK: いつか#を_にして半公開するかも

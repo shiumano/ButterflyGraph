@@ -106,7 +106,7 @@ export class Container extends DrawObject {
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {
-        if (this.getAllChildren().includes(sender) || true) {
+        if (this.getAllChildren().includes(sender)) {
             if (this.#childrenTimed && !sender.timed ||
                 this.#childrenAnimated && !sender.animated ||
                 !this.perfectlyOptimized && sender.perfectlyOptimized
