@@ -3,12 +3,13 @@ import { TestScene } from "./testScene.js";
 import { Circle } from "../../Graphics/Shapes/circle.js";
 import { Rectangle } from "../../Graphics/Shapes/rectangle.js";
 import { Anchor, allAnchors } from "../../Graphics/anchor.js";
-import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
+import { degreeToRadian, direct, rotationToHSLColor } from "../../Utils/unitConversion.js";
+import { TextObject } from "../../Graphics/Objects/textObject.js";
 
 export class ContainerTestScene extends TestScene {
     async load() {
         const testContainer = new Container({
-            x: 200, y: 200,
+            x: 200, y: 100,
             width: 500, height: 500,
             children: [
                 new Circle({
@@ -33,6 +34,37 @@ export class ContainerTestScene extends TestScene {
         });
         testContainer.addChild(greenRect);
 
+        const stackTestContainer = new Container({ x: 200, y: 600 });
+
+        for (let i = 0; i < 10; i++) {
+            const color = rotationToHSLColor(i / 10);
+            const zIndex = Math.min(i, 5);
+            const stackRect = new Rectangle({
+                x: 5 + (i * 60), y: 5 + (i * 10),
+                width: 50, height: 20,
+                color: color,
+                zIndex: zIndex
+            });
+            const stackText = new TextObject({
+                x: 25 + (i * 60), y: 30 + (i * 10),
+                text: `${zIndex}`,
+                font: "20px Arial",
+                color: color,
+                zIndex: zIndex
+            });
+            stackTestContainer.addChild(stackRect, stackText);
+        }
+        const zIndexTestRect = new Rectangle({
+            x: 0, y: 0,
+            width: 800, height: 150,
+            color: "white",
+            alpha: 0.5,
+            zIndex: 2
+        });
+        stackTestContainer.addChild(zIndexTestRect);
+
+        this.root.addChild(stackTestContainer);
+
         this.addBindSlider("X position", -500, 500, testContainer, "x", direct);
         this.addBindSlider("Y position", -500, 500, testContainer, "y", direct);
         this.addBindSlider("Rotation", -360, 360, testContainer, "rotation", degreeToRadian);
@@ -50,6 +82,8 @@ export class ContainerTestScene extends TestScene {
 
         this.addBindToggle("Clipping", testContainer, "clip", value => value);
         this.addBindToggle("Show bounds", testContainer, "showBounds", value => value);
+
+        this.addBindSlider("Z index", -1, 6, zIndexTestRect, "zIndex", direct);
 
         /** @type {Circle[]} */
         const addedChild = [];
