@@ -20,7 +20,7 @@
     "build-tests": "esbuild ./src/Tests/main.js --bundle --format=esm --minify --sourcemap --keep-names --outfile=./dist/main.js && cp ./src/Tests/index.html ./dist/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
+  "devDependencies": {
     "esbuild": "^0.28.1",
     "eslint": "^10.6.0",
     "typescript": "^6.0.3"
