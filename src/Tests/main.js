@@ -64,7 +64,12 @@ Scenes.forEach(async (SceneClass) => {
     const button = document.createElement("button");
     button.textContent = SceneClass.name;
     button.addEventListener("click", () => {
-        location.hash = SceneClass.name;  // hashchangeイベントでシーンが切り替わる
+        if (location.hash.replace("#", "") === SceneClass.name) {
+            // イベントを発行してロードし直す
+            window.dispatchEvent(new HashChangeEvent("hashchange"));
+        } else {
+            location.hash = SceneClass.name;  // hashchangeイベントでシーンが切り替わる
+        }
     });
 
     testsList.appendChild(button);

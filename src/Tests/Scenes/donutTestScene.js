@@ -12,6 +12,9 @@ export class DonutTestScene extends TestScene {
             strokeStyle: "yellow",
         });
 
+        this.addBindSlider("X position", 0, 500, donut, "x", direct);
+        this.addBindSlider("Y position", 0, 500, donut, "y", direct);
+        this.addBindToggle("Show bounds", donut, "showBounds", value => value);
         this.addBindSlider("Radius", 0, 100, donut, "radius", direct);
         this.addBindSlider("Line Width", 0, 50, donut, "lineWidth", direct);
 

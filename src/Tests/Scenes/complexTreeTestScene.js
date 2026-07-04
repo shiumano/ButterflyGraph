@@ -6,6 +6,7 @@ import { Container } from "../../Graphics/Containers/container.js";
 import { angleToHSLColor } from "../../Utils/unitConversion.js";
 import { TextObject } from "../../Graphics/Objects/textObject.js";
 import { Anchor } from "../../Graphics/anchor.js";
+import { BufferedContainer } from "../../Graphics/Containers/bufferedContainer.js";
 
 
 export class ComplexTreeTestScene extends TestScene {
@@ -24,7 +25,11 @@ export class ComplexTreeTestScene extends TestScene {
         });
         baseContainer.addChild(background);
 
-        const circlesContainer = new Container();
+        const circlesContainer = new Container({
+            width: 1000,
+            height: 1000,
+            clip: true,
+        });
         for (let i = 0; i < 500; i++) {
             const circle = new Circle({
                 fillStyle: angleToHSLColor(Math.random() * 360),
@@ -34,11 +39,19 @@ export class ComplexTreeTestScene extends TestScene {
             });
             circlesContainer.addChild(circle);
         }
-        circlesContainer.registerAnimationFor("x", (t) => Math.sin(t / 1000) * 50).to(1000000, 1000000);
-        circlesContainer.registerAnimationFor("y", (t) => Math.cos(t / 1000) * 50).to(1000000, 1000000);
-        baseContainer.addChild(circlesContainer);
 
-        const rectanglesContainer = new Container();
+        const circlesBufferContainer = new BufferedContainer({
+            width: 1000,
+            height: 1000,
+            visible: false
+        });
+        const circlesWrapContainer = new Container({ children: [circlesContainer, circlesBufferContainer] });
+        circlesWrapContainer.registerAnimationFor("x", (t) => Math.sin(t / 1000) * 50).to(1000000, 1000000);
+        circlesWrapContainer.registerAnimationFor("y", (t) => Math.cos(t / 1000) * 50).to(1000000, 1000000);
+        baseContainer.addChild(circlesWrapContainer);
+
+        const staticRectanglesContainer = new Container();
+        const rectanglesContainer = new Container({ children: [staticRectanglesContainer] });
         for (let i = 0; i < 500; i++) {
             const rectangle = new Rectangle({
                 fillStyle: angleToHSLColor(Math.random() * 360),
@@ -49,10 +62,14 @@ export class ComplexTreeTestScene extends TestScene {
                 y: Math.random() * 1000,
             });
 
-            if (i < 50) {
+            if (i < 100) {
                 rectangle.registerAnimationFor("rotation", (t) => t / 1000).to(2000000, 1000000);
+                rectanglesContainer.addChild(rectangle);
+            } else {
+                // PERF: 子が動くと、Container全体でmapが起きる
+                //     : 動かないものは動かないものContainerにまとめて、mapを限定しようね
+                staticRectanglesContainer.addChild(rectangle);
             }
-            rectanglesContainer.addChild(rectangle);
         }
         rectanglesContainer.registerAnimationFor("x", (t) => -Math.sin(t / 1000) * 50).to(1000000, 1000000);
         rectanglesContainer.registerAnimationFor("y", (t) => Math.cos(t / 2000) * 50).to(1000000, 1000000);
@@ -78,6 +95,17 @@ export class ComplexTreeTestScene extends TestScene {
         currentContainer.addChild(currentTimeText);
 
         baseContainer.addChild(nestedContainer);
+
+        this.addToggle("Buffer circles", false, (value) => {
+            circlesBufferContainer.visible = value;
+            if (value) {
+                // Container同士が奪い合うのでこれで済む
+                circlesBufferContainer.addChild(circlesContainer);
+            } else {
+                circlesWrapContainer.addChild(circlesContainer);
+            }
+        });
+        this.addBindToggle("Check buffer redraw", circlesBufferContainer, "redrawRainbow", value => value);
 
         this.root.addChild(baseContainer);
     }

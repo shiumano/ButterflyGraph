@@ -36,6 +36,11 @@ export class TestScene {
     fpsUpdateIntervalId;
     animationFrameCount = 0;
 
+    stats = {
+        updateTime: 0,
+        executionTime: 0
+    };
+
     destroyed = false;
 
     root;
@@ -108,8 +113,15 @@ export class TestScene {
             }
 
             const fps = renderer.frameCount;
-            fpsDisplay.textContent = `FPS: ${fps} / ${this.animationFrameCount}`;
+            const updateTimePercent = this.stats.updateTime / 100;
+            const execTimePercent = this.stats.executionTime / 10;
+            fpsDisplay.textContent = (
+                `FPS: ${fps} / ${this.animationFrameCount}  `
+                + `Update: ${updateTimePercent.toFixed(2)}% `
+                + `Exec: ${execTimePercent.toFixed(2)}%`);
             renderer.frameCount = 0;
+            this.stats.updateTime = 0;
+            this.stats.executionTime = 0;
             this.animationFrameCount = 0;
         }, 1000);
 
@@ -126,7 +138,7 @@ export class TestScene {
         this.root = root;
     }
 
-    async load() {}
+    async load() { }
 
     resizeCanvas() {
         const rect = this.wrapper.getBoundingClientRect();
@@ -179,13 +191,23 @@ export class TestScene {
 
         const t = this.toLocalTime(now);
 
+        const startCalc = performance.now();
         const snapshot = this.root.getSnapshot(t);
+        const endCalc = performance.now();
 
         if (this.root.contentChanged || this.forceRedraw) {
             this.renderer.render(snapshot);
             this.root.contentChanged = false;
             this.forceRedraw = false;
         }
+
+        // 実際にはCanvas APIのドローコールは積まれて実行は後でまとめてされる
+        // ので、ここで取った時間は描画全体にかかった時間ではない
+        // これはAPIコールにかかった時間の合計
+        const endExec = performance.now();
+
+        this.stats.updateTime += endCalc - startCalc;
+        this.stats.executionTime += endExec - endCalc;
     }
 
     destroy() {
