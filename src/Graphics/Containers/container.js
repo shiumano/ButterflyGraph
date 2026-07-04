@@ -106,7 +106,7 @@ export class Container extends DrawObject {
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {
-        if (this.getAllChildren().includes(sender) || true) {
+        if (this.getAllChildren().includes(sender)) {
             if (this.#childrenTimed && !sender.timed ||
                 this.#childrenAnimated && !sender.animated ||
                 !this.perfectlyOptimized && sender.perfectlyOptimized
@@ -128,9 +128,16 @@ export class Container extends DrawObject {
                 this.#childrenAnimated ||= sender.animated;
                 this.#perfectlyOptimized &&= sender.perfectlyOptimized;
             }
+
+            if (reason === "zIndex") {
+                this.#frozenChildren = null;  // zIndexの変化でchildrenの順番が変わる可能性があるので、キャッシュを破棄する
+                this.#children.sort((a, b) => a.zIndex - b.zIndex);
+            }
+            super.requestRecreate(sender, "object");
+        } else {
+            super.requestRecreate(sender, reason);
         }
 
-        super.requestRecreate(sender, reason);
     }
 
     getAllChildren() {
@@ -158,6 +165,7 @@ export class Container extends DrawObject {
             }
 
             this.#children.push(child);
+            this.#children.sort((a, b) => a.zIndex - b.zIndex);
             this.#childrenTimed ||= child.timed;
             this.#childrenAnimated ||= child.animated;
             this.#perfectlyOptimized &&= child.perfectlyOptimized;
@@ -244,8 +252,10 @@ export class Container extends DrawObject {
                 const childNode = childObjects[0].getSnapshot(t);
                 children = [childNode];
             } else {
-                children = childObjects.map(child => child.getSnapshot(t))
-                    .sort((a, b) => a.zIndex - b.zIndex);
+                // PERF: mapだって高負荷
+                //     : なるべく動かないものは動かないものContainerにまとめて
+                //     : 動くものは動くものContainerに分けてmapを限定しようね
+                children = childObjects.map(child => child.getSnapshot(t));
             }
         }
 

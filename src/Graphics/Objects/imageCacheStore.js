@@ -9,8 +9,6 @@ import { fnv1a64 } from "../../Utils/hash.js";
  * }} ImageInfo
  */
 
-const performance = window.performance;  // PERF: おまじないすぎてエグい window.performanceはgetter
-
 /**
  * 画像キャッシュ管理のためのstaticクラス
  */

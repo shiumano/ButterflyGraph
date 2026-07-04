@@ -26,7 +26,7 @@ import { AnimationManager } from "./Animations/animationManager.js";
  *   fillStyle?: string | CanvasGradient | CanvasPattern | Gradient
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
- * @typedef {"transform" | "object"} RecreateReason
+ * @typedef {"transform" | "object" | "zIndex"} RecreateReason
  * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
  */
 
@@ -225,7 +225,7 @@ export class DrawObject {
         if (this.#zIndex === value) return;
 
         this.#zIndex = value;
-        this.requestRecreate(this, "transform");
+        this.requestRecreate(this, "zIndex");
     }
 
     get visible() { return this.#visible; }
@@ -329,7 +329,7 @@ export class DrawObject {
                 break;
         }
 
-        this.parent?.requestRecreate(sender, "object");
+        this.parent?.requestRecreate(this, reason);
     }
 
     // IDK: いつか#を_にして半公開するかも
@@ -406,6 +406,7 @@ export class DrawObject {
             showBounds: this.showBounds,
             fillStyle: fillStyle,
             strokeStyle: strokeStyle,
+            objectChanged: this.objectChanged,
         });
     }
 
@@ -427,6 +428,7 @@ export class DrawObject {
             alpha: this.alpha,
             zIndex: this.zIndex,
             visible: this.visible,
+            transformChanged: this.transformChanged,
         };
     }
 
