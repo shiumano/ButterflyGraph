@@ -43,6 +43,7 @@ export class ComplexTreeTestScene extends TestScene {
         const circlesBufferContainer = new BufferedContainer({
             width: 1000,
             height: 1000,
+            visible: false
         });
         const circlesWrapContainer = new Container({ children: [circlesContainer, circlesBufferContainer] });
         circlesWrapContainer.registerAnimationFor("x", (t) => Math.sin(t / 1000) * 50).to(1000000, 1000000);
@@ -96,6 +97,7 @@ export class ComplexTreeTestScene extends TestScene {
         baseContainer.addChild(nestedContainer);
 
         this.addToggle("Buffer circles", false, (value) => {
+            circlesBufferContainer.visible = value;
             if (value) {
                 // Container同士が奪い合うのでこれで済む
                 circlesBufferContainer.addChild(circlesContainer);
