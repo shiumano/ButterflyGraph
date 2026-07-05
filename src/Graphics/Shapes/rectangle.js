@@ -70,6 +70,8 @@ export class RectangleNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
+        // PERF: ctx.fillRectはfill(path)とは違って専用パスっぽい ただの四角形だもんね
+        //     : わざわざPath2Dを作るより圧倒的に高速
         ctx.fillRect(0, 0, this.width, this.height);
     }
 }
