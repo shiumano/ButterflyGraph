@@ -31,8 +31,14 @@ export class Rectangle extends DrawObject {
     calculateOptions(t) {
         const baseOptions = super.calculateOptions(t);
 
-        const options = Object.assign(baseOptions, {
-        });
+        // // 本来は内容を更新していくのでこうなる
+        // // ただし、Rectangleは何もプロパティを追加しないので…
+        //
+        // const options = Object.assign(baseOptions, {
+        // });
+        //
+        // // こうなっちゃってもう無駄以外の何物でもない
+        const options = baseOptions;
 
         return options;
     }
