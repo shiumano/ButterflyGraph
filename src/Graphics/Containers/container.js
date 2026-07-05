@@ -112,6 +112,7 @@ export class Container extends DrawObject {
                 this.#childrenAnimated && !sender.animated ||
                 !this.perfectlyOptimized && sender.perfectlyOptimized
             ) {
+                const thisOptimized = this.isPerfectlyOptimized();
                 let childrenTimed = false;
                 let childrenAnimated = false;
                 let childrenPerfect = true;
@@ -123,7 +124,7 @@ export class Container extends DrawObject {
                 }
                 this.#childrenTimed = childrenTimed;
                 this.#childrenAnimated = childrenAnimated;
-                this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
+                this.#perfectlyOptimized = thisOptimized && childrenPerfect;
             } else {
                 this.#childrenTimed ||= sender.timed;
                 this.#childrenAnimated ||= sender.animated;
