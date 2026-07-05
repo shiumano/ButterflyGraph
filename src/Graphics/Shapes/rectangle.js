@@ -29,10 +29,18 @@ export class Rectangle extends DrawObject {
      * @returns {RectangleNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
-        return {
-            ...options,
-        };
+        const baseOptions = super.calculateOptions(t);
+
+        // // 本来は内容を更新していくのでこうなる
+        // // ただし、Rectangleは何もプロパティを追加しないので…
+        //
+        // const options = Object.assign(baseOptions, {
+        // });
+        //
+        // // こうなっちゃってもう無駄以外の何物でもない
+        const options = baseOptions;
+
+        return options;
     }
 
     /**
@@ -40,7 +48,7 @@ export class Rectangle extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new RectangleNode(options);
+        return new RectangleNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Rectangle; }
@@ -62,6 +70,8 @@ export class RectangleNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
+        // PERF: ctx.fillRectはfill(path)とは違って専用パスっぽい ただの四角形だもんね
+        //     : わざわざPath2Dを作るより圧倒的に高速
         ctx.fillRect(0, 0, this.width, this.height);
     }
 }

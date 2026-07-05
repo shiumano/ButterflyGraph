@@ -55,11 +55,13 @@ export class Circle extends DrawObject {
      * @returns {CircleNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
-        return {
-            ...options,
+        const baseOptions = super.calculateOptions(t);
+
+        const options = Object.assign(baseOptions, {
             radius: this.radius
-        };
+        });
+
+        return options;
     }
 
     /**
@@ -67,7 +69,7 @@ export class Circle extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new CircleNode(options);
+        return new CircleNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Circle; }

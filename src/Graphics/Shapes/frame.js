@@ -48,7 +48,7 @@ export class Frame extends DrawObject {
      * @returns {FrameNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
+        const baseOptions = super.calculateOptions(t);
 
         let lineWidth = this.lineWidth;
         let lineRectWidth = this.width - lineWidth;
@@ -61,12 +61,13 @@ export class Frame extends DrawObject {
             lineRectHeight = this.height - lineWidth;
         }
 
-        return {
-            ...options,
+        const options = Object.assign(baseOptions, {
             lineRectWidth: lineRectWidth,
             lineRectHeight: lineRectHeight,
             lineWidth: lineWidth
-        };
+        });
+
+        return options;
     }
 
     /**
@@ -74,7 +75,7 @@ export class Frame extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new FrameNode(options);
+        return new FrameNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Frame; }

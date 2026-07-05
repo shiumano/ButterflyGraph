@@ -156,15 +156,17 @@ export class TextObject extends DrawObject {
      * @returns {TextNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
-        return {
-            ...options,
+        const baseOptions = super.calculateOptions(t);
+
+        const options = Object.assign(baseOptions, {
             text: this.text,
             font: this.font,
             fill: this.fill,
             strokeWidth: this.strokeWidth,
             textAscent: this.#textAscent
-        };
+        });
+
+        return options;
     }
 
     /**
@@ -172,7 +174,7 @@ export class TextObject extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new TextNode(options);
+        return new TextNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === TextObject; }

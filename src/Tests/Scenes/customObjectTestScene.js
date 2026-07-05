@@ -67,12 +67,20 @@ class Butterfly extends DrawObject {
      * @returns {ButterflyNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
-        return {
-            ...options,
+        const baseOptions = super.calculateOptions(t);
+
+        // まるで新しくコピーを作って設定しているかのような見た目だが
+        // 実際にはbaseOptionsを書き換えている
+        // ただし、見かけ上だけでもこういう書き方をしないと
+        // TSがbaseOptionsの型を更新できない
+        //
+        // どうせ参照型なので変数が一つ増えたところで実害はない
+        const options = Object.assign(baseOptions, {
             fillStyle: this.dark ? "#A78BFA" : "#6A5ACD",
             strokeStyle: this.dark ? "#F5F7FA" : "#111"
-        };
+        });
+
+        return options;
     }
 
     /**
@@ -80,7 +88,7 @@ class Butterfly extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new ButterflyNode(options);
+        return new ButterflyNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Butterfly; }

@@ -70,7 +70,7 @@ export class Donut extends DrawObject {
      * @returns {DonutNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
+        const baseOptions = super.calculateOptions(t);
 
         let lineWidth = this.lineWidth;
         let lineRadius = this.radius - (lineWidth / 2);
@@ -80,11 +80,12 @@ export class Donut extends DrawObject {
             lineRadius = this.radius - (lineWidth / 2);
         }
 
-        return {
-            ...options,
+        const options = Object.assign(baseOptions, {
             lineRadius: lineRadius,
             lineWidth: lineWidth,
-        };
+        });
+
+        return options;
     }
 
     /**
@@ -92,7 +93,7 @@ export class Donut extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new DonutNode(options);
+        return new DonutNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Donut; }

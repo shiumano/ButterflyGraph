@@ -98,16 +98,17 @@ export class BufferedContainer extends Container {
      * @returns {BufferedContainerNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
+        const baseOptions = super.calculateOptions(t);
 
-        return {
-            ...options,
+        const options = Object.assign(baseOptions, {
             objectChanged: this.objectChanged,
             supersize: this.supersize && !this.clip,
             follow: this.follow,
             resolutionScale: this.resolutionScale,
-            redrawRainbow: this.#redrawRainbow
-        };
+            redrawRainbow: this.redrawRainbow
+        });
+
+        return options;
     }
 
     /**
@@ -115,7 +116,7 @@ export class BufferedContainer extends Container {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new BufferedContainerNode(options);
+        return new BufferedContainerNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === BufferedContainer; }

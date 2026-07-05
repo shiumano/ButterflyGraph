@@ -60,7 +60,7 @@ export class Container extends DrawObject {
         if (super.width === value) return;
 
         super.width = value;
-        const children = this.getAllChildren();
+        const children = this.#children;
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (child.anchor.x !== 0) {
@@ -75,7 +75,7 @@ export class Container extends DrawObject {
 
         super.height = value;
 
-        const children = this.getAllChildren();
+        const children = this.#children;
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (child.anchor.y !== 0) {
@@ -106,23 +106,25 @@ export class Container extends DrawObject {
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {
-        if (this.getAllChildren().includes(sender)) {
+        const children = this.#children;
+        if (children.includes(sender)) {
             if (this.#childrenTimed && !sender.timed ||
                 this.#childrenAnimated && !sender.animated ||
                 !this.perfectlyOptimized && sender.perfectlyOptimized
             ) {
+                const thisOptimized = this.isPerfectlyOptimized();
                 let childrenTimed = false;
                 let childrenAnimated = false;
                 let childrenPerfect = true;
-                for (let i = 0; i < this.#children.length; i++) {
-                    const child = this.#children[i];
+                for (let i = 0; i < children.length; i++) {
+                    const child = children[i];
                     childrenTimed ||= child.timed;
                     childrenAnimated ||= child.animated;
                     childrenPerfect &&= child.perfectlyOptimized;
                 }
                 this.#childrenTimed = childrenTimed;
                 this.#childrenAnimated = childrenAnimated;
-                this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
+                this.#perfectlyOptimized = thisOptimized && childrenPerfect;
             } else {
                 this.#childrenTimed ||= sender.timed;
                 this.#childrenAnimated ||= sender.animated;
@@ -144,6 +146,11 @@ export class Container extends DrawObject {
         let frozenChildren = this.#frozenChildren;
 
         if (frozenChildren === null) {
+            // PERF: けっこう無視できないくらいの量の配列コピーが発生する
+            //     : クラス外部のどこぞの馬の骨とも知らぬ奴らが何するか
+            //     : 分かったもんじゃないからこれで囲ってpublicにしているのであって
+            //     : クラス内部でくらいはthis.#childrenを直で扱ってもいい
+            //     :     ただし気をつけろよ！
             frozenChildren = Object.freeze(this.#children.slice());
         }
 
@@ -226,7 +233,7 @@ export class Container extends DrawObject {
 
         // FIXME: 2回呼ぶはめになる
         if (this.#childrenAnimated) {
-            const childObjects = this.getAllChildren();
+            const childObjects = this.#children;
             if (childObjects.length === 1) {
                 childObjects[0].calculateAnimations(t);
             } else {
@@ -243,11 +250,11 @@ export class Container extends DrawObject {
      * @returns {ContainerNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
+        const baseOptions = super.calculateOptions(t);
 
         let children = this.cachedNode?.options?.children;
         if (children === undefined || this.timed || this.objectChanged) {
-            const childObjects = this.getAllChildren();
+            const childObjects = this.#children;
             if (childObjects.length === 1) {
                 const childNode = childObjects[0].getSnapshot(t);
                 children = [childNode];
@@ -259,11 +266,12 @@ export class Container extends DrawObject {
             }
         }
 
-        return {
-            ...options,
+        const options = Object.assign(baseOptions, {
             children: children,
             clip: this.clip
-        };
+        });
+
+        return options;
     }
 
     /**
@@ -274,7 +282,7 @@ export class Container extends DrawObject {
         const options = this.calculateOptions(t);
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
         // BufferedContainerを見習いなさい
-        return /** @type {T} */ (this.cachedNode?.with(options) ?? new ContainerNode(options));
+        return /** @type {T} */ (new ContainerNode(options, this.cachedNode));
     }
 
     isPerfectlyOptimized() { return this.constructor === Container; }

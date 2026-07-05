@@ -34,7 +34,7 @@ import { AnimationManager } from "./Animations/animationManager.js";
  * @template {GenericDrawNode} T
  * @typedef {{
  *   t: number | undefined
- *   node: T
+ *   node: T?
  * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
  */
 
@@ -78,8 +78,11 @@ export class DrawObject {
     #transformChanged = true;
     #objectChanged = true;
     #contentChanged = true;
-    /** @type {DrawNodeCache<T>?} */
-    #nodeCache = null;
+    /** @type {DrawNodeCache<T>} */
+    #nodeCache = {
+        t: undefined,
+        node: null
+    };
 
     /** @type {{[K in keyof this]?: AnimationManager<this[K]>}} */
     #animations = {};
@@ -310,7 +313,7 @@ export class DrawObject {
     get contentChanged() { return this.#contentChanged || !this.perfectlyOptimized; }
     set contentChanged(value) { this.#contentChanged = value; }
 
-    get cachedNode() { return this.#nodeCache?.node; }
+    get cachedNode() { return this.#nodeCache.node; }
 
     /**
      * オブジェクトの再生性を要求、情報を親に伝播
@@ -332,7 +335,8 @@ export class DrawObject {
         this.parent?.requestRecreate(this, reason);
     }
 
-    // IDK: いつか#を_にして半公開するかも
+    // PERF: この4回の乗算のキャッシュがマジで効いた
+    //  IDK: いつか#を_にして半公開するかも
     /**
      * オブジェクトの配置・回転中心を計算しキャッシュする
      */
@@ -369,70 +373,6 @@ export class DrawObject {
     }
 
     /**
-     * 子オブジェクトのオプションの計算
-     * @template {GenericDrawNode} N
-     * @param {DrawObject<N>} child
-     * @param {number} t
-     * @returns {NodeOptions<N>}
-     */
-    calculateChildOptions(child, t) {
-        const childOptions = child.calculateThisOptions(t);
-        return {
-            ...childOptions,
-            x: child.x - child.originOffsetX + this.width * child.anchor.x,
-            y: child.y - child.originOffsetY + this.height * child.anchor.y
-        };
-    }
-
-    /**
-     * 自分自身のオプションの計算
-     * @param {number} t
-     * @returns {NodeOptions<T>}
-     */
-    calculateThisOptions(t) {
-        const hasCache = this.cachedNode !== undefined;
-        const cacheOptions = hasCache ? this.cachedNode.options : {};
-        const transforms = (!hasCache || this.transformChanged) ? this.calculateTransforms(t) : {};
-
-        const fillStyle = this.fillStyle instanceof Gradient ? this.fillStyle.getGradientBuilder() : this.fillStyle;
-        const strokeStyle = this.strokeStyle instanceof Gradient ? this.strokeStyle.getGradientBuilder() : this.strokeStyle;
-
-        // TOOBAD: 実際の流れとしては正しいんだけど、TSが理解できる領域ではないらしい
-        return /** @type {NodeOptions<T>} */ ({
-            ...cacheOptions,
-            ...transforms,
-            width: this.width,
-            height: this.height,
-            showBounds: this.showBounds,
-            fillStyle: fillStyle,
-            strokeStyle: strokeStyle,
-            objectChanged: this.objectChanged,
-        });
-    }
-
-    /**
-     * transformの計算
-     * @param {number} t
-     */
-    calculateTransforms(t) {
-        return {
-            x: this.x - this.originOffsetX,
-            y: this.y - this.originOffsetY,
-            rotation: this.rotation,
-            scaleX: this.scaleX,
-            scaleY: this.scaleY,
-            anchor: this.anchor,
-            origin: this.origin,
-            originOffsetX: this.originOffsetX,
-            originOffsetY: this.originOffsetY,
-            alpha: this.alpha,
-            zIndex: this.zIndex,
-            visible: this.visible,
-            transformChanged: this.transformChanged,
-        };
-    }
-
-    /**
      * アニメーションによる変化を計算
      * @param {number} t
      */
@@ -453,17 +393,43 @@ export class DrawObject {
      * @returns {DrawNodeOptions}
      */
     calculateOptions(t) {
-        // TODO: objectChangedとtransformChangedを活用し、*ｲﾝﾃﾘｼﾞｪﾝﾄ*な差分更新を行う 関数を分けるのがだるすぎる
-        // PERF: 一旦widthとかshowBoundsみたいなobject系もtransformChangedに巻沿い食わせて試したら10~11%→5~7%になった えぐい
-        let options;
+        const fillStyle = this.fillStyle instanceof Gradient
+            ? this.fillStyle.getGradientBuilder() : this.fillStyle;
+
+        const strokeStyle = this.strokeStyle instanceof Gradient
+            ? this.strokeStyle.getGradientBuilder() : this.strokeStyle;
+
+        // IDK: 責務としてこんな場所にあっていいんだろうか…
+        //    : そもそもContainerじゃなくてDrawObjectの時点で処理が書かれてる時点でオワって話でもあるが
+        let x = this.x - this.originOffsetX;
+        let y = this.y - this.originOffsetY;
 
         if (this.parent !== null) {
-            options = this.parent.calculateChildOptions(this, t);
-        } else {
-            options = this.calculateThisOptions(t);
+            x += this.parent.width * this.anchor.x;
+            y += this.parent.height * this.anchor.y;
         }
 
-        return options;
+        return {
+            x: x,
+            y: y,
+            rotation: this.rotation,
+            width: this.width,
+            height: this.height,
+            scaleX: this.scaleX,
+            scaleY: this.scaleY,
+            anchor: this.anchor,
+            origin: this.origin,
+            originOffsetX: this.originOffsetX,
+            originOffsetY: this.originOffsetY,
+            alpha: this.alpha,
+            zIndex: this.zIndex,
+            fillStyle: fillStyle,
+            strokeStyle: strokeStyle,
+            visible: this.visible,
+            showBounds: this.showBounds,
+            transformChanged: this.transformChanged,
+            objectChanged: this.objectChanged,
+        };
     }
 
     // 派生クラスで実装する必要があるので、あくまでこれはサンプル実装
@@ -477,7 +443,7 @@ export class DrawObject {
         const options = this.calculateOptions(t);
         // new DrawNodeの出処を探してここに来たのかい？本当は別のNodeを返したかったのかな
         // 残念、あんたがcreateSnapshot(t)を定義しなかったせいでDrawNodeが返ってきたんだよ
-        return /** @type {T} */ (this.cachedNode?.with(options) ?? new DrawNode(options));
+        return /** @type {T} */ (new DrawNode(options, this.cachedNode));
     }
 
     /**
@@ -490,17 +456,15 @@ export class DrawObject {
             this.calculateAnimations(t);
         }
 
-        let nodeCache = this.#nodeCache;
-        if (nodeCache === null
+        const nodeCache = this.#nodeCache;
+        if (nodeCache.node === null
             || (nodeCache.t !== undefined && nodeCache.t !== t)
             || this.transformChanged
             || this.objectChanged
         ) {
-            nodeCache = {
-                t: this.timed ? t : undefined,
-                node: this.createSnapshot(t)
-            };
-            this.#nodeCache = nodeCache;
+            nodeCache.t = this.timed ? t : undefined;
+            nodeCache.node = this.createSnapshot(t);
+
             this.#transformChanged = false;
             this.#objectChanged = false;
         }
