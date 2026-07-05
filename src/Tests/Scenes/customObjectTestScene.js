@@ -80,7 +80,7 @@ class Butterfly extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new ButterflyNode(options);
+        return new ButterflyNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Butterfly; }

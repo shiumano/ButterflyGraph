@@ -92,7 +92,7 @@ export class Donut extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new DonutNode(options);
+        return new DonutNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Donut; }

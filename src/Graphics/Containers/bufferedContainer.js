@@ -115,7 +115,7 @@ export class BufferedContainer extends Container {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new BufferedContainerNode(options);
+        return new BufferedContainerNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === BufferedContainer; }

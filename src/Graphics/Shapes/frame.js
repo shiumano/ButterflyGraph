@@ -74,7 +74,7 @@ export class Frame extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new FrameNode(options);
+        return new FrameNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Frame; }

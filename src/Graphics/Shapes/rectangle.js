@@ -40,7 +40,7 @@ export class Rectangle extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new RectangleNode(options);
+        return new RectangleNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === Rectangle; }

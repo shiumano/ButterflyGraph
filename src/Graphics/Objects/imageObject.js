@@ -186,7 +186,7 @@ export class ImageObject extends DrawObject {
     createSnapshot(t) {
         const options = this.calculateOptions(t);
 
-        return this.cachedNode?.with(options) ?? new ImageNode(options);
+        return new ImageNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === ImageObject; }

@@ -480,7 +480,7 @@ export class DrawObject {
         const options = this.calculateOptions(t);
         // new DrawNodeの出処を探してここに来たのかい？本当は別のNodeを返したかったのかな
         // 残念、あんたがcreateSnapshot(t)を定義しなかったせいでDrawNodeが返ってきたんだよ
-        return /** @type {T} */ (this.cachedNode?.with(options) ?? new DrawNode(options));
+        return /** @type {T} */ (new DrawNode(options, this.cachedNode));
     }
 
     /**

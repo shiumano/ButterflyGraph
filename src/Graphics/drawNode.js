@@ -132,20 +132,6 @@ export class DrawNode {
     get zIndex() { return this.#zIndex; }
 
     /**
-     * 新しいオプションを指定して再生成
-     * @param {Partial<T>} options
-     * @returns {this}
-     */
-    with(options) {
-        // HACK: TSが理解できない領域
-        //     : this.constructorは自身のクラスのコンストラクタと同一
-        //     : しかしTSはthis.constructorをコンストラクタではない通常の関数として解釈する
-        // 全てのカルマをここで背負う
-        /** @typedef {new (options: Partial<T>, oldNode?: this) => this} ThisNodeConstructor */
-        return new /** @type {ThisNodeConstructor} */(this.constructor)({ ...this.options, ...options }, this);
-    }
-
-    /**
      * ctxにtransform を適用し、自身と子を描画
      * @param {CanvasRenderingContext2D} ctx
      */

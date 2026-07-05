@@ -280,7 +280,7 @@ export class Container extends DrawObject {
         const options = this.calculateOptions(t);
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
         // BufferedContainerを見習いなさい
-        return /** @type {T} */ (this.cachedNode?.with(options) ?? new ContainerNode(options));
+        return /** @type {T} */ (new ContainerNode(options, this.cachedNode));
     }
 
     isPerfectlyOptimized() { return this.constructor === Container; }

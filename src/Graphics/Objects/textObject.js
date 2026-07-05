@@ -172,7 +172,7 @@ export class TextObject extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new TextNode(options);
+        return new TextNode(options, this.cachedNode);
     }
 
     isPerfectlyOptimized() { return this.constructor === TextObject; }
