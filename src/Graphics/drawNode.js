@@ -141,6 +141,9 @@ export class DrawNode {
         ctx.save();
 
         if (this.#transformMatrix !== null) {
+            // PERF: ここスプレッドつかってるけど全引数をインデックスアクセスで出してもそんな改善しなかった
+            //     : 毎フレーム1000回やるエグいケースでも差がないので問題ないと言っていいでしょう
+            //     : そもそもそんな複雑なものCanvas APIで描こうと思うな WebGLでやれ
             ctx.transform(...this.#transformMatrix);
         }
 
