@@ -34,7 +34,7 @@ import { AnimationManager } from "./Animations/animationManager.js";
  * @template {GenericDrawNode} T
  * @typedef {{
  *   t: number | undefined
- *   node: T
+ *   node: T?
  * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
  */
 
@@ -78,8 +78,11 @@ export class DrawObject {
     #transformChanged = true;
     #objectChanged = true;
     #contentChanged = true;
-    /** @type {DrawNodeCache<T>?} */
-    #nodeCache = null;
+    /** @type {DrawNodeCache<T>} */
+    #nodeCache = {
+        t: undefined,
+        node: null
+    };
 
     /** @type {{[K in keyof this]?: AnimationManager<this[K]>}} */
     #animations = {};
@@ -310,7 +313,7 @@ export class DrawObject {
     get contentChanged() { return this.#contentChanged || !this.perfectlyOptimized; }
     set contentChanged(value) { this.#contentChanged = value; }
 
-    get cachedNode() { return this.#nodeCache?.node; }
+    get cachedNode() { return this.#nodeCache.node; }
 
     /**
      * オブジェクトの再生性を要求、情報を親に伝播
@@ -490,17 +493,15 @@ export class DrawObject {
             this.calculateAnimations(t);
         }
 
-        let nodeCache = this.#nodeCache;
-        if (nodeCache === null
+        const nodeCache = this.#nodeCache;
+        if (nodeCache.node === null
             || (nodeCache.t !== undefined && nodeCache.t !== t)
             || this.transformChanged
             || this.objectChanged
         ) {
-            nodeCache = {
-                t: this.timed ? t : undefined,
-                node: this.createSnapshot(t)
-            };
-            this.#nodeCache = nodeCache;
+            nodeCache.t = this.timed ? t : undefined;
+            nodeCache.node = this.createSnapshot(t);
+
             this.#transformChanged = false;
             this.#objectChanged = false;
         }
