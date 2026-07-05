@@ -55,11 +55,13 @@ export class Circle extends DrawObject {
      * @returns {CircleNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
-        return {
-            ...options,
+        const baseOptions = super.calculateOptions(t);
+
+        const options = Object.assign(baseOptions, {
             radius: this.radius
-        };
+        });
+
+        return options;
     }
 
     /**

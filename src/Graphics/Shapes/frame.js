@@ -48,7 +48,7 @@ export class Frame extends DrawObject {
      * @returns {FrameNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
+        const baseOptions = super.calculateOptions(t);
 
         let lineWidth = this.lineWidth;
         let lineRectWidth = this.width - lineWidth;
@@ -61,12 +61,13 @@ export class Frame extends DrawObject {
             lineRectHeight = this.height - lineWidth;
         }
 
-        return {
-            ...options,
+        const options = Object.assign(baseOptions, {
             lineRectWidth: lineRectWidth,
             lineRectHeight: lineRectHeight,
             lineWidth: lineWidth
-        };
+        });
+
+        return options;
     }
 
     /**

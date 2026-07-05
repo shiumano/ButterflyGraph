@@ -156,15 +156,17 @@ export class TextObject extends DrawObject {
      * @returns {TextNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
-        return {
-            ...options,
+        const baseOptions = super.calculateOptions(t);
+
+        const options = Object.assign(baseOptions, {
             text: this.text,
             font: this.font,
             fill: this.fill,
             strokeWidth: this.strokeWidth,
             textAscent: this.#textAscent
-        };
+        });
+
+        return options;
     }
 
     /**

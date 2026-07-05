@@ -144,7 +144,7 @@ export class ImageObject extends DrawObject {
      * @returns {ImageNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
+        const baseOptions = super.calculateOptions(t);
 
         const time = this.#loop ? t % (this.#length) : t;
         const frameIndex = Math.max(Math.min(
@@ -155,13 +155,13 @@ export class ImageObject extends DrawObject {
         const imageInfo = this.#images[frameIndex];
 
         if (imageInfo === undefined) {
-            return {
-                ...options,
+            const options = Object.assign(baseOptions, {
                 hash: null,
                 offsetX: 0,
                 offsetY: 0,
                 imageSmoothing: false
-            };
+            });
+            return options;
         }
 
         if (this.cachedNode?.options.hash !== imageInfo.hash) {
@@ -171,13 +171,14 @@ export class ImageObject extends DrawObject {
         const offsetX = (this.width - imageInfo.width) * this.#imageAlign.x;
         const offsetY = (this.height - imageInfo.height) * this.#imageAlign.y;
 
-        return {
-            ...options,
+        const options = Object.assign(baseOptions, {
             hash: imageInfo.hash,
             offsetX: offsetX,
             offsetY: offsetY,
             imageSmoothing: this.imageSmoothing
-        };
+        });
+
+        return options;
     }
 
     /**

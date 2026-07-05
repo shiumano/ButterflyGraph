@@ -249,11 +249,11 @@ export class Container extends DrawObject {
      * @returns {ContainerNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
+        const baseOptions = super.calculateOptions(t);
 
         let children = this.cachedNode?.options?.children;
         if (children === undefined || this.timed || this.objectChanged) {
-            const childObjects = this.getAllChildren();
+            const childObjects = this.#children;
             if (childObjects.length === 1) {
                 const childNode = childObjects[0].getSnapshot(t);
                 children = [childNode];
@@ -265,11 +265,12 @@ export class Container extends DrawObject {
             }
         }
 
-        return {
-            ...options,
+        const options = Object.assign(baseOptions, {
             children: children,
             clip: this.clip
-        };
+        });
+
+        return options;
     }
 
     /**

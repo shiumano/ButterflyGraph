@@ -29,10 +29,12 @@ export class Rectangle extends DrawObject {
      * @returns {RectangleNodeOptions}
      */
     calculateOptions(t) {
-        const options = super.calculateOptions(t);
-        return {
-            ...options,
-        };
+        const baseOptions = super.calculateOptions(t);
+
+        const options = Object.assign(baseOptions, {
+        });
+
+        return options;
     }
 
     /**
