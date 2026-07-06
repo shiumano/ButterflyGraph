@@ -65,7 +65,7 @@ export class DrawNode {
             console.warn("Constructing abstract class!");
         }
 
-        this.#options = Object.freeze(options);
+        this.#options = options;
 
         this.#width = options.width;
         this.#height = options.height;
@@ -124,6 +124,7 @@ export class DrawNode {
         }
     }
 
+    /** @type {Readonly<T>} */
     get options() { return this.#options; }
 
     get width() { return this.#width; }
