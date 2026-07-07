@@ -10,6 +10,7 @@ import { DrawNode } from "../drawNode.js";
  *   fill?: boolean
  *   strokeWidth?: number
  *   sizeReference?: "actual" | "font"
+ *   autoSizeUpdate?: boolean
  * }} TextOptions
  * @typedef {DrawNodeOptions & {
  *   text: string
@@ -35,6 +36,7 @@ export class TextObject extends DrawObject {
     #font;
 
     #sizeReference;
+    #autoSizeUpdate;
 
     #textHeight = 0;
     #textWidth = 0;
@@ -57,6 +59,7 @@ export class TextObject extends DrawObject {
         this.#font = options.font ?? "10px sans-serif";
 
         this.#sizeReference = options.sizeReference ?? "actual";
+        this.#autoSizeUpdate = options.autoSizeUpdate ?? true;
 
         this.#updateMetrics();
     }
@@ -119,7 +122,18 @@ export class TextObject extends DrawObject {
         this.requestRecreate(this, "object");
     };
 
+    get autoSizeUpdate() { return this.#autoSizeUpdate; }
+    set autoSizeUpdate(value) {
+        if (this.#autoSizeUpdate === value) return;
+
+        this.#autoSizeUpdate = value;
+        this.#updateMetrics();
+        this.requestRecreate(this, "object");
+    };
+
     #updateMetrics() {
+        if (!this.autoSizeUpdate) return;
+
         // WARN: いつフォントが読み込まれたかどうかはわからない
         // TODO: どうにか呼ばせる。必要なときだけ。新たなPERFコメは生み出したくない
         if (this.#text.length === 0) {
