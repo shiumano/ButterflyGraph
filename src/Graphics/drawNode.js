@@ -1,4 +1,4 @@
-import { GradientBuilder } from "./Gradients/gradient.js";
+import { Gradient,  GradientBuilder } from "./Gradients/gradient.js";
 
 /**
  * @import { Vector2 } from "./vector2"
@@ -18,8 +18,8 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  *   parentHeight: number
  *   alpha: number
  *   zIndex: number
- *   fillStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
- *   strokeStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
+ *   fillStyle: string | CanvasGradient | CanvasPattern | Gradient | GradientBuilder | undefined
+ *   strokeStyle: string | CanvasGradient | CanvasPattern | Gradient | GradientBuilder | undefined
  *   visible: boolean
  *   showBounds: boolean
  *   transformChanged: boolean
@@ -75,14 +75,18 @@ export class DrawNode {
         this.#zIndex = options.zIndex;
 
         // type判定は先にやっておく、drawではnullチェックのみとする
-        if (options.fillStyle instanceof GradientBuilder) {
+        if (options.fillStyle instanceof GradientBuilder
+            || options.fillStyle instanceof Gradient
+        ) {
             this.#fillGradient = options.fillStyle;
         }
         else {
             this.#fillStyle = options.fillStyle;
         }
 
-        if (options.strokeStyle instanceof GradientBuilder) {
+        if (options.strokeStyle instanceof GradientBuilder
+            || options.strokeStyle instanceof Gradient
+        ) {
             this.#strokeGradient = options.strokeStyle;
         }
         else {
@@ -142,14 +146,18 @@ export class DrawNode {
         this.#zIndex = options.zIndex;
 
         // type判定は先にやっておく、drawではnullチェックのみとする
-        if (options.fillStyle instanceof GradientBuilder) {
+        if (options.fillStyle instanceof GradientBuilder
+            || options.fillStyle instanceof Gradient
+        ) {
             this.#fillGradient = options.fillStyle;
         }
         else {
             this.#fillStyle = options.fillStyle;
         }
 
-        if (options.strokeStyle instanceof GradientBuilder) {
+        if (options.strokeStyle instanceof GradientBuilder
+            || options.strokeStyle instanceof Gradient
+        ) {
             this.#strokeGradient = options.strokeStyle;
         }
         else {
