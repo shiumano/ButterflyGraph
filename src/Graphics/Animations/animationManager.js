@@ -225,10 +225,21 @@ export class AnimationManager {
         return this.#lastAnimation?.endValue ?? this.#lastValue;
     }
 
+    /** @type {number?} */
+    #cachedTime = null;
+    /** @type {T?} */
+    #cachedValue = null;
+
     /**
      * @param {number} t
      */
     get(t) {
-        return this.#applyer(this.getValue(t));
+        if (t !== this.#cachedTime || this.#cachedValue === null) {
+            const value = this.#applyer(this.getValue(t));
+            this.#cachedTime = t;
+            this.#cachedValue = value;
+        }
+
+        return this.#cachedValue;
     }
 }
