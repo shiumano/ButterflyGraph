@@ -127,8 +127,8 @@ class ButterflyNode extends DrawNode {
             this.#bodyPath = oldNode.#bodyPath;
             this.#strokePath = oldNode.#strokePath;
         } else {
-            const ws = this.width / 160;  // width scale
-            const hs = this.height / 110;  // height scale
+            const ws = options.width / 160;  // width scale
+            const hs = options.height / 110;  // height scale
 
             const nodesPath = new Path2D();
             nodesPath.arc(42 * ws, 52 * hs, 4, 0, Math.PI * 2);
@@ -182,8 +182,8 @@ class ButterflyNode extends DrawNode {
         if (this.width !== options.width
             || this.height !== options.height
         ) {
-            const ws = this.width / 160;  // width scale
-            const hs = this.height / 110;  // height scale
+            const ws = options.width / 160;  // width scale
+            const hs = options.height / 110;  // height scale
 
             const nodesPath = new Path2D();
             nodesPath.arc(42 * ws, 52 * hs, 4, 0, Math.PI * 2);
