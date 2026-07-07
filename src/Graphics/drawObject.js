@@ -301,6 +301,8 @@ export class DrawObject {
 
     get originOffsetX() { return this.#originOffsetX; }
     get originOffsetY() { return this.#originOffsetY; }
+    get parentWidth() { return this.parent?.width ?? 0; }
+    get parentHeight() { return this.parent?.height ?? 0; }
 
     get transformChanged() { return this.#transformChanged || !this.perfectlyOptimized; }  // 変わったって言われてないかもしれない
     get objectChanged() { return this.#objectChanged || !this.perfectlyOptimized; }
@@ -411,8 +413,8 @@ export class DrawObject {
             origin: this.origin,
             originOffsetX: this.originOffsetX,
             originOffsetY: this.originOffsetY,
-            parentWidth: this.parent?.width,
-            parentHeight: this.parent?.height,
+            parentWidth: this.parentWidth,
+            parentHeight: this.parentHeight,
             alpha: this.alpha,
             zIndex: this.zIndex,
             fillStyle: fillStyle,

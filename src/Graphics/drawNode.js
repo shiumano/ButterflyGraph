@@ -14,8 +14,8 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  *   origin: Readonly<Vector2>
  *   originOffsetX: number
  *   originOffsetY: number
- *   parentWidth: number | undefined
- *   parentHeight: number | undefined
+ *   parentWidth: number
+ *   parentHeight: number
  *   alpha: number
  *   zIndex: number
  *   fillStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder
@@ -93,7 +93,7 @@ export class DrawNode {
 
         this.#showBounds = options.showBounds ?? false;
 
-        const { x, y, anchor, originOffsetX, originOffsetY, parentWidth = 0, parentHeight = 0, rotation, scaleX, scaleY } = options;
+        const { x, y, anchor, originOffsetX, originOffsetY, parentWidth, parentHeight, rotation, scaleX, scaleY } = options;
         const drawX = x - originOffsetX + parentWidth * anchor.x;
         const drawY = y - originOffsetY + parentHeight * anchor.y;
 
@@ -161,7 +161,7 @@ export class DrawNode {
         this.#showBounds = options.showBounds ?? false;
 
 
-        const { x, y, anchor, originOffsetX, originOffsetY, parentWidth = 0, parentHeight = 0, rotation, scaleX, scaleY } = options;
+        const { x, y, anchor, originOffsetX, originOffsetY, parentWidth, parentHeight, rotation, scaleX, scaleY } = options;
         const drawX = x - originOffsetX + parentWidth * anchor.x;
         const drawY = y - originOffsetY + parentHeight * anchor.y;
 
