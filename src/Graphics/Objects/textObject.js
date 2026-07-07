@@ -131,6 +131,8 @@ export class TextObject extends DrawObject {
         this.requestRecreate(this, "object");
     };
 
+    get textAscent() { return this.#textAscent; }
+
     #updateMetrics() {
         if (!this.autoSizeUpdate) return;
 
