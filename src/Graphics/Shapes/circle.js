@@ -120,6 +120,35 @@ class CircleNode extends DrawNode {
     }
 
     /**
+     * @param {CircleNodeOptions} options
+     */
+    read(options) {
+        if (this.options.radius !== options.radius) {
+            const radius = options.radius;
+
+            const cachedPath = CircleNode.#pathRegistory.get(radius);
+            if (cachedPath !== undefined) {
+                this.#path = cachedPath;
+            } else {
+                const path = new Path2D();
+                path.arc(radius, radius, radius, 0, Math.PI * 2);
+
+                if (radius % 1 === 0) {
+                    // PERF: 整数の半径の円は、Path2Dのキャッシュに登録する
+                    //     : 塵ほどではあるが同じPath2Dを可能な限り使いまわしたほうが描画効率が良くなる
+                    //     : 500個のCircleがあれば全体で1%くらいの差が出た
+                    // WARN: さぁ、いつ捨てようか……あんまり恐ろしい量にはならないと思うが
+                    CircleNode.#pathRegistory.set(radius, path);
+                }
+
+                this.#path = path;
+            }
+        }
+
+        super.read(options);
+    }
+
+    /**
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {

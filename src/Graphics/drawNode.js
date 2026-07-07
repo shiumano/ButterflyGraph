@@ -133,6 +133,67 @@ export class DrawNode {
     get zIndex() { return this.#zIndex; }
 
     /**
+     * @param {T} options
+     */
+    read(options) {
+        this.#options = options;
+
+        this.#width = options.width;
+        this.#height = options.height;
+        this.#alpha = options.alpha;
+        this.#zIndex = options.zIndex;
+
+        // type判定は先にやっておく、drawではnullチェックのみとする
+        if (options.fillStyle instanceof GradientBuilder) {
+            this.#fillGradient = options.fillStyle;
+        }
+        else {
+            this.#fillStyle = options.fillStyle;
+        }
+
+        if (options.strokeStyle instanceof GradientBuilder) {
+            this.#strokeGradient = options.strokeStyle;
+        }
+        else {
+            this.#strokeStyle = options.strokeStyle;
+        }
+
+        this.#visible = options.visible;
+
+        this.#showBounds = options.showBounds ?? false;
+
+        const x = options.x;
+        const y = options.y;
+        const originOffsetX = options.originOffsetX;
+        const originOffsetY = options.originOffsetY;
+        const rotation = options.rotation;
+        const scaleX = options.scaleX;
+        const scaleY = options.scaleY;
+
+        if (options.transformChanged) {
+            const hasTransform = x !== 0 || y !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
+            if (hasTransform) {
+                // 回転のサイン・コサインを計算
+                const rCos = Math.cos(rotation);
+                const rSin = Math.sin(rotation);
+
+                // 行列の各成分を計算
+                const a = scaleX * rCos;
+                const b = scaleX * rSin;
+                const c = -scaleY * rSin;
+                const d = scaleY * rCos;
+                const e = x + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
+                const f = y + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
+
+                this.#transformMatrix = [a, b, c, d, e, f];
+                // クソややこしいね！translateとrotateとscaleが恋しいよ
+            } else {
+                this.#transformMatrix = null;
+            }
+        }
+    }
+
+    /**
      * ctxにtransform を適用し、自身と子を描画
      * @param {CanvasRenderingContext2D} ctx
      */

@@ -103,6 +103,18 @@ export class FrameNode extends DrawNode {
     }
 
     /**
+     * @param {FrameNodeOptions} options
+     */
+    read(options) {
+        this.#lineRectWidth = options.lineRectWidth;
+        this.#lineRectHeight = options.lineRectHeight;
+        this.#lineWidth = options.lineWidth;
+        this.#offset = options.lineWidth / 2;
+
+        super.read(options);
+    }
+
+    /**
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {

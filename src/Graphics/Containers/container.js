@@ -329,6 +329,28 @@ export class ContainerNode extends DrawNode {
     }
 
     /**
+     * @param {T} options
+     */
+    read(options) {
+        this.#children = Object.freeze(options.children);
+
+        this.#single = this.#children.length === 1;
+
+        if (options.clip) {
+            if (!this.options.clip
+                || this.width !== options.width
+                || this.height !== options.height
+            ) {
+                const clipPath = new Path2D();
+                clipPath.rect(0, 0, options.width, options.height);
+                this.#clipPath = clipPath;
+            }
+        }
+
+        super.read(options);
+    }
+
+    /**
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {

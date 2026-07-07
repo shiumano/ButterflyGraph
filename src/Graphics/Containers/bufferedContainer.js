@@ -235,6 +235,28 @@ class BufferedContainerNode extends ContainerNode {
     }
 
     /**
+     * @param {BufferedContainerNodeOptions} options
+     */
+    read(options) {
+        this.#redrawRainbow = options.redrawRainbow ?? false;
+
+        this.#supersize = options.supersize;
+        this.#follow = options.follow;
+        this.#resolutionScale = options.resolutionScale;
+
+        // 複雑な条件は事前に固定
+        this.#incompletePosition = !options.supersize && options.follow !== "all" || options.resolutionScale !== 1;
+
+        if (options.objectChanged) {
+            // 内容が変化したので、描画済みビットマップを破棄
+            deRef(this.#bitmap);
+            this.#bitmap = null;
+        }
+
+        super.read(options);
+    }
+
+    /**
      * @param {DOMMatrix} transform
      * @param {number} canvasWidth
      * @param {number} canvasHeight

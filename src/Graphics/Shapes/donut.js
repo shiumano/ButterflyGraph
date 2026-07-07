@@ -131,6 +131,24 @@ class DonutNode extends DrawNode {
     }
 
     /**
+     * @param {DonutNodeOptions} options
+     */
+    read(options) {
+        this.#lineWidth = options.lineWidth;
+        if (this.options.lineRadius !== options.lineRadius ||
+            this.options.lineWidth !== options.lineWidth
+        ) {
+            const radius = Math.max(0, options.lineRadius);
+            const center = radius + options.lineWidth / 2;
+            const path = new Path2D();
+            path.arc(center, center, radius, 0, Math.PI * 2);
+            this.#path = path;
+        }
+
+        super.read(options);
+    }
+
+    /**
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
