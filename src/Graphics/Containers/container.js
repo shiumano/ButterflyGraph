@@ -280,6 +280,13 @@ export class Container extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
+
+        const cachedNode = this.cachedNode;
+        if (cachedNode !== null) {
+            cachedNode.read(options);
+            return cachedNode;
+        }
+
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
         // BufferedContainerを見習いなさい
         return /** @type {T} */ (new ContainerNode(options, this.cachedNode));
