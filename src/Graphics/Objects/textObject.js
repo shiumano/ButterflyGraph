@@ -189,14 +189,13 @@ export class TextObject extends DrawObject {
      * @param {number} t
      */
     createSnapshot(t) {
-        const options = this.calculateOptions(t);
-
         const cachedNode = this.cachedNode;
         if (cachedNode !== null) {
-            cachedNode.read(options);
+            cachedNode.read(this);
             return cachedNode;
         }
 
+        const options = this.calculateOptions(t);
         return new TextNode(options, this.cachedNode);
     }
 
