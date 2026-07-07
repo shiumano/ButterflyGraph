@@ -14,6 +14,8 @@ import { GradientBuilder } from "./Gradients/gradient.js";
  *   origin: Readonly<Vector2>
  *   originOffsetX: number
  *   originOffsetY: number
+ *   parentWidth: number | undefined
+ *   parentHeight: number | undefined
  *   alpha: number
  *   zIndex: number
  *   fillStyle?: string | CanvasGradient | CanvasPattern | GradientBuilder

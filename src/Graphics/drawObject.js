@@ -421,6 +421,8 @@ export class DrawObject {
             origin: this.origin,
             originOffsetX: this.originOffsetX,
             originOffsetY: this.originOffsetY,
+            parentWidth: this.parent?.width,
+            parentHeight: this.parent?.height,
             alpha: this.alpha,
             zIndex: this.zIndex,
             fillStyle: fillStyle,
