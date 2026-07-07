@@ -265,14 +265,10 @@ export class Container extends DrawObject {
                 const childNode = childObjects[0].getSnapshot(t);
                 children[0] = childNode;
             } else {
-                if (this.#childrenNodeArrayChanged) {
-                    for (let i = 0; i < childObjects.length; i++) {
-                        children[i] = childObjects[i].getSnapshot(t);
-                    }
-                this.#childrenNodeArrayChanged = false;
-                } else {
-                    childObjects.forEach(child => child.getSnapshot(t));
+                for (let i = 0; i < childObjects.length; i++) {
+                    children[i] = childObjects[i].getSnapshot(t);
                 }
+                this.#childrenNodeArrayChanged = false;
             }
         }
 
