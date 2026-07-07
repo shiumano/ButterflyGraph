@@ -28,6 +28,7 @@ export class Container extends DrawObject {
 
     /** @type {readonly GenericDrawObject[] | null} */
     #frozenChildren = null;
+    #childrenNodeArrayChanged = true;
 
     /**
      * @param {ContainerOptions} options
@@ -133,6 +134,7 @@ export class Container extends DrawObject {
 
             if (reason === "zIndex") {
                 this.#frozenChildren = null;  // zIndexの変化でchildrenの順番が変わる可能性があるので、キャッシュを破棄する
+                this.#childrenNodeArrayChanged = true;
                 this.#children.sort((a, b) => a.zIndex - b.zIndex);
             }
             super.requestRecreate(sender, "object");
@@ -162,6 +164,8 @@ export class Container extends DrawObject {
      */
     addChild(...children) {
         this.#frozenChildren = null;
+        this.#childrenNodeArrayChanged = true;
+
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const index = this.#children.indexOf(child);
@@ -187,6 +191,7 @@ export class Container extends DrawObject {
      */
     removeChild(child) {
         this.#frozenChildren = null;
+        this.#childrenNodeArrayChanged = true;
 
         const index = this.#children.indexOf(child);
         if (index === -1) return;  // この Container の子ではない
@@ -252,17 +257,22 @@ export class Container extends DrawObject {
     calculateOptions(t) {
         const baseOptions = super.calculateOptions(t);
 
-        let children = this.cachedNode?.options?.children;
+        const childObjects = this.#children;
+        const children = this.cachedNode?.options.children ?? [];
+        children.length = childObjects.length;
         if (children === undefined || this.timed || this.objectChanged) {
-            const childObjects = this.#children;
             if (childObjects.length === 1) {
                 const childNode = childObjects[0].getSnapshot(t);
-                children = [childNode];
+                children[0] = childNode;
             } else {
-                // PERF: mapだって高負荷
-                //     : なるべく動かないものは動かないものContainerにまとめて
-                //     : 動くものは動くものContainerに分けてmapを限定しようね
-                children = childObjects.map(child => child.getSnapshot(t));
+                if (this.#childrenNodeArrayChanged) {
+                    for (let i = 0; i < childObjects.length; i++) {
+                        children[i] = childObjects[i].getSnapshot(t);
+                    }
+                this.#childrenNodeArrayChanged = false;
+                } else {
+                    childObjects.forEach(child => child.getSnapshot(t));
+                }
             }
         }
 
