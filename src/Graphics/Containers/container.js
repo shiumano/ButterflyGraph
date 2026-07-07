@@ -9,7 +9,7 @@ import { DrawObject } from "../drawObject.js";
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
- *   children: readonly GenericDrawNode[]
+ *   children: GenericDrawNode[]
  *   clip: boolean
  * }} ContainerNodeOptions
  * @typedef {ContainerNode<ContainerNodeOptions>} GenericContainerNode
@@ -315,7 +315,7 @@ export class ContainerNode extends DrawNode {
     constructor(options, oldNode = null) {
         super(options, oldNode);
 
-        this.#children = Object.freeze(options.children);
+        this.#children = options.children;
 
         this.#single = this.#children.length === 1;
 
@@ -339,7 +339,7 @@ export class ContainerNode extends DrawNode {
      * @param {T} options
      */
     read(options) {
-        this.#children = Object.freeze(options.children);
+        this.#children = options.children;
 
         this.#single = this.#children.length === 1;
 
