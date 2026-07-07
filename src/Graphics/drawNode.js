@@ -1,4 +1,4 @@
-import { Gradient,  GradientBuilder } from "./Gradients/gradient.js";
+import { Gradient, GradientBuilder } from "./Gradients/gradient.js";
 
 /**
  * @import { Vector2 } from "./vector2"
