@@ -188,6 +188,13 @@ export class TextObject extends DrawObject {
      */
     createSnapshot(t) {
         const options = this.calculateOptions(t);
+
+        const cachedNode = this.cachedNode;
+        if (cachedNode !== null) {
+            cachedNode.read(options);
+            return cachedNode;
+        }
+
         return new TextNode(options, this.cachedNode);
     }
 
@@ -216,7 +223,21 @@ class TextNode extends DrawNode {
         this.#fill = options.fill;
         this.#strokeWidth = options.strokeWidth;
         this.#offsetX = this.#strokeWidth / 2;
-        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;  // IDK: なんだか変な気がするが、これが正しい
+        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;
+    }
+
+    /**
+     * @param {TextNodeOptions} options
+     */
+    read(options) {
+        this.#text = options.text;
+        this.#font = options.font;
+        this.#fill = options.fill;
+        this.#strokeWidth = options.strokeWidth;
+        this.#offsetX = this.#strokeWidth / 2;
+        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;
+
+        super.read(options);
     }
 
     /**
