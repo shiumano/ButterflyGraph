@@ -428,23 +428,18 @@ export class DrawObject {
 
     // 派生クラスで実装する必要があるので、あくまでこれはサンプル実装
     /**
-     * 時間 t におけるこのオブジェクトの見た目を DrawNode 化する
+     * 時間 t におけるこのオブジェクトの見た目を DrawNode に適用する
      * @abstract
      * @param {number} t
      * @returns {T}
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
+    updateNode(t) {
         // new DrawNodeの出処を探してここに来たのかい？本当は別のNodeを返したかったのかな
         // 残念、あんたがcreateSnapshot(t)を定義しなかったせいでDrawNodeが返ってきたんだよ
+        const node = this.cachedNode ?? /** @type {T} */ (new DrawNode());
 
-        const cachedNode = this.cachedNode;
-        if (cachedNode !== null) {
-            cachedNode.read(options);
-            return cachedNode;
-        }
-
-        return /** @type {T} */ (new DrawNode(options, this.cachedNode));
+        node.read(this);
+        return node;
     }
 
     /**
@@ -464,7 +459,7 @@ export class DrawObject {
             || this.objectChanged
         ) {
             nodeCache.t = this.timed ? t : undefined;
-            nodeCache.node = this.createSnapshot(t);
+            nodeCache.node = this.updateNode(t);
 
             this.#transformChanged = false;
             this.#objectChanged = false;

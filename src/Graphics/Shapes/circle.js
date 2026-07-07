@@ -67,16 +67,11 @@ export class Circle extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
+    updateNode(t) {
+        const node = this.cachedNode ?? new CircleNode();
 
-        const cachedNode = this.cachedNode;
-        if (cachedNode !== null) {
-            cachedNode.read(options);
-            return cachedNode;
-        }
-
-        return new CircleNode(options, this.cachedNode);
+        node.read(this);
+        return node;
     }
 
     isPerfectlyOptimized() { return this.constructor === Circle; }
@@ -86,44 +81,21 @@ export class Circle extends DrawObject {
  * @extends {DrawNode<CircleNodeOptions>}
  */
 class CircleNode extends DrawNode {
+    // WARN: ゴミ もうちょっとまとめるとかしなさい
+    static #nullPath = new Path2D();
     /** @type {Path2D} */
-    #path;
+    #path = CircleNode.#nullPath;
 
     /** @type {Map<number, Path2D>} */
     static #pathRegistory = new Map();
 
     /**
-     * @param {CircleNodeOptions} options
-     * @param {CircleNode?} oldNode
+     * @returns {CircleNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options);
-
-        if (oldNode instanceof CircleNode
-            && oldNode.options.radius === options.radius
-        ) {
-            this.#path = oldNode.#path;
-        } else {
-            const radius = options.radius;
-
-            const cachedPath = CircleNode.#pathRegistory.get(radius);
-            if (cachedPath !== undefined) {
-                this.#path = cachedPath;
-            } else {
-                const path = new Path2D();
-                path.arc(radius, radius, radius, 0, Math.PI * 2);
-
-                if (radius % 1 === 0) {
-                    // PERF: 整数の半径の円は、Path2Dのキャッシュに登録する
-                    //     : 塵ほどではあるが同じPath2Dを可能な限り使いまわしたほうが描画効率が良くなる
-                    //     : 500個のCircleがあれば全体で1%くらいの差が出た
-                    // WARN: さぁ、いつ捨てようか……あんまり恐ろしい量にはならないと思うが
-                    CircleNode.#pathRegistory.set(radius, path);
-                }
-
-                this.#path = path;
-            }
-        }
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            radius: 0,
+        });
     }
 
     /**
@@ -151,6 +123,8 @@ class CircleNode extends DrawNode {
                 this.#path = path;
             }
         }
+
+        this.options.radius = options.radius;
 
         super.read(options);
     }

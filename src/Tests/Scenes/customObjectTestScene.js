@@ -49,6 +49,9 @@ class Butterfly extends DrawObject {
         super(options);
 
         this.#dark = options.dark ?? true;
+
+        this.fillStyle = this.dark ? "#A78BFA" : "#6A5ACD";
+        this.strokeStyle = this.dark ? "#F5F7FA" : "#111";
     }
 
     get timed() { return false; }
@@ -59,6 +62,9 @@ class Butterfly extends DrawObject {
         if (this.#dark === value) return;
 
         this.#dark = value;
+        this.fillStyle = this.dark ? "#A78BFA" : "#6A5ACD";
+        this.strokeStyle = this.dark ? "#F5F7FA" : "#111";
+
         this.requestRecreate(this, "object");
     }
 
@@ -76,8 +82,7 @@ class Butterfly extends DrawObject {
         //
         // どうせ参照型なので変数が一つ増えたところで実害はない
         const options = Object.assign(baseOptions, {
-            fillStyle: this.dark ? "#A78BFA" : "#6A5ACD",
-            strokeStyle: this.dark ? "#F5F7FA" : "#111"
+            /* ここに追加プロパティを書く */
         });
 
         return options;
@@ -86,16 +91,13 @@ class Butterfly extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
+    updateNode(t) {
         const options = this.calculateOptions(t);
 
-        const cachedNode = this.cachedNode;
-        if (cachedNode !== null) {
-            cachedNode.read(options);
-            return cachedNode;
-        }
+        const cachedNode = this.cachedNode ?? new ButterflyNode();
 
-        return new ButterflyNode(options, this.cachedNode);
+        cachedNode.read(options);
+        return cachedNode;
     }
 
     isPerfectlyOptimized() { return this.constructor === Butterfly; }
@@ -105,75 +107,12 @@ class Butterfly extends DrawObject {
  * @extends {DrawNode<ButterflyNodeOptions>}
  */
 class ButterflyNode extends DrawNode {
-    /** @type {Path2D} */
-    #nodesPath;
-    /** @type {Path2D} */
-    #bodyPath;
-    /** @type {Path2D} */
-    #strokePath;
-    /**
-     * @param {ButterflyNodeOptions} options
-     * @param {ButterflyNode?} oldNode
-     */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
+    // WARN: ゴミ もうちょっとこううまくできないものかねぇ
+    static #nullPath = new Path2D();
 
-        if (
-            oldNode instanceof ButterflyNode &&
-            oldNode.width === options.width &&
-            oldNode.height === options.height
-        ) {
-            this.#nodesPath = oldNode.#nodesPath;
-            this.#bodyPath = oldNode.#bodyPath;
-            this.#strokePath = oldNode.#strokePath;
-        } else {
-            const ws = options.width / 160;  // width scale
-            const hs = options.height / 110;  // height scale
-
-            const nodesPath = new Path2D();
-            nodesPath.arc(42 * ws, 52 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(60 * ws, 58 * hs);
-            nodesPath.arc(60 * ws, 58 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(40 * ws, 66 * hs);
-            nodesPath.arc(40 * ws, 66 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(118 * ws, 52 * hs);
-            nodesPath.arc(118 * ws, 52 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(100 * ws, 58 * hs);
-            nodesPath.arc(100 * ws, 58 * hs, 4, 0, Math.PI * 2);
-            nodesPath.moveTo(120 * ws, 66 * hs);
-            nodesPath.arc(120 * ws, 66 * hs, 4, 0, Math.PI * 2);
-
-            const bodyPath = new Path2D();
-            bodyPath.roundRect(78 * ws, 30 * hs, 4 * ws, 36 * hs, 2);
-
-            const strokePath = new Path2D();
-            strokePath.moveTo(98 * ws, 18 * hs);
-            strokePath.bezierCurveTo(92 * ws, 15 * hs, 82 * ws, 20 * hs, 80 * ws, 30 * hs);
-            strokePath.bezierCurveTo(78 * ws, 20 * hs, 68 * ws, 15 * hs, 62 * ws, 18 * hs);
-            strokePath.moveTo(76 * ws, 70 * hs);
-            strokePath.bezierCurveTo(68 * ws, 85 * hs, 53 * ws, 110 * hs, 30 * ws, 105 * hs);
-            strokePath.bezierCurveTo(15 * ws, 100 * hs, 25 * ws, 80 * hs, 48 * ws, 70 * hs);
-            strokePath.bezierCurveTo(20 * ws, 65 * hs, 0 * ws, 40 * hs, 5 * ws, 20 * hs);
-            strokePath.bezierCurveTo(10 * ws, -5 * hs, 40 * ws, 0 * hs, 70 * ws, 40 * hs);
-            strokePath.closePath();
-            strokePath.moveTo(84 * ws, 70 * hs);
-            strokePath.bezierCurveTo(92 * ws, 85 * hs, 107 * ws, 110 * hs, 130 * ws, 105 * hs);
-            strokePath.bezierCurveTo(145 * ws, 100 * hs, 135 * ws, 80 * hs, 112 * ws, 70 * hs);
-            strokePath.bezierCurveTo(140 * ws, 65 * hs, 160 * ws, 40 * hs, 155 * ws, 20 * hs);
-            strokePath.bezierCurveTo(150 * ws, -5 * hs, 120 * ws, 0 * hs, 90 * ws, 40 * hs);
-            strokePath.closePath();
-            strokePath.moveTo(42 * ws, 52 * hs);
-            strokePath.lineTo(60 * ws, 58 * hs);
-            strokePath.lineTo(40 * ws, 66 * hs);
-            strokePath.moveTo(118 * ws, 52 * hs);
-            strokePath.lineTo(100 * ws, 58 * hs);
-            strokePath.lineTo(120 * ws, 66 * hs);
-
-            this.#nodesPath = nodesPath;
-            this.#bodyPath = bodyPath;
-            this.#strokePath = strokePath;
-        }
-    }
+    #nodesPath = ButterflyNode.#nullPath;
+    #bodyPath = ButterflyNode.#nullPath;
+    #strokePath = ButterflyNode.#nullPath;
 
     /**
      * @param {ButterflyNodeOptions} options

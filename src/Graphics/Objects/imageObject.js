@@ -184,10 +184,13 @@ export class ImageObject extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
+    updateNode(t) {
         const options = this.calculateOptions(t);
 
-        return new ImageNode(options, this.cachedNode);
+        const node = this.cachedNode ?? new ImageNode();
+        node.read(options);
+
+        return node;
     }
 
     isPerfectlyOptimized() { return this.constructor === ImageObject; }
@@ -197,22 +200,42 @@ export class ImageObject extends DrawObject {
  * @extends {DrawNode<ImageNodeOptions>}
  */
 class ImageNode extends DrawNode {
-    #hash;
-    #offsetX;
-    #offsetY;
-    #imageSmoothing;
+    /** @type {BigInt?} */
+    #hash = null;
+    #offsetX = 0;
+    #offsetY = 0;
+    #imageSmoothing = true;
+
+    /**
+     * @returns {ImageNodeOptions}
+     */
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            hash: null,
+            offsetX: 0,
+            offsetY: 0,
+            imageSmoothing: true
+        });
+    }
 
     /**
      * @param {ImageNodeOptions} options
-     * @param {ImageNode?} oldNode
      */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
+    read(options) {
+        const { hash, offsetX, offsetY, imageSmoothing } = options;
 
-        this.#hash = options.hash;
-        this.#offsetX = options.offsetX;
-        this.#offsetY = options.offsetY;
-        this.#imageSmoothing = options.imageSmoothing;
+        this.#hash = hash;
+        this.#offsetX = offsetX;
+        this.#offsetY = offsetY;
+        this.#imageSmoothing = imageSmoothing;
+
+        const tOpt = this.options;
+        tOpt.hash = hash;
+        tOpt.offsetX = offsetX;
+        tOpt.offsetY = offsetY;
+        tOpt.imageSmoothing = imageSmoothing;
+
+        super.read(options);
     }
 
     /**

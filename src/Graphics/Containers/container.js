@@ -28,7 +28,6 @@ export class Container extends DrawObject {
 
     /** @type {readonly GenericDrawObject[] | null} */
     #frozenChildren = null;
-    #childrenNodeArrayChanged = true;
 
     /**
      * @param {ContainerOptions} options
@@ -134,7 +133,6 @@ export class Container extends DrawObject {
 
             if (reason === "zIndex") {
                 this.#frozenChildren = null;  // zIndexの変化でchildrenの順番が変わる可能性があるので、キャッシュを破棄する
-                this.#childrenNodeArrayChanged = true;
                 this.#children.sort((a, b) => a.zIndex - b.zIndex);
             }
             super.requestRecreate(sender, "object");
@@ -164,7 +162,6 @@ export class Container extends DrawObject {
      */
     addChild(...children) {
         this.#frozenChildren = null;
-        this.#childrenNodeArrayChanged = true;
 
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
@@ -191,7 +188,6 @@ export class Container extends DrawObject {
      */
     removeChild(child) {
         this.#frozenChildren = null;
-        this.#childrenNodeArrayChanged = true;
 
         const index = this.#children.indexOf(child);
         if (index === -1) return;  // この Container の子ではない
@@ -268,7 +264,6 @@ export class Container extends DrawObject {
                 for (let i = 0; i < childObjects.length; i++) {
                     children[i] = childObjects[i].getSnapshot(t);
                 }
-                this.#childrenNodeArrayChanged = false;
             }
         }
 
@@ -284,18 +279,15 @@ export class Container extends DrawObject {
      * @param {number} t
      * @returns {T}
      */
-    createSnapshot(t) {
+    updateNode(t) {
         const options = this.calculateOptions(t);
-
-        const cachedNode = this.cachedNode;
-        if (cachedNode !== null) {
-            cachedNode.read(options);
-            return cachedNode;
-        }
 
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
         // BufferedContainerを見習いなさい
-        return /** @type {T} */ (new ContainerNode(options, this.cachedNode));
+        const cachedNode = this.cachedNode ?? /** @type {T} */ (new ContainerNode());
+
+        cachedNode.read(options);
+        return cachedNode;
     }
 
     isPerfectlyOptimized() { return this.constructor === Container; }
@@ -309,47 +301,32 @@ export class Container extends DrawObject {
  * @extends {DrawNode<T>}
  */
 export class ContainerNode extends DrawNode {
-    #children;
+    /** @type {GenericDrawNode[]} */
+    #children = [];
     /** @type {Path2D?} */
     #clipPath = null;
-    #single;
+    #single = false;
 
     /**
-     * @param {T} options
-     * @param {ContainerNode<T>?} oldNode
+     * @returns {ContainerNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
-
-        this.#children = options.children;
-
-        this.#single = this.#children.length === 1;
-
-        if (
-            oldNode instanceof ContainerNode
-            && oldNode.options.clip && options.clip
-            && oldNode.width === options.width
-            && oldNode.height === options.height
-        ) {
-            this.#clipPath = oldNode.#clipPath;
-        } else {
-            if (options.clip) {
-                const clipPath = new Path2D();
-                clipPath.rect(0, 0, options.width, options.height);
-                this.#clipPath = clipPath;
-            }
-        }
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            children: [],
+            clip: false
+        });
     }
 
     /**
      * @param {T} options
      */
     read(options) {
-        this.#children = options.children;
+        const { children, clip } = options;
+        this.#children = children;
 
-        this.#single = this.#children.length === 1;
+        this.#single = children.length === 1;
 
-        if (options.clip) {
+        if (clip) {
             if (!this.options.clip
                 || this.width !== options.width
                 || this.height !== options.height
@@ -358,7 +335,13 @@ export class ContainerNode extends DrawNode {
                 clipPath.rect(0, 0, options.width, options.height);
                 this.#clipPath = clipPath;
             }
+        } else {
+            this.#clipPath = null;
         }
+
+        const tOpt = this.options;
+        tOpt.children = children;
+        tOpt.clip = clip;
 
         super.read(options);
     }

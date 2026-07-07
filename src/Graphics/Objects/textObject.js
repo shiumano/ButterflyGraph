@@ -21,6 +21,9 @@ import { DrawNode } from "../drawNode.js";
  * }} TextNodeOptions
  */
 
+// https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-font-dev
+const FONT_DEFAULT = "10px sans-serif";
+
 /**
  * @extends {DrawObject<TextNode>}
  */
@@ -56,7 +59,7 @@ export class TextObject extends DrawObject {
         this.#strokeWidth = Math.max(options.strokeWidth ?? 0, 0);
 
         this.#text = options.text ?? "";
-        this.#font = options.font ?? "10px sans-serif";
+        this.#font = options.font ?? FONT_DEFAULT;
 
         this.#sizeReference = options.sizeReference ?? "actual";
         this.#autoSizeUpdate = options.autoSizeUpdate ?? true;
@@ -188,15 +191,12 @@ export class TextObject extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
-        const cachedNode = this.cachedNode;
-        if (cachedNode !== null) {
-            cachedNode.read(this);
-            return cachedNode;
-        }
+    updateNode(t) {
+        const cachedNode = this.cachedNode ?? new TextNode();
 
-        const options = this.calculateOptions(t);
-        return new TextNode(options, this.cachedNode);
+        cachedNode.read(this);
+        return cachedNode;
+
     }
 
     isPerfectlyOptimized() { return this.constructor === TextObject; }
@@ -206,37 +206,44 @@ export class TextObject extends DrawObject {
  * @extends {DrawNode<TextNodeOptions>}
  */
 class TextNode extends DrawNode {
-    #text;
-    #font;
-    #fill;
-    #strokeWidth;
-    #offsetX;
-    #offsetY;
+    #text = "";
+    #font = FONT_DEFAULT;
+    #fill = true;
+    #strokeWidth = 0;
+    #offsetX = 0;
+    #offsetY = 0;
 
     /**
-     * @param {TextNodeOptions} options
-     * @param {TextNode?} oldNode
+     * @returns {TextNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options);
-        this.#text = options.text;
-        this.#font = options.font;
-        this.#fill = options.fill;
-        this.#strokeWidth = options.strokeWidth;
-        this.#offsetX = this.#strokeWidth / 2;
-        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            text: "",
+            font: FONT_DEFAULT,
+            fill: true,
+            strokeWidth: 0,
+            textAscent: 0
+        });
     }
 
     /**
      * @param {TextNodeOptions} options
      */
     read(options) {
-        this.#text = options.text;
-        this.#font = options.font;
-        this.#fill = options.fill;
-        this.#strokeWidth = options.strokeWidth;
-        this.#offsetX = this.#strokeWidth / 2;
-        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;
+        const { text, font, fill, strokeWidth, textAscent } = options;
+        this.#text = text;
+        this.#font = font;
+        this.#fill = fill;
+        this.#strokeWidth = strokeWidth;
+        this.#offsetX = strokeWidth / 2;
+        this.#offsetY = strokeWidth / 2 + textAscent;
+
+        const tOpt = this.options;
+        tOpt.text = text;
+        tOpt.font = font;
+        tOpt.fill = fill;
+        tOpt.strokeWidth = strokeWidth;
+        tOpt.textAscent = textAscent;
 
         super.read(options);
     }
