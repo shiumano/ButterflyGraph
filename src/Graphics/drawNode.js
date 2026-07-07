@@ -93,18 +93,14 @@ export class DrawNode {
 
         this.#showBounds = options.showBounds ?? false;
 
-        const x = options.x;
-        const y = options.y;
-        const originOffsetX = options.originOffsetX;
-        const originOffsetY = options.originOffsetY;
-        const rotation = options.rotation;
-        const scaleX = options.scaleX;
-        const scaleY = options.scaleY;
+        const { x, y, anchor, originOffsetX, originOffsetY, parentWidth = 0, parentHeight = 0, rotation, scaleX, scaleY } = options;
+        const drawX = x - originOffsetX + parentWidth * anchor.x;
+        const drawY = y - originOffsetY + parentHeight * anchor.y;
 
         if (!options.transformChanged && oldNode !== null) {
             this.#transformMatrix = oldNode.#transformMatrix;
         } else {
-            const hasTransform = x !== 0 || y !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
+            const hasTransform = drawX !== 0 || drawY !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
             if (hasTransform) {
                 // 回転のサイン・コサインを計算
                 const rCos = Math.cos(rotation);
@@ -115,8 +111,8 @@ export class DrawNode {
                 const b = scaleX * rSin;
                 const c = -scaleY * rSin;
                 const d = scaleY * rCos;
-                const e = x + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
-                const f = y + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
+                const e = drawX + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
+                const f = drawY + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
 
                 this.#transformMatrix = [a, b, c, d, e, f];
                 // クソややこしいね！translateとrotateとscaleが恋しいよ
@@ -164,16 +160,13 @@ export class DrawNode {
 
         this.#showBounds = options.showBounds ?? false;
 
-        const x = options.x;
-        const y = options.y;
-        const originOffsetX = options.originOffsetX;
-        const originOffsetY = options.originOffsetY;
-        const rotation = options.rotation;
-        const scaleX = options.scaleX;
-        const scaleY = options.scaleY;
+
+        const { x, y, anchor, originOffsetX, originOffsetY, parentWidth = 0, parentHeight = 0, rotation, scaleX, scaleY } = options;
+        const drawX = x - originOffsetX + parentWidth * anchor.x;
+        const drawY = y - originOffsetY + parentHeight * anchor.y;
 
         if (options.transformChanged) {
-            const hasTransform = x !== 0 || y !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
+            const hasTransform = drawX !== 0 || drawY !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
             if (hasTransform) {
                 // 回転のサイン・コサインを計算
                 const rCos = Math.cos(rotation);
@@ -184,8 +177,8 @@ export class DrawNode {
                 const b = scaleX * rSin;
                 const c = -scaleY * rSin;
                 const d = scaleY * rCos;
-                const e = x + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
-                const f = y + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
+                const e = drawX + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
+                const f = drawY + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
 
                 this.#transformMatrix = [a, b, c, d, e, f];
                 // クソややこしいね！translateとrotateとscaleが恋しいよ

@@ -399,19 +399,9 @@ export class DrawObject {
         const strokeStyle = this.strokeStyle instanceof Gradient
             ? this.strokeStyle.getGradientBuilder() : this.strokeStyle;
 
-        // IDK: 責務としてこんな場所にあっていいんだろうか…
-        //    : そもそもContainerじゃなくてDrawObjectの時点で処理が書かれてる時点でオワって話でもあるが
-        let x = this.x - this.originOffsetX;
-        let y = this.y - this.originOffsetY;
-
-        if (this.parent !== null) {
-            x += this.parent.width * this.anchor.x;
-            y += this.parent.height * this.anchor.y;
-        }
-
         return {
-            x: x,
-            y: y,
+            x: this.x,
+            y: this.y,
             rotation: this.rotation,
             width: this.width,
             height: this.height,
@@ -448,7 +438,7 @@ export class DrawObject {
 
         const cachedNode = this.cachedNode;
         if (cachedNode !== null) {
-            cachedNode.read(this);
+            cachedNode.read(options);
             return cachedNode;
         }
 
