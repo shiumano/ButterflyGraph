@@ -114,11 +114,9 @@ export class BufferedContainer extends Container {
      * @param {number} t
      */
     updateNode(t) {
-        const options = this.calculateOptions(t);
-
         const cachedNode = this.cachedNode ?? new BufferedContainerNode();
 
-        cachedNode.read(options);
+        cachedNode.read(this);
         return cachedNode;
     }
 

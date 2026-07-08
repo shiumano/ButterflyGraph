@@ -9,12 +9,14 @@ import { DrawObject } from "../drawObject.js";
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
- *   children: GenericDrawNode[]
+ *   children?: GenericDrawNode[]
  *   clip: boolean
  * }} ContainerNodeOptions
  * @typedef {ContainerNode<ContainerNodeOptions>} GenericContainerNode
  * @typedef {Container<GenericContainerNode>} GenericContainer
  */
+
+const children_nodes = Symbol();
 
 /**
  * @template {ContainerNode<ContainerNodeOptions>} T
@@ -256,14 +258,9 @@ export class Container extends DrawObject {
         const childObjects = this.#children;
         const children = this.cachedNode?.options.children ?? [];
         children.length = childObjects.length;
-        if (children === undefined || this.timed || this.objectChanged) {
-            if (childObjects.length === 1) {
-                const childNode = childObjects[0].getSnapshot(t);
-                children[0] = childNode;
-            } else {
-                for (let i = 0; i < childObjects.length; i++) {
-                    children[i] = childObjects[i].getSnapshot(t);
-                }
+        if (this.timed || this.objectChanged) {
+            for (let i = 0; i < childObjects.length; i++) {
+                children[i] = childObjects[i].getSnapshot(t);
             }
         }
 
@@ -280,15 +277,34 @@ export class Container extends DrawObject {
      * @returns {T}
      */
     updateNode(t) {
-        const options = this.calculateOptions(t);
+        if (this.timed || this.objectChanged) {
+            this.#updateChildren(t);
+        }
 
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
         // BufferedContainerを見習いなさい
         const cachedNode = this.cachedNode ?? /** @type {T} */ (new ContainerNode());
 
-        cachedNode.read(options);
+        cachedNode.read(this);
         return cachedNode;
     }
+
+    /** @type {GenericDrawNode[]} */
+    #childrenNodes = [];
+
+    /**
+     * @param {number} t
+     */
+    #updateChildren(t) {
+        const childrenNodes = this.#childrenNodes;
+        const childObjects = this.#children;
+        for (let i = 0; i < childObjects.length; i++) {
+            childrenNodes[i] = childObjects[i].getSnapshot(t);
+        }
+        childrenNodes.length = childObjects.length;
+    }
+
+    get [children_nodes]() { return this.#childrenNodes; }
 
     isPerfectlyOptimized() { return this.constructor === Container; }
 
@@ -321,7 +337,9 @@ export class ContainerNode extends DrawNode {
      * @param {Readonly<T>} options
      */
     read(options) {
-        const { children, clip } = options;
+        const children = options instanceof Container ? options[children_nodes] : options.children ?? [];
+        const clip = options.clip;
+
         this.#children = children;
 
         this.#single = children.length === 1;
