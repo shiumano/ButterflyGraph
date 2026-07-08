@@ -42,7 +42,7 @@ import { Gradient, GradientBuilder } from "./Gradients/gradient.js";
  */
 export class DrawNode {
     // しょうがない: これはもう、うっかりやらかしてたら爆死するしか無い
-    #options = /** @type {T} */(this.createDefaultOptions());
+    #options = /** @type {Partial<T>} */(this.createDefaultOptions());
 
     #width = 0;
     #height = 0;
