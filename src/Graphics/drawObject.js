@@ -416,7 +416,6 @@ export class DrawObject {
             parentWidth: this.parentWidth,
             parentHeight: this.parentHeight,
             alpha: this.alpha,
-            zIndex: this.zIndex,
             fillStyle: fillStyle,
             strokeStyle: strokeStyle,
             visible: this.visible,

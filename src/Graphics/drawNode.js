@@ -18,7 +18,6 @@ import { Gradient, GradientBuilder } from "./Gradients/gradient.js";
  *   parentWidth: number
  *   parentHeight: number
  *   alpha: number
- *   zIndex: number
  *   fillStyle: string | CanvasGradient | CanvasPattern | Gradient | GradientBuilder | undefined
  *   strokeStyle: string | CanvasGradient | CanvasPattern | Gradient | GradientBuilder | undefined
  *   visible: boolean
@@ -47,7 +46,6 @@ export class DrawNode {
     #width = 0;
     #height = 0;
     #alpha = 1;
-    #zIndex = 0;
     /** @type {string | CanvasGradient | CanvasPattern | undefined} */
     #fillStyle = undefined;
     /** @type {Gradient | GradientBuilder | undefined} */
@@ -76,8 +74,6 @@ export class DrawNode {
     get width() { return this.#width; }
     get height() { return this.#height; }
 
-    get zIndex() { return this.#zIndex; }
-
     /**
      * 初期状態のoptionsの生成
      * @returns {DrawNodeOptions}
@@ -98,7 +94,6 @@ export class DrawNode {
             parentWidth: 0,
             parentHeight: 0,
             alpha: 1,
-            zIndex: 0,
             fillStyle: undefined,
             strokeStyle: undefined,
             visible: true,
@@ -121,7 +116,7 @@ export class DrawNode {
             anchor, origin,
             originOffsetX, originOffsetY,
             parentWidth, parentHeight,
-            alpha, zIndex,
+            alpha,
             fillStyle, strokeStyle,
             visible, showBounds,
             transformChanged, objectChanged
@@ -130,7 +125,6 @@ export class DrawNode {
         this.#width = width;
         this.#height = height;
         this.#alpha = alpha;
-        this.#zIndex = zIndex;
 
         // type判定は先にやっておく、drawではnullチェックのみとする
         if (fillStyle instanceof GradientBuilder
@@ -185,7 +179,7 @@ export class DrawNode {
         tOpt.anchor = anchor; tOpt.origin = origin;
         tOpt.originOffsetX = originOffsetX; tOpt.originOffsetY = originOffsetY;
         tOpt.parentWidth = parentWidth; tOpt.parentHeight = parentHeight;
-        tOpt.alpha = alpha; tOpt.zIndex = zIndex;
+        tOpt.alpha = alpha;
         tOpt.fillStyle = fillStyle; tOpt.strokeStyle = strokeStyle;
         tOpt.visible = visible; tOpt.showBounds = showBounds;
         tOpt.transformChanged = transformChanged; tOpt.objectChanged = objectChanged;
