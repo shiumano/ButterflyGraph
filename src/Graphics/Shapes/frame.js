@@ -87,7 +87,7 @@ export class FrameNode extends DrawNode {
     }
 
     /**
-     * @param {FrameNodeOptions} options
+     * @param {Readonly<FrameNodeOptions>} options
      */
     read(options) {
         let lineWidth = options.lineWidth;

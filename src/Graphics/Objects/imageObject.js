@@ -219,7 +219,7 @@ class ImageNode extends DrawNode {
     }
 
     /**
-     * @param {ImageNodeOptions} options
+     * @param {Readonly<ImageNodeOptions>} options
      */
     read(options) {
         const { hash, offsetX, offsetY, imageSmoothing } = options;

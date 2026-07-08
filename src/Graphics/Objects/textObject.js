@@ -227,7 +227,7 @@ class TextNode extends DrawNode {
     }
 
     /**
-     * @param {TextNodeOptions} options
+     * @param {Readonly<TextNodeOptions>} options
      */
     read(options) {
         const { text, font, fill, strokeWidth, textAscent } = options;

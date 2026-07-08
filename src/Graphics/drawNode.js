@@ -111,7 +111,7 @@ export class DrawNode {
     }
 
     /**
-     * @param {T} options
+     * @param {Readonly<T>} options
      */
     read(options) {
         const {

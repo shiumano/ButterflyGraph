@@ -318,7 +318,7 @@ export class ContainerNode extends DrawNode {
     }
 
     /**
-     * @param {T} options
+     * @param {Readonly<T>} options
      */
     read(options) {
         const { children, clip } = options;

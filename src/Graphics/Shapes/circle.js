@@ -99,7 +99,7 @@ class CircleNode extends DrawNode {
     }
 
     /**
-     * @param {CircleNodeOptions} options
+     * @param {Readonly<CircleNodeOptions>} options
      */
     read(options) {
         if (this.options.radius !== options.radius) {

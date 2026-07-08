@@ -115,7 +115,7 @@ class ButterflyNode extends DrawNode {
     #strokePath = ButterflyNode.#nullPath;
 
     /**
-     * @param {ButterflyNodeOptions} options
+     * @param {Readonly<ButterflyNodeOptions>} options
      */
     read(options) {
         if (this.width !== options.width

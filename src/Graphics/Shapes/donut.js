@@ -115,7 +115,7 @@ class DonutNode extends DrawNode {
     }
 
     /**
-     * @param {DonutNodeOptions} options
+     * @param {Readonly<DonutNodeOptions>} options
      */
     read(options) {
         let lineWidth = options.lineWidth;

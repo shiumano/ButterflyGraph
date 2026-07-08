@@ -203,7 +203,7 @@ class BufferedContainerNode extends ContainerNode {
     }
 
     /**
-     * @param {BufferedContainerNodeOptions} options
+     * @param {Readonly<BufferedContainerNodeOptions>} options
      */
     read(options) {
         this.#redrawRainbow = options.redrawRainbow ?? false;
