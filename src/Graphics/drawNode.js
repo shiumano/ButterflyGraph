@@ -48,11 +48,11 @@ export class DrawNode {
     #alpha = 1;
     /** @type {string | CanvasGradient | CanvasPattern | undefined} */
     #fillStyle = undefined;
-    /** @type {Gradient | GradientBuilder | undefined} */
+    /** @type {GradientBuilder | undefined} */
     #fillGradient = undefined;
     /** @type {string | CanvasGradient | CanvasPattern | undefined} */
     #strokeStyle = undefined;
-    /** @type {Gradient | GradientBuilder | undefined} */
+    /** @type {GradientBuilder | undefined} */
     #strokeGradient = undefined;
     #visible = true;
     #showBounds = false;
@@ -127,21 +127,19 @@ export class DrawNode {
         this.#alpha = alpha;
 
         // type判定は先にやっておく、drawではnullチェックのみとする
-        if (fillStyle instanceof GradientBuilder
-            || fillStyle instanceof Gradient
-        ) {
+        if (fillStyle instanceof Gradient) {
+            this.#fillGradient = fillStyle.getGradientBuilder();
+        } else if (fillStyle instanceof GradientBuilder) {
             this.#fillGradient = fillStyle;
-        }
-        else {
+        } else {
             this.#fillStyle = fillStyle;
         }
 
-        if (strokeStyle instanceof GradientBuilder
-            || strokeStyle instanceof Gradient
-        ) {
+        if (strokeStyle instanceof Gradient) {
+            this.#strokeGradient = strokeStyle.getGradientBuilder();
+        } else if (strokeStyle instanceof GradientBuilder) {
             this.#strokeGradient = strokeStyle;
-        }
-        else {
+        } else {
             this.#strokeStyle = strokeStyle;
         }
 
