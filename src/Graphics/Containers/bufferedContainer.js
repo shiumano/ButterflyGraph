@@ -114,6 +114,10 @@ export class BufferedContainer extends Container {
      * @param {number} t
      */
     updateNode(t) {
+        if (this.timed || this.objectChanged) {
+            this._updateChildren(t);
+        }
+
         const cachedNode = this.cachedNode ?? new BufferedContainerNode();
 
         cachedNode.read(this);
@@ -228,7 +232,6 @@ class BufferedContainerNode extends ContainerNode {
      * @param {number} canvasHeight
      */
     renderBuffer(transform, canvasWidth, canvasHeight) {
-
         if (this.#bufferCtx === null) return;
 
         this.#bufferCtx.reset();

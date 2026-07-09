@@ -278,7 +278,7 @@ export class Container extends DrawObject {
      */
     updateNode(t) {
         if (this.timed || this.objectChanged) {
-            this.#updateChildren(t);
+            this._updateChildren(t);
         }
 
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
@@ -295,7 +295,7 @@ export class Container extends DrawObject {
     /**
      * @param {number} t
      */
-    #updateChildren(t) {
+    _updateChildren(t) {
         const childrenNodes = this.#childrenNodes;
         const childObjects = this.#children;
         for (let i = 0; i < childObjects.length; i++) {
