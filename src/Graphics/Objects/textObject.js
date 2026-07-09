@@ -10,6 +10,7 @@ import { DrawNode } from "../drawNode.js";
  *   fill?: boolean
  *   strokeWidth?: number
  *   sizeReference?: "actual" | "font"
+ *   autoSizeUpdate?: boolean
  * }} TextOptions
  * @typedef {DrawNodeOptions & {
  *   text: string
@@ -19,6 +20,9 @@ import { DrawNode } from "../drawNode.js";
  *   textAscent: number
  * }} TextNodeOptions
  */
+
+// https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-font-dev
+const FONT_DEFAULT = "10px sans-serif";
 
 /**
  * @extends {DrawObject<TextNode>}
@@ -35,6 +39,7 @@ export class TextObject extends DrawObject {
     #font;
 
     #sizeReference;
+    #autoSizeUpdate;
 
     #textHeight = 0;
     #textWidth = 0;
@@ -54,9 +59,10 @@ export class TextObject extends DrawObject {
         this.#strokeWidth = Math.max(options.strokeWidth ?? 0, 0);
 
         this.#text = options.text ?? "";
-        this.#font = options.font ?? "10px sans-serif";
+        this.#font = options.font ?? FONT_DEFAULT;
 
         this.#sizeReference = options.sizeReference ?? "actual";
+        this.#autoSizeUpdate = options.autoSizeUpdate ?? true;
 
         this.#updateMetrics();
     }
@@ -119,7 +125,20 @@ export class TextObject extends DrawObject {
         this.requestRecreate(this, "object");
     };
 
+    get autoSizeUpdate() { return this.#autoSizeUpdate; }
+    set autoSizeUpdate(value) {
+        if (this.#autoSizeUpdate === value) return;
+
+        this.#autoSizeUpdate = value;
+        this.#updateMetrics();
+        this.requestRecreate(this, "object");
+    };
+
+    get textAscent() { return this.#textAscent; }
+
     #updateMetrics() {
+        if (!this.autoSizeUpdate) return;
+
         // WARN: いつフォントが読み込まれたかどうかはわからない
         // TODO: どうにか呼ばせる。必要なときだけ。新たなPERFコメは生み出したくない
         if (this.#text.length === 0) {
@@ -172,9 +191,12 @@ export class TextObject extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
-        return new TextNode(options, this.cachedNode);
+    updateNode(t) {
+        const cachedNode = this.cachedNode ?? new TextNode();
+
+        cachedNode.read(this);
+        return cachedNode;
+
     }
 
     isPerfectlyOptimized() { return this.constructor === TextObject; }
@@ -184,25 +206,46 @@ export class TextObject extends DrawObject {
  * @extends {DrawNode<TextNodeOptions>}
  */
 class TextNode extends DrawNode {
-    #text;
-    #font;
-    #fill;
-    #strokeWidth;
-    #offsetX;
-    #offsetY;
+    #text = "";
+    #font = FONT_DEFAULT;
+    #fill = true;
+    #strokeWidth = 0;
+    #offsetX = 0;
+    #offsetY = 0;
 
     /**
-     * @param {TextNodeOptions} options
-     * @param {TextNode?} oldNode
+     * @returns {TextNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options);
-        this.#text = options.text;
-        this.#font = options.font;
-        this.#fill = options.fill;
-        this.#strokeWidth = options.strokeWidth;
-        this.#offsetX = this.#strokeWidth / 2;
-        this.#offsetY = this.#strokeWidth / 2 + options.textAscent;  // IDK: なんだか変な気がするが、これが正しい
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            text: "",
+            font: FONT_DEFAULT,
+            fill: true,
+            strokeWidth: 0,
+            textAscent: 0
+        });
+    }
+
+    /**
+     * @param {Readonly<TextNodeOptions>} options
+     */
+    read(options) {
+        const { text, font, fill, strokeWidth, textAscent } = options;
+        this.#text = text;
+        this.#font = font;
+        this.#fill = fill;
+        this.#strokeWidth = strokeWidth;
+        this.#offsetX = strokeWidth / 2;
+        this.#offsetY = strokeWidth / 2 + textAscent;
+
+        const tOpt = this.options;
+        tOpt.text = text;
+        tOpt.font = font;
+        tOpt.fill = fill;
+        tOpt.strokeWidth = strokeWidth;
+        tOpt.textAscent = textAscent;
+
+        super.read(options);
     }
 
     /**

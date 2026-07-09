@@ -223,75 +223,95 @@ TypeScriptで書いたときのサンプルコード
 　私はTSを書いたことがない人間なので、正しいTSかどうかの保証はしません
 　ですが、一応これで型エラーは出ません
 
-import { Container, GenericContainer } from "@core/Graphics/Containers/container";
+import { TestScene } from "./testScene";
 import { DrawNode, DrawNodeOptions } from "@core/Graphics/drawNode";
 import { DrawObject, DrawObjectOptions } from "@core/Graphics/drawObject";
+import { direct } from "@core/Utils/unitConversion";
+
+export class TypeScriptTestScene extends TestScene {
+    async load(): Promise<void> {
+        const testObject: TestObject = new TestObject({
+            x: 100, y: 100,
+            width: 200, height: 200,
+            lineWidth: 10,
+            strokeStyle: "lime"
+        });
+        this.root.addChild(testObject);
+
+        this.addBindSlider("X position", 0, 500, testObject, "x", direct);
+        this.addBindSlider("Y position", 0, 500, testObject, "y", direct);
+        this.addBindSlider("Width", 0, 500, testObject, "width", direct);
+        this.addBindSlider("Height", 0, 500, testObject, "height", direct);
+        this.addBindSlider("Line width", 0, 20, testObject, "lineWidth", direct);
+        this.addTextInput("Color", "lime", (value) => testObject.strokeStyle = value);
+    }
+}
 
 type TestObjectOptions = DrawObjectOptions & {
     lineWidth?: number
 }
 
-type TestNodeOptions = Omit<DrawNodeOptions, "strokeStyle"> & {
-    strokeStyle: Exclude<DrawNodeOptions["strokeStyle"], undefined>,
+type TestNodeOptions = DrawNodeOptions & {
     lineWidth: number
 }
 
 class TestObject extends DrawObject<TestNode> {
     lineWidth: number;
-    constructor(options: Partial<TestObjectOptions> = {}) {
+    constructor(options: TestObjectOptions = {}) {
         super(options);
 
         this.lineWidth = options.lineWidth ?? 0;
     }
 
     calculateOptions(t: number): TestNodeOptions {
-        const options = super.calculateOptions(t);
-        return {
-            ...options,
-            strokeStyle: this.getStyle(this.strokeStyle),
-            lineWidth: this.lineWidth
-        }
+        const baseOptions = super.calculateOptions(t);
+
+        const options = Object.assign(baseOptions, { lineWidth: this.lineWidth });
+
+        return options;
     }
 
-    createSnapshot(t: number): TestNode {
-        const options = this.calculateOptions(t);
-        return this.cachedNode?.with(options) ?? new TestNode(options);
+    updateNode(t: number): TestNode {
+        const node = this.cachedNode ?? new TestNode();
+        node.read(this);
+
+        return node;
     }
 }
 
 class TestNode extends DrawNode<TestNodeOptions> {
-    #lineWidth: number;
-    #path: Path2D;
-    constructor(options: TestNodeOptions, oldNode: TestNode | null = null) {
-        super(options, oldNode);
+    static #nullPath = new Path2D();
+    #lineWidth: number = 0;
+    #path: Path2D = TestNode.#nullPath;
 
-        this.#lineWidth = options.lineWidth;
+    createDefaultOptions(): TestNodeOptions {
+        return Object.assign(super.createDefaultOptions(), { lineWidth: 0 });
+    }
 
-        if (
-            oldNode instanceof TestNode &&
-            oldNode.width === options.width && oldNode.height === options.height) {
-            this.#path = oldNode.#path;
-        } else {
-            const cx: number = options.width / 2;
-            const cy: number = options.height / 2;
+    read(options: Readonly<TestNodeOptions>): void {
+        const { width, height, lineWidth } = options;
+        this.#lineWidth = Math.min(lineWidth, width, height);
+
+        if (this.width !== width || this.height !== height) {
+            const cx: number = width / 2;
+            const cy: number = height / 2;
             const r: number = Math.min(cx, cy) / 2;
 
             const path: Path2D = new Path2D();
-            path.moveTo(cx, 0); path.lineTo(cx, options.height);
-            path.moveTo(0, cy); path.lineTo(options.width, cy);
+            path.moveTo(cx, 0); path.lineTo(cx, height);
+            path.moveTo(0, cy); path.lineTo(width, cy);
             path.arc(cx, cy, r, 0, Math.PI * 2);
 
             this.#path = path;
         }
+
+        this.options.lineWidth = options.lineWidth;
+
+        super.read(options);
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
-        this._setStrokeStyle(ctx);
         ctx.lineWidth = this.#lineWidth;
         ctx.stroke(this.#path);
     }
 }
-
-const root: GenericContainer = new Container();
-const obj: TestObject = new TestObject({width: 10, height: 10, lineWidth: 1});
-root.addChild(obj);

@@ -9,12 +9,14 @@ import { DrawObject } from "../drawObject.js";
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
- *   children: readonly GenericDrawNode[]
+ *   children?: GenericDrawNode[]
  *   clip: boolean
  * }} ContainerNodeOptions
  * @typedef {ContainerNode<ContainerNodeOptions>} GenericContainerNode
  * @typedef {Container<GenericContainerNode>} GenericContainer
  */
+
+const children_nodes = Symbol();
 
 /**
  * @template {ContainerNode<ContainerNodeOptions>} T
@@ -162,6 +164,7 @@ export class Container extends DrawObject {
      */
     addChild(...children) {
         this.#frozenChildren = null;
+
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             const index = this.#children.indexOf(child);
@@ -252,17 +255,12 @@ export class Container extends DrawObject {
     calculateOptions(t) {
         const baseOptions = super.calculateOptions(t);
 
-        let children = this.cachedNode?.options?.children;
-        if (children === undefined || this.timed || this.objectChanged) {
-            const childObjects = this.#children;
-            if (childObjects.length === 1) {
-                const childNode = childObjects[0].getSnapshot(t);
-                children = [childNode];
-            } else {
-                // PERF: mapだって高負荷
-                //     : なるべく動かないものは動かないものContainerにまとめて
-                //     : 動くものは動くものContainerに分けてmapを限定しようね
-                children = childObjects.map(child => child.getSnapshot(t));
+        const childObjects = this.#children;
+        const children = this.cachedNode?.options.children ?? [];
+        children.length = childObjects.length;
+        if (this.timed || this.objectChanged) {
+            for (let i = 0; i < childObjects.length; i++) {
+                children[i] = childObjects[i].getSnapshot(t);
             }
         }
 
@@ -278,12 +276,35 @@ export class Container extends DrawObject {
      * @param {number} t
      * @returns {T}
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
+    updateNode(t) {
+        if (this.timed || this.objectChanged) {
+            this._updateChildren(t);
+        }
+
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
         // BufferedContainerを見習いなさい
-        return /** @type {T} */ (new ContainerNode(options, this.cachedNode));
+        const cachedNode = this.cachedNode ?? /** @type {T} */ (new ContainerNode());
+
+        cachedNode.read(this);
+        return cachedNode;
     }
+
+    /** @type {GenericDrawNode[]} */
+    #childrenNodes = [];
+
+    /**
+     * @param {number} t
+     */
+    _updateChildren(t) {
+        const childrenNodes = this.#childrenNodes;
+        const childObjects = this.#children;
+        for (let i = 0; i < childObjects.length; i++) {
+            childrenNodes[i] = childObjects[i].getSnapshot(t);
+        }
+        childrenNodes.length = childObjects.length;
+    }
+
+    get [children_nodes]() { return this.#childrenNodes; }
 
     isPerfectlyOptimized() { return this.constructor === Container; }
 
@@ -296,36 +317,51 @@ export class Container extends DrawObject {
  * @extends {DrawNode<T>}
  */
 export class ContainerNode extends DrawNode {
-    #children;
+    /** @type {GenericDrawNode[]} */
+    #children = [];
     /** @type {Path2D?} */
     #clipPath = null;
-    #single;
+    #single = false;
 
     /**
-     * @param {T} options
-     * @param {ContainerNode<T>?} oldNode
+     * @returns {ContainerNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            children: [],
+            clip: false
+        });
+    }
 
-        this.#children = Object.freeze(options.children);
+    /**
+     * @param {Readonly<T>} options
+     */
+    read(options) {
+        const children = options instanceof Container ? options[children_nodes] : options.children ?? [];
+        const clip = options.clip;
 
-        this.#single = this.#children.length === 1;
+        this.#children = children;
 
-        if (
-            oldNode instanceof ContainerNode
-            && oldNode.options.clip && options.clip
-            && oldNode.width === options.width
-            && oldNode.height === options.height
-        ) {
-            this.#clipPath = oldNode.#clipPath;
-        } else {
-            if (options.clip) {
+        this.#single = children.length === 1;
+
+        if (clip) {
+            if (!this.options.clip
+                || this.width !== options.width
+                || this.height !== options.height
+            ) {
                 const clipPath = new Path2D();
                 clipPath.rect(0, 0, options.width, options.height);
                 this.#clipPath = clipPath;
             }
+        } else {
+            this.#clipPath = null;
         }
+
+        const tOpt = this.options;
+        tOpt.children = children;
+        tOpt.clip = clip;
+
+        super.read(options);
     }
 
     /**

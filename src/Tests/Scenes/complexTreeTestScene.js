@@ -88,6 +88,7 @@ export class ComplexTreeTestScene extends TestScene {
             text: "Current Time: 0",
             font: "20px Arial",
             fillStyle: "white",
+            autoSizeUpdate: false,
             x: 10,
             y: 10,
         });

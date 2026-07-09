@@ -49,6 +49,9 @@ class Butterfly extends DrawObject {
         super(options);
 
         this.#dark = options.dark ?? true;
+
+        this.fillStyle = this.dark ? "#A78BFA" : "#6A5ACD";
+        this.strokeStyle = this.dark ? "#F5F7FA" : "#111";
     }
 
     get timed() { return false; }
@@ -59,6 +62,9 @@ class Butterfly extends DrawObject {
         if (this.#dark === value) return;
 
         this.#dark = value;
+        this.fillStyle = this.dark ? "#A78BFA" : "#6A5ACD";
+        this.strokeStyle = this.dark ? "#F5F7FA" : "#111";
+
         this.requestRecreate(this, "object");
     }
 
@@ -76,8 +82,7 @@ class Butterfly extends DrawObject {
         //
         // どうせ参照型なので変数が一つ増えたところで実害はない
         const options = Object.assign(baseOptions, {
-            fillStyle: this.dark ? "#A78BFA" : "#6A5ACD",
-            strokeStyle: this.dark ? "#F5F7FA" : "#111"
+            /* ここに追加プロパティを書く */
         });
 
         return options;
@@ -86,9 +91,13 @@ class Butterfly extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
+    updateNode(t) {
         const options = this.calculateOptions(t);
-        return new ButterflyNode(options, this.cachedNode);
+
+        const cachedNode = this.cachedNode ?? new ButterflyNode();
+
+        cachedNode.read(options);
+        return cachedNode;
     }
 
     isPerfectlyOptimized() { return this.constructor === Butterfly; }
@@ -98,30 +107,22 @@ class Butterfly extends DrawObject {
  * @extends {DrawNode<ButterflyNodeOptions>}
  */
 class ButterflyNode extends DrawNode {
-    /** @type {Path2D} */
-    #nodesPath;
-    /** @type {Path2D} */
-    #bodyPath;
-    /** @type {Path2D} */
-    #strokePath;
-    /**
-     * @param {ButterflyNodeOptions} options
-     * @param {ButterflyNode?} oldNode
-     */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
+    // WARN: ゴミ もうちょっとこううまくできないものかねぇ
+    static #nullPath = new Path2D();
 
-        if (
-            oldNode instanceof ButterflyNode &&
-            oldNode.width === options.width &&
-            oldNode.height === options.height
+    #nodesPath = ButterflyNode.#nullPath;
+    #bodyPath = ButterflyNode.#nullPath;
+    #strokePath = ButterflyNode.#nullPath;
+
+    /**
+     * @param {Readonly<ButterflyNodeOptions>} options
+     */
+    read(options) {
+        if (this.width !== options.width
+            || this.height !== options.height
         ) {
-            this.#nodesPath = oldNode.#nodesPath;
-            this.#bodyPath = oldNode.#bodyPath;
-            this.#strokePath = oldNode.#strokePath;
-        } else {
-            const ws = this.width / 160;  // width scale
-            const hs = this.height / 110;  // height scale
+            const ws = options.width / 160;  // width scale
+            const hs = options.height / 110;  // height scale
 
             const nodesPath = new Path2D();
             nodesPath.arc(42 * ws, 52 * hs, 4, 0, Math.PI * 2);
@@ -166,6 +167,8 @@ class ButterflyNode extends DrawNode {
             this.#bodyPath = bodyPath;
             this.#strokePath = strokePath;
         }
+
+        super.read(options);
     }
 
     /**

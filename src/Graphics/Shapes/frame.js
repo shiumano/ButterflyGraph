@@ -9,8 +9,6 @@ import { DrawNode } from "../drawNode.js";
  * }} FrameOptions
  * @typedef {DrawNodeOptions & {
  *    lineWidth: number
- *    lineRectWidth: number
- *    lineRectHeight: number
  * }} FrameNodeOptions
  */
 
@@ -50,21 +48,8 @@ export class Frame extends DrawObject {
     calculateOptions(t) {
         const baseOptions = super.calculateOptions(t);
 
-        let lineWidth = this.lineWidth;
-        let lineRectWidth = this.width - lineWidth;
-        let lineRectHeight = this.height - lineWidth;
-
-        // rectの幅or高さが0だと、miterが0の辺を消すので欲しいサイズにならない 0にはしないようにする
-        if (lineRectWidth <= 0 || lineRectHeight <= 0) {
-            lineWidth = Math.min(this.width, this.height) / 2 + 0.5;  // 若干重ねる どうせctx.lineWidthは0だと0.5として扱われるので
-            lineRectWidth = this.width - lineWidth;
-            lineRectHeight = this.height - lineWidth;
-        }
-
         const options = Object.assign(baseOptions, {
-            lineRectWidth: lineRectWidth,
-            lineRectHeight: lineRectHeight,
-            lineWidth: lineWidth
+            lineWidth: this.lineWidth
         });
 
         return options;
@@ -73,9 +58,11 @@ export class Frame extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
-        return new FrameNode(options, this.cachedNode);
+    updateNode(t) {
+        const node = this.cachedNode ?? new FrameNode();
+
+        node.read(this);
+        return node;
     }
 
     isPerfectlyOptimized() { return this.constructor === Frame; }
@@ -85,21 +72,43 @@ export class Frame extends DrawObject {
  * @extends {DrawNode<FrameNodeOptions>}
  */
 export class FrameNode extends DrawNode {
-    #lineRectWidth;
-    #lineRectHeight;
-    #lineWidth;
-    #offset;
-    /**
-     * @param {FrameNodeOptions} options
-     * @param {FrameNode?} oldNode
-     */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
+    #lineRectWidth = 0;
+    #lineRectHeight = 0;
+    #lineWidth = 0;
+    #offset = 0;
 
-        this.#lineRectWidth = options.lineRectWidth;
-        this.#lineRectHeight = options.lineRectHeight;
-        this.#lineWidth = options.lineWidth;
-        this.#offset = options.lineWidth / 2;
+    /**
+     * @returns {FrameNodeOptions}
+     */
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            lineWidth: 0,
+        });
+    }
+
+    /**
+     * @param {Readonly<FrameNodeOptions>} options
+     */
+    read(options) {
+        let lineWidth = options.lineWidth;
+        let lineRectWidth = options.width - lineWidth;
+        let lineRectHeight = options.height - lineWidth;
+
+        // rectの幅or高さが0だと、miterが0の辺を消すので欲しいサイズにならない 0にはしないようにする
+        if (lineRectWidth <= 0 || lineRectHeight <= 0) {
+            lineWidth = Math.min(options.width, options.height) / 2 + 0.5;  // 若干重ねる どうせctx.lineWidthは0だと0.5として扱われるので
+            lineRectWidth = options.width - lineWidth;
+            lineRectHeight = options.height - lineWidth;
+        }
+
+        this.#lineRectWidth = lineRectWidth;
+        this.#lineRectHeight = lineRectHeight;
+        this.#lineWidth = lineWidth;
+        this.#offset = lineWidth / 2;
+
+        this.options.lineWidth = options.lineWidth;
+
+        super.read(options);
     }
 
     /**

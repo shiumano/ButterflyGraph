@@ -9,7 +9,6 @@ import { Container, ContainerNode } from "./container.js";
  *   redrawRainbow?: boolean
  * }} BufferedContainerOptions
  * @typedef {ContainerNodeOptions & {
- *   objectChanged?: boolean
  *   follow: "all" | "scale" | "none"
  *   resolutionScale: number
  *   supersize: boolean
@@ -114,9 +113,15 @@ export class BufferedContainer extends Container {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
-        return new BufferedContainerNode(options, this.cachedNode);
+    updateNode(t) {
+        if (this.timed || this.objectChanged) {
+            this._updateChildren(t);
+        }
+
+        const cachedNode = this.cachedNode ?? new BufferedContainerNode();
+
+        cachedNode.read(this);
+        return cachedNode;
     }
 
     isPerfectlyOptimized() { return this.constructor === BufferedContainer; }
@@ -163,17 +168,15 @@ function deRef(bmp) {
  * @extends {ContainerNode<BufferedContainerNodeOptions>}
  */
 class BufferedContainerNode extends ContainerNode {
-    /** @type {OffscreenCanvas?} */
-    #buffer;
-    /** @type {CanvasRenderingContext2D?} */
-    #bufferCtx;
+    #buffer = new OffscreenCanvas(1, 1);
+    // HACK: キャストしてます 互換性は若干ありません
+    #bufferCtx =  /** @type {CanvasRenderingContext2D | null} */ (/** @type {any} */ this.#buffer.getContext("2d"));
     #bufferWidth = 1;
     #bufferHeight = 1;
-    #supersize;
-    #follow;
-    #resolutionScale;
-    /** @type {boolean} */
-    #incompletePosition;
+    #supersize = false;
+    #follow = "scale";
+    #resolutionScale = 1;
+    #incompletePosition = true;
     #drawOffsetX = 0;
     #drawOffsetY = 0;
     #drawScaleX = 1;
@@ -186,15 +189,25 @@ class BufferedContainerNode extends ContainerNode {
     #oldScaleY = 1;
 
     // デバッグ用!! でもおもろいから残した!!!!!!!!
-    #redrawRainbow;
+    #redrawRainbow = false;
 
     /**
-     * @param {BufferedContainerNodeOptions} options
-     * @param {BufferedContainerNode?} oldNode
+     * @returns {BufferedContainerNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            /** @type {BufferedContainerNodeOptions["follow"]} */
+            follow: "scale",
+            resolutionScale: 1,
+            supersize: false,
+            redrawRainbow: true
+        });
+    }
 
+    /**
+     * @param {Readonly<BufferedContainerNodeOptions>} options
+     */
+    read(options) {
         this.#redrawRainbow = options.redrawRainbow ?? false;
 
         this.#supersize = options.supersize;
@@ -203,35 +216,14 @@ class BufferedContainerNode extends ContainerNode {
 
         // 複雑な条件は事前に固定
         this.#incompletePosition = !options.supersize && options.follow !== "all" || options.resolutionScale !== 1;
-        if (oldNode instanceof BufferedContainerNode) {
-            // バッファの所有権を移譲
-            this.#buffer = oldNode.#buffer;
-            this.#bufferCtx = oldNode.#bufferCtx;
 
-            oldNode.#buffer = null;
-            oldNode.#bufferCtx = null;
-
-            // バッファに設定済みの値を引き継ぎ
-            this.#drawOffsetX = oldNode.#drawOffsetX;
-            this.#drawOffsetY = oldNode.#drawOffsetY;
-            this.#drawScaleX = oldNode.#drawScaleX;
-            this.#drawScaleY = oldNode.#drawScaleY;
-
-            this.#oldTrasnform = oldNode.#oldTrasnform;
-            this.#oldScaleX = oldNode.#oldScaleX;
-            this.#oldScaleY = oldNode.#oldScaleY;
-
-            if (options.objectChanged === false) {
-                // 描画内容も引き継ぎ
-                this.#bitmap = oldNode.#bitmap;
-                incRef(this.#bitmap);  // 使ってる人が増えたよ！
-                registry.register(this, this.#bitmap);
-            }
-        } else {
-            this.#buffer = new OffscreenCanvas(1, 1);
-            // HACK: キャストしてます 互換性は若干ありません
-            this.#bufferCtx = /** @type {CanvasRenderingContext2D | null} */ /** @type {any} */ (this.#buffer.getContext("2d"));
+        if (options.objectChanged) {
+            // 内容が変化したので、描画済みビットマップを破棄
+            deRef(this.#bitmap);
+            this.#bitmap = null;
         }
+
+        super.read(options);
     }
 
     /**
@@ -240,11 +232,8 @@ class BufferedContainerNode extends ContainerNode {
      * @param {number} canvasHeight
      */
     renderBuffer(transform, canvasWidth, canvasHeight) {
-        if (this.#buffer === null) {
-            this.#buffer = new OffscreenCanvas(1, 1);
-            this.#bufferCtx = /** @type {CanvasRenderingContext2D | null} */ /** @type {any} */ (this.#buffer.getContext("2d"));
-        }
         if (this.#bufferCtx === null) return;
+
         this.#bufferCtx.reset();
 
         const transformX = transform.e;

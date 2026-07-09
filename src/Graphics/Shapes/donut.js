@@ -10,7 +10,7 @@ import { DrawNode } from "../drawNode.js";
  *   lineWidth?: number
  * }} DonutOptions
  * @typedef {DrawNodeOptions & {
- *   lineRadius: number
+ *   radius: number
  *   lineWidth: number
  * }} DonutNodeOptions
  */
@@ -72,17 +72,9 @@ export class Donut extends DrawObject {
     calculateOptions(t) {
         const baseOptions = super.calculateOptions(t);
 
-        let lineWidth = this.lineWidth;
-        let lineRadius = this.radius - (lineWidth / 2);
-
-        if (lineRadius <= lineWidth / 2) {
-            lineWidth = this.radius + 0.5;
-            lineRadius = this.radius - (lineWidth / 2);
-        }
-
         const options = Object.assign(baseOptions, {
-            lineRadius: lineRadius,
-            lineWidth: lineWidth,
+            radius: this.radius,
+            lineWidth: this.lineWidth
         });
 
         return options;
@@ -91,9 +83,11 @@ export class Donut extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
-        return new DonutNode(options, this.cachedNode);
+    updateNode(t) {
+        const node = this.cachedNode ?? new DonutNode();
+        node.read(this);
+
+        return node;
     }
 
     isPerfectlyOptimized() { return this.constructor === Donut; }
@@ -103,31 +97,53 @@ export class Donut extends DrawObject {
  * @extends {DrawNode<DonutNodeOptions>}
  */
 class DonutNode extends DrawNode {
+    static #nullPath = new Path2D();
+
     /** @type {Path2D} */
-    #path;
-    #lineWidth;
+    #path = DonutNode.#nullPath;
+    #lineWidth = 0;
+    #lineRadius = 0;
 
     /**
-     * @param {DonutNodeOptions} options
-     * @param {DonutNode?} oldNode
+     * @returns {DonutNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            radius: 0,
+            lineWidth: 0
+        });
+    }
 
-        this.#lineWidth = options.lineWidth;
-        if (
-            oldNode instanceof DonutNode &&
-            oldNode.options.lineRadius === options.lineRadius &&
-            oldNode.options.lineWidth === options.lineWidth
+    /**
+     * @param {Readonly<DonutNodeOptions>} options
+     */
+    read(options) {
+        let lineWidth = options.lineWidth;
+        let lineRadius = options.radius - (lineWidth / 2);
+
+        if (lineRadius <= lineWidth / 2) {
+            lineWidth = options.radius + 0.5;
+            lineRadius = options.radius - (lineWidth / 2);
+        }
+
+        if (this.#lineRadius !== lineRadius ||
+            this.#lineWidth !== lineWidth
         ) {
-            this.#path = oldNode.#path;
-        } else {
-            const radius = Math.max(0, options.lineRadius);
-            const center = radius + options.lineWidth / 2;
+            const radius = Math.max(0, lineRadius);
+            const center = radius + lineWidth / 2;
             const path = new Path2D();
             path.arc(center, center, radius, 0, Math.PI * 2);
             this.#path = path;
         }
+
+        this.#lineWidth = lineWidth;
+        this.#lineRadius = lineRadius;
+
+        const tOpt = this.options;
+        tOpt.radius = options.radius;
+        tOpt.lineWidth = options.lineWidth;
+
+        super.read(options);
     }
 
     /**

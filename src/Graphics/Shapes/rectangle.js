@@ -26,29 +26,12 @@ export class Rectangle extends DrawObject {
 
     /**
      * @param {number} t
-     * @returns {RectangleNodeOptions}
      */
-    calculateOptions(t) {
-        const baseOptions = super.calculateOptions(t);
+    updateNode(t) {
+        const node = this.cachedNode ?? new RectangleNode();
+        node.read(this);
 
-        // // 本来は内容を更新していくのでこうなる
-        // // ただし、Rectangleは何もプロパティを追加しないので…
-        //
-        // const options = Object.assign(baseOptions, {
-        // });
-        //
-        // // こうなっちゃってもう無駄以外の何物でもない
-        const options = baseOptions;
-
-        return options;
-    }
-
-    /**
-     * @param {number} t
-     */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
-        return new RectangleNode(options, this.cachedNode);
+        return node;
     }
 
     isPerfectlyOptimized() { return this.constructor === Rectangle; }
@@ -59,11 +42,10 @@ export class Rectangle extends DrawObject {
  */
 export class RectangleNode extends DrawNode {
     /**
-     * @param {RectangleNodeOptions} options
-     * @param {RectangleNode?} oldNode
+     * @returns {RectangleNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options, oldNode);
+    createDefaultOptions() {
+        return super.createDefaultOptions();
     }
 
     /**

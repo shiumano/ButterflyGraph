@@ -67,9 +67,11 @@ export class Circle extends DrawObject {
     /**
      * @param {number} t
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
-        return new CircleNode(options, this.cachedNode);
+    updateNode(t) {
+        const node = this.cachedNode ?? new CircleNode();
+
+        node.read(this);
+        return node;
     }
 
     isPerfectlyOptimized() { return this.constructor === Circle; }
@@ -79,24 +81,28 @@ export class Circle extends DrawObject {
  * @extends {DrawNode<CircleNodeOptions>}
  */
 class CircleNode extends DrawNode {
+    // WARN: ゴミ もうちょっとまとめるとかしなさい
+    static #nullPath = new Path2D();
     /** @type {Path2D} */
-    #path;
+    #path = CircleNode.#nullPath;
 
     /** @type {Map<number, Path2D>} */
     static #pathRegistory = new Map();
 
     /**
-     * @param {CircleNodeOptions} options
-     * @param {CircleNode?} oldNode
+     * @returns {CircleNodeOptions}
      */
-    constructor(options, oldNode = null) {
-        super(options);
+    createDefaultOptions() {
+        return Object.assign(super.createDefaultOptions(), {
+            radius: 0,
+        });
+    }
 
-        if (oldNode instanceof CircleNode
-            && oldNode.options.radius === options.radius
-        ) {
-            this.#path = oldNode.#path;
-        } else {
+    /**
+     * @param {Readonly<CircleNodeOptions>} options
+     */
+    read(options) {
+        if (this.options.radius !== options.radius) {
             const radius = options.radius;
 
             const cachedPath = CircleNode.#pathRegistory.get(radius);
@@ -117,6 +123,10 @@ class CircleNode extends DrawNode {
                 this.#path = path;
             }
         }
+
+        this.options.radius = options.radius;
+
+        super.read(options);
     }
 
     /**

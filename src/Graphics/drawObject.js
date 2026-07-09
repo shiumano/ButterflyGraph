@@ -301,6 +301,8 @@ export class DrawObject {
 
     get originOffsetX() { return this.#originOffsetX; }
     get originOffsetY() { return this.#originOffsetY; }
+    get parentWidth() { return this.parent?.width ?? 0; }
+    get parentHeight() { return this.parent?.height ?? 0; }
 
     get transformChanged() { return this.#transformChanged || !this.perfectlyOptimized; }  // 変わったって言われてないかもしれない
     get objectChanged() { return this.#objectChanged || !this.perfectlyOptimized; }
@@ -399,19 +401,9 @@ export class DrawObject {
         const strokeStyle = this.strokeStyle instanceof Gradient
             ? this.strokeStyle.getGradientBuilder() : this.strokeStyle;
 
-        // IDK: 責務としてこんな場所にあっていいんだろうか…
-        //    : そもそもContainerじゃなくてDrawObjectの時点で処理が書かれてる時点でオワって話でもあるが
-        let x = this.x - this.originOffsetX;
-        let y = this.y - this.originOffsetY;
-
-        if (this.parent !== null) {
-            x += this.parent.width * this.anchor.x;
-            y += this.parent.height * this.anchor.y;
-        }
-
         return {
-            x: x,
-            y: y,
+            x: this.x,
+            y: this.y,
             rotation: this.rotation,
             width: this.width,
             height: this.height,
@@ -421,8 +413,9 @@ export class DrawObject {
             origin: this.origin,
             originOffsetX: this.originOffsetX,
             originOffsetY: this.originOffsetY,
+            parentWidth: this.parentWidth,
+            parentHeight: this.parentHeight,
             alpha: this.alpha,
-            zIndex: this.zIndex,
             fillStyle: fillStyle,
             strokeStyle: strokeStyle,
             visible: this.visible,
@@ -434,16 +427,18 @@ export class DrawObject {
 
     // 派生クラスで実装する必要があるので、あくまでこれはサンプル実装
     /**
-     * 時間 t におけるこのオブジェクトの見た目を DrawNode 化する
+     * 時間 t におけるこのオブジェクトの見た目を DrawNode に適用する
      * @abstract
      * @param {number} t
      * @returns {T}
      */
-    createSnapshot(t) {
-        const options = this.calculateOptions(t);
+    updateNode(t) {
         // new DrawNodeの出処を探してここに来たのかい？本当は別のNodeを返したかったのかな
         // 残念、あんたがcreateSnapshot(t)を定義しなかったせいでDrawNodeが返ってきたんだよ
-        return /** @type {T} */ (new DrawNode(options, this.cachedNode));
+        const node = this.cachedNode ?? /** @type {T} */ (new DrawNode());
+
+        node.read(this);
+        return node;
     }
 
     /**
@@ -463,7 +458,7 @@ export class DrawObject {
             || this.objectChanged
         ) {
             nodeCache.t = this.timed ? t : undefined;
-            nodeCache.node = this.createSnapshot(t);
+            nodeCache.node = this.updateNode(t);
 
             this.#transformChanged = false;
             this.#objectChanged = false;
