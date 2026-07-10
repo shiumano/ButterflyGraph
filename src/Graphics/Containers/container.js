@@ -257,13 +257,9 @@ export class Container extends DrawObject {
         // FIXME: 2回呼ぶはめになる
         if (this.#childrenAnimated) {
             const childObjects = this.#children;
-            if (childObjects.length === 1) {
-                childObjects[0].calculateAnimations(t);
-            } else {
-                for (let i = 0; i < childObjects.length; i++) {
-                    const child = childObjects[i];
-                    if (child.animated) child.calculateAnimations(t);
-                }
+            for (let i = 0; i < childObjects.length; i++) {
+                const child = childObjects[i];
+                child.calculateAnimations(t);
             }
         }
     }
@@ -341,7 +337,6 @@ export class ContainerNode extends DrawNode {
     #children = [];
     /** @type {Path2D?} */
     #clipPath = null;
-    #single = false;
 
     /**
      * @returns {ContainerNodeOptions}
@@ -361,8 +356,6 @@ export class ContainerNode extends DrawNode {
         const clip = options.clip;
 
         this.#children = children;
-
-        this.#single = children.length === 1;
 
         if (clip) {
             if (!this.options.clip
@@ -392,12 +385,8 @@ export class ContainerNode extends DrawNode {
             ctx.clip(this.#clipPath);
         }
 
-        if (this.#single) {  // PERF: ループ回す必要がない マイクロ最適化
-            this.#children[0].render(ctx);
-        } else {
-            for (let i = 0; i < this.#children.length; i++) {
-                this.#children[i].render(ctx);
-            }
+        for (let i = 0; i < this.#children.length; i++) {
+            this.#children[i].render(ctx);
         }
     }
 }
