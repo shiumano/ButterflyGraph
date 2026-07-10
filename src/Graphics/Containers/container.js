@@ -182,7 +182,7 @@ export class Container extends DrawObject {
 
             child.parent = this;
         }
-        this.requestRecreate(this, "object");
+        this.requestRecreate(this, "children");
     }
 
     /**
@@ -215,7 +215,7 @@ export class Container extends DrawObject {
         this.#childrenAnimated = childrenAnimated;
         this.#perfectlyOptimized = this.isPerfectlyOptimized() && childrenPerfect;
 
-        this.requestRecreate(this, "object");
+        this.requestRecreate(this, "children");
     }
 
     clearChildren() {
@@ -225,7 +225,7 @@ export class Container extends DrawObject {
         this.#childrenAnimated = false;
         this.#perfectlyOptimized = this.isPerfectlyOptimized();
         this.#frozenChildren = [];  // 何もないなら最初から空配列でいい
-        this.requestRecreate(this, "object");
+        this.requestRecreate(this, "children");
     }
 
     /**

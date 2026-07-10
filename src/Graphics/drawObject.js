@@ -26,7 +26,7 @@ import { AnimationManager } from "./Animations/animationManager.js";
  *   fillStyle?: string | CanvasGradient | CanvasPattern | Gradient
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
- * @typedef {"transform" | "object" | "zIndex"} RecreateReason
+ * @typedef {"transform" | "object" | "animationRegister" | "timed" | "children" | "zIndex"} RecreateReason
  * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
  */
 
@@ -294,7 +294,7 @@ export class DrawObject {
         if (this.#timed === value) return;
 
         this.#timed = value;
-        this.requestRecreate(this, "object");
+        this.requestRecreate(this, "timed");
     }
 
     get animated() { return this.#animated; }
@@ -355,7 +355,7 @@ export class DrawObject {
      */
     registerAnimationFor(target, applyer) {
         this.#animated = true;
-        this.requestRecreate(this, "object");
+        this.requestRecreate(this, "animationRegister");
 
         const startValue = this[target];
 
