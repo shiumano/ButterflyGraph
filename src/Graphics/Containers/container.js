@@ -184,8 +184,11 @@ export class Container extends DrawObject {
             const index = this.#children.indexOf(child);
             if (index !== -1) continue;  // 既にあるので、追加する意味はない
 
-            if (child.parent !== null && child.parent instanceof Container) {
-                child.parent.removeChild(child);  // childを奪う そういう仕様とする
+            const oldParent = child.parent;
+            child.parent = this;
+
+            if (oldParent !== null && oldParent instanceof Container) {
+                oldParent.removeChild(child);  // childを奪う そういう仕様とする
             }
 
             this.#children.push(child);
@@ -208,7 +211,10 @@ export class Container extends DrawObject {
         const index = this.#children.indexOf(child);
         if (index === -1) return;  // この Container の子ではない
 
-        child.parent = null;
+        if (child.parent === this) {
+            child.parent = null;
+        }
+
         const newChildren = [];
         let childrenTimed = false;
         let childrenAnimated = false;
