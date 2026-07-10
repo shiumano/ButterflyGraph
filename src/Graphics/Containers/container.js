@@ -250,22 +250,6 @@ export class Container extends DrawObject {
 
     /**
      * @param {number} t
-     */
-    calculateAnimations(t) {
-        super.calculateAnimations(t);
-
-        // FIXME: 2回呼ぶはめになる
-        if (this.#childrenAnimated) {
-            const childObjects = this.#children;
-            for (let i = 0; i < childObjects.length; i++) {
-                const child = childObjects[i];
-                child.calculateAnimations(t);
-            }
-        }
-    }
-
-    /**
-     * @param {number} t
      * @returns {ContainerNodeOptions}
      */
     calculateOptions(t) {
@@ -293,9 +277,7 @@ export class Container extends DrawObject {
      * @returns {T}
      */
     updateNode(t) {
-        if (this.timed || this.objectChanged) {
-            this._updateChildren(t);
-        }
+        this._updateChildren(t);
 
         // もしContainerNode以外を返したいと思っていたのなら、ちゃんとcreateSnapshot(t)を実装する必要がありますよ
         // BufferedContainerを見習いなさい

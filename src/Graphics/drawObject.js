@@ -33,9 +33,9 @@ import { AnimationManager } from "./Animations/animationManager.js";
 /**
  * @template {GenericDrawNode} T
  * @typedef {{
- *   t: number | undefined
+ *   t: number
  *   node: T?
- * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
+ * }} DrawNodeCache
  */
 
 // FIXME: get-onlyプロパティは弾くことができてない アニメーションのターゲットにしたら実行時エラーでドボン
@@ -80,7 +80,7 @@ export class DrawObject {
     #contentChanged = true;
     /** @type {DrawNodeCache<T>} */
     #nodeCache = {
-        t: undefined,
+        t: NaN,
         node: null
     };
 
@@ -468,17 +468,15 @@ export class DrawObject {
      * @param {number} t
      */
     getSnapshot(t) {
-        if (this.animated) {
-            this.calculateAnimations(t);
-        }
-
         const nodeCache = this.#nodeCache;
         if (nodeCache.node === null
-            || (nodeCache.t !== undefined && nodeCache.t !== t)
+            || ((this.timed || this.animated) && nodeCache.t !== t)
             || this.transformChanged
             || this.objectChanged
         ) {
-            nodeCache.t = this.timed ? t : undefined;
+            this.calculateAnimations(t);
+
+            nodeCache.t = t;
             nodeCache.node = this.updateNode(t);
 
             this.#transformChanged = false;
