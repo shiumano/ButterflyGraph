@@ -84,8 +84,10 @@ export class DrawObject {
         node: null
     };
 
-    /** @type {{[K in keyof this]?: AnimationManager<this[K]>}} */
-    #animations = {};
+    /** @type {Map<string, AnimationManager>}} */
+    #animationsMap = new Map();
+    /** @type {AnimationManager[]} */
+    #animations = [];
 
     #animated = false;
 
@@ -357,29 +359,45 @@ export class DrawObject {
 
     /**
      * AnimationManagerを登録する
-     * @template {Properties<this>} P
-     * @param {P} target
-     * @param {(value: number) => this[P]} applyer
+     * @param {string} key
+     * @param {(value: number) => void} applyer
+     * @param {number} startValue
      */
-    registerAnimationFor(target, applyer) {
+    addAnimation(key, applyer, startValue = 0) {
         this.#animated = true;
         this.requestRecreate(this, "animationRegister");
 
-        const startValue = this[target];
-
-        const manager = new AnimationManager(typeof startValue === "number" ? startValue : 0, applyer);
-        this.#animations[target] = manager;
+        const manager = new AnimationManager(startValue, applyer);
+        this.#animationsMap.set(key, manager);
+        this.#animations.push(manager);
 
         return manager;
     }
 
     /**
      * AnimationManagerを取得する
-     * @template {Properties<this>} P
-     * @param {P} target
+     * @param {string} key
      */
-    getAnimationFor(target) {
-        return this.#animations[target];
+    getAnimation(key) {
+        return this.#animationsMap.get(key);
+    }
+
+    #randomPrefix = Math.random().toFixed(10);
+    /** @param {string} key  */
+    #animKey(key) { return this.#randomPrefix + key; }
+    /**
+     * @template {Properties<this>} P
+     * @param {P} prop
+     * @param {(value: number) => this[P]} convert
+     */
+    animate(prop, convert) {
+        const manager = this.getAnimation(this.#animKey(prop));
+        if (manager !== undefined) return manager;
+
+        const descriptor = getDesctiptor(this, prop);
+        /** @type {(value: this[P]) => void} */
+        const apl = descriptor?.set?.bind(this) ?? ((value) => { this[prop] = value; });
+        return this.addAnimation(this.#animKey(prop), (value) => apl(convert(value)));
     }
 
     /**
@@ -387,13 +405,8 @@ export class DrawObject {
      * @param {number} t
      */
     calculateAnimations(t) {
-        for (const target in this.#animations) {
-            const manager = this.#animations[target];
-            if (manager === undefined) continue;  // こうしないとTSは信用してくれない
-
-            const calculatedValue = manager.get(t);
-
-            this[target] = calculatedValue;
+        for (let i = 0; i < this.#animations.length; i++) {
+            this.#animations[i].apply(t);
         }
     }
 
@@ -484,4 +497,20 @@ export class DrawObject {
 
     #perfectlyOptimized = this.isPerfectlyOptimized();
     get perfectlyOptimized() { return this.#perfectlyOptimized; }
+}
+
+/**
+ * @template T
+ * @param {T} obj
+ * @param {{[K in keyof T]: K extends string ? K : never}[keyof T]} prop
+ */
+function getDesctiptor(obj, prop) {
+    let searchTarget = obj;
+    while (searchTarget !== null) {
+        const descriptor = Object.getOwnPropertyDescriptor(searchTarget, prop);
+        if (descriptor !== undefined) {
+            return descriptor;
+        }
+        searchTarget = Object.getPrototypeOf(searchTarget);
+    }
 }

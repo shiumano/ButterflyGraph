@@ -4,9 +4,6 @@ import { EaseAnimation, Easing } from "./easeAnimation.js";
  * @import { AnimationBase } from "./animationBase.js"
  */
 
-/**
- * @template T
- */
 export class AnimationManager {
     /** @type {AnimationBase[]} */
     #animations = [];
@@ -25,7 +22,7 @@ export class AnimationManager {
 
     /**
      * @param {number} startValue
-     * @param {(value: number) => T} applyer
+     * @param {(value: number) => void} applyer
      */
     constructor(startValue, applyer) {
         this.startValue = startValue;
@@ -225,21 +222,10 @@ export class AnimationManager {
         return this.#lastAnimation?.endValue ?? this.#lastValue;
     }
 
-    /** @type {number?} */
-    #cachedTime = null;
-    /** @type {T?} */
-    #cachedValue = null;
-
     /**
      * @param {number} t
      */
-    get(t) {
-        if (t !== this.#cachedTime || this.#cachedValue === null) {
-            const value = this.#applyer(this.getValue(t));
-            this.#cachedTime = t;
-            this.#cachedValue = value;
-        }
-
-        return this.#cachedValue;
+    apply(t) {
+        this.#applyer(this.getValue(t));
     }
 }

@@ -46,8 +46,8 @@ export class ComplexTreeTestScene extends TestScene {
             visible: false
         });
         const circlesWrapContainer = new Container({ children: [circlesContainer, circlesBufferContainer] });
-        circlesWrapContainer.registerAnimationFor("x", (t) => Math.sin(t / 1000) * 50).to(1000000, 1000000);
-        circlesWrapContainer.registerAnimationFor("y", (t) => Math.cos(t / 1000) * 50).to(1000000, 1000000);
+        circlesWrapContainer.animate("x", (t) => Math.sin(t / 1000) * 50).to(1000000, 1000000);
+        circlesWrapContainer.animate("y", (t) => Math.cos(t / 1000) * 50).to(1000000, 1000000);
         baseContainer.addChild(circlesWrapContainer);
 
         const staticRectanglesContainer = new Container();
@@ -63,7 +63,7 @@ export class ComplexTreeTestScene extends TestScene {
             });
 
             if (i < 100) {
-                rectangle.registerAnimationFor("rotation", (t) => t / 1000).to(2000000, 1000000);
+                rectangle.animate("rotation", (t) => t / 1000).to(2000000, 1000000);
                 rectanglesContainer.addChild(rectangle);
             } else {
                 // PERF: 子が動くと、Container全体でmapが起きる
@@ -71,8 +71,8 @@ export class ComplexTreeTestScene extends TestScene {
                 staticRectanglesContainer.addChild(rectangle);
             }
         }
-        rectanglesContainer.registerAnimationFor("x", (t) => -Math.sin(t / 1000) * 50).to(1000000, 1000000);
-        rectanglesContainer.registerAnimationFor("y", (t) => Math.cos(t / 2000) * 50).to(1000000, 1000000);
+        rectanglesContainer.animate("x", (t) => -Math.sin(t / 1000) * 50).to(1000000, 1000000);
+        rectanglesContainer.animate("y", (t) => Math.cos(t / 2000) * 50).to(1000000, 1000000);
 
         const nestedContainer = new Container();
         let currentContainer = nestedContainer;
@@ -92,7 +92,7 @@ export class ComplexTreeTestScene extends TestScene {
             x: 10,
             y: 10,
         });
-        currentTimeText.registerAnimationFor("text", (t) => `Current Time: ${t.toFixed(2)}`).to(1000000, 1000000);
+        currentTimeText.animate("text", (t) => `Current Time: ${t.toFixed(2)}`).to(1000000, 1000000);
         currentContainer.addChild(currentTimeText);
 
         baseContainer.addChild(nestedContainer);
