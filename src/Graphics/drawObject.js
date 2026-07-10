@@ -42,7 +42,7 @@ import { AnimationManager } from "./Animations/animationManager.js";
 /**
  * @template T
  * @typedef {{
- *   [K in keyof T]: T[K] extends Function ? never : K
+ *   [K in keyof T]: T[K] extends Function ? never : K extends string ? K : never
  * }[keyof T]} Properties
  */
 
