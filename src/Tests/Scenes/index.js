@@ -11,6 +11,7 @@ import { TextObjectTestScene } from "./textObjectTestScene.js";
 import { GradientTestScene } from "./gradientTestScene.js";
 import { InheritedColorTestScene } from "./inheritedColorTestScene.js";
 import { ComplexTreeTestScene } from "./complexTreeTestScene.js";
+import { ParticleTestScene } from "./particleTestScene.js";
 
 /**
  * @import { TestScene } from "./testScene.js";
@@ -31,4 +32,5 @@ export const Scenes = [
     CustomObjectTestScene,
     InheritedColorTestScene,
     ComplexTreeTestScene,
+    ParticleTestScene,
 ];
