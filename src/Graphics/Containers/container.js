@@ -109,39 +109,53 @@ export class Container extends DrawObject {
      */
     requestRecreate(sender, reason) {
         const children = this.#children;
-        if (children.includes(sender)) {
-            if (this.#childrenTimed && !sender.timed ||
-                this.#childrenAnimated && !sender.animated ||
-                !this.perfectlyOptimized && sender.perfectlyOptimized
-            ) {
-                const thisOptimized = this.isPerfectlyOptimized();
-                let childrenTimed = false;
-                let childrenAnimated = false;
-                let childrenPerfect = true;
-                for (let i = 0; i < children.length; i++) {
-                    const child = children[i];
-                    childrenTimed ||= child.timed;
-                    childrenAnimated ||= child.animated;
-                    childrenPerfect &&= child.perfectlyOptimized;
-                }
-                this.#childrenTimed = childrenTimed;
-                this.#childrenAnimated = childrenAnimated;
-                this.#perfectlyOptimized = thisOptimized && childrenPerfect;
-            } else {
-                this.#childrenTimed ||= sender.timed;
-                this.#childrenAnimated ||= sender.animated;
-                this.#perfectlyOptimized &&= sender.perfectlyOptimized;
-            }
 
-            if (reason === "zIndex") {
+        switch (reason) {
+            case "children":
+            case "timed":
+            case "animationRegister":
+                if (sender.parent !== this) break;
+                // console.log({ reason, cTimed: this.#childrenTimed, sTimed: sender.timed, cAnim: this.#childrenAnimated, sAmin: sender.animated });
+                if (this.#childrenTimed && !sender.timed ||
+                    this.#childrenAnimated && !sender.animated
+                ) {
+                    let childrenTimed = false;
+                    let childrenAnimated = false;
+                    for (let i = 0; i < children.length; i++) {
+                        const child = children[i];
+                        childrenTimed ||= child.timed;
+                        childrenAnimated ||= child.animated;
+                    }
+                    this.#childrenTimed = childrenTimed;
+                    this.#childrenAnimated = childrenAnimated;
+                } else {
+                    this.#childrenTimed ||= sender.timed;
+                    this.#childrenAnimated ||= sender.animated;
+                }
+                break;
+            case "zIndex":
+                if (sender.parent !== this) break;
                 this.#frozenChildren = null;  // zIndexの変化でchildrenの順番が変わる可能性があるので、キャッシュを破棄する
                 this.#children.sort((a, b) => a.zIndex - b.zIndex);
-            }
-            super.requestRecreate(sender, "object");
-        } else {
-            super.requestRecreate(sender, reason);
+                break;
+            case "children":
+                if (sender.parent !== this) break;
+                if (!this.perfectlyOptimized && sender.perfectlyOptimized) {
+                    const thisOptimized = this.isPerfectlyOptimized();
+                    let childrenPerfect = true;
+                    for (let i = 0; i < children.length; i++) {
+                        const child = children[i];
+                        childrenPerfect &&= child.perfectlyOptimized;
+                    }
+                    this.#perfectlyOptimized = thisOptimized && childrenPerfect;
+                } else {
+                    this.#perfectlyOptimized &&= sender.perfectlyOptimized;
+                }
+                break;
         }
 
+        super.requestRecreate(this, "object");
+        super.requestRecreate(sender, reason);
     }
 
     getAllChildren() {
