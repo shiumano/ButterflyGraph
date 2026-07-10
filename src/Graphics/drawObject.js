@@ -89,6 +89,9 @@ export class DrawObject {
 
     #animated = false;
 
+    /** @type {RecreateReason?} */
+    #lastRecreateReason = null;
+
     /**
      * @param {DrawObjectOptions} options
      */
@@ -315,6 +318,8 @@ export class DrawObject {
     get contentChanged() { return this.#contentChanged || !this.perfectlyOptimized; }
     set contentChanged(value) { this.#contentChanged = value; }
 
+    get lastRecreateReason() { return this.#lastRecreateReason; }
+
     get cachedNode() { return this.#nodeCache.node; }
 
     /**
@@ -323,6 +328,9 @@ export class DrawObject {
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {
+        if (this.lastRecreateReason === reason) return;
+        this.#lastRecreateReason = reason;
+
         this.#contentChanged = true;
         // console.log(reason, "changed by", this.constructor.name, performance.now())
         switch (reason) {
@@ -463,6 +471,8 @@ export class DrawObject {
             this.#transformChanged = false;
             this.#objectChanged = false;
         }
+
+        this.#lastRecreateReason = null;
 
         return nodeCache.node;
     }
