@@ -23,7 +23,14 @@ export class AnimationBase {
         // timeRange=0の場合は即座に終了値へ遷移(0/0でNaNが生まれるので)、それ以外は通常の正規化
         const norm = this.timeRange === 0 ? 1 : Math.min(Math.max(t / this.timeRange, 0), 1);
 
-        return this.startValue + moveRange * this.leap(norm);
+        switch (norm) {
+            case 0:
+                return this.startValue;
+            case 1:
+                return this.startValue + moveRange;
+            default:
+                return this.startValue + moveRange * this.leap(norm);
+        }
     }
 
     /**
