@@ -1,5 +1,5 @@
 import { Anchor } from "./anchor.js";
-import { Gradient, GradientBuilder } from "./Gradients/gradient.js";
+import { Gradient } from "./Gradients/gradient.js";
 
 /**
  * @import { Vector2 } from "./vector2"
@@ -18,8 +18,8 @@ import { Gradient, GradientBuilder } from "./Gradients/gradient.js";
  *   parentWidth: number
  *   parentHeight: number
  *   alpha: number
- *   fillStyle: string | CanvasGradient | CanvasPattern | Gradient | GradientBuilder | undefined
- *   strokeStyle: string | CanvasGradient | CanvasPattern | Gradient | GradientBuilder | undefined
+ *   fillStyle: string | CanvasGradient | CanvasPattern | Gradient | undefined
+ *   strokeStyle: string | CanvasGradient | CanvasPattern | Gradient | undefined
  *   visible: boolean
  *   showBounds: boolean
  *   transformChanged: boolean
@@ -48,11 +48,11 @@ export class DrawNode {
     #alpha = 1;
     /** @type {string | CanvasGradient | CanvasPattern | undefined} */
     #fillStyle = undefined;
-    /** @type {GradientBuilder | undefined} */
+    /** @type {Gradient | undefined} */
     #fillGradient = undefined;
     /** @type {string | CanvasGradient | CanvasPattern | undefined} */
     #strokeStyle = undefined;
-    /** @type {GradientBuilder | undefined} */
+    /** @type {Gradient | undefined} */
     #strokeGradient = undefined;
     #visible = true;
     #showBounds = false;
@@ -128,16 +128,14 @@ export class DrawNode {
 
         // type判定は先にやっておく、drawではnullチェックのみとする
         if (fillStyle instanceof Gradient) {
-            this.#fillGradient = fillStyle.getGradientBuilder();
-        } else if (fillStyle instanceof GradientBuilder) {
+            this.#fillStyle = undefined;
             this.#fillGradient = fillStyle;
         } else {
             this.#fillStyle = fillStyle;
+            this.#fillGradient = undefined;
         }
 
         if (strokeStyle instanceof Gradient) {
-            this.#strokeGradient = strokeStyle.getGradientBuilder();
-        } else if (strokeStyle instanceof GradientBuilder) {
             this.#strokeGradient = strokeStyle;
         } else {
             this.#strokeStyle = strokeStyle;

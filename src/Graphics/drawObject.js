@@ -416,11 +416,8 @@ export class DrawObject {
      * @returns {DrawNodeOptions}
      */
     calculateOptions(t) {
-        const fillStyle = this.fillStyle instanceof Gradient
-            ? this.fillStyle.getGradientBuilder() : this.fillStyle;
-
-        const strokeStyle = this.strokeStyle instanceof Gradient
-            ? this.strokeStyle.getGradientBuilder() : this.strokeStyle;
+        const fillStyle = this.fillStyle;
+        const strokeStyle = this.strokeStyle;
 
         return {
             x: this.x,

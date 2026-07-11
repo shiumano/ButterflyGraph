@@ -1,4 +1,4 @@
-import { Gradient, GradientBuilder } from "./gradient.js";
+import { Gradient } from "./gradient.js";
 
 /**
  * @import { ColorStop } from "./gradient.js";
@@ -40,28 +40,6 @@ export class ConicGradient extends Gradient {
         this.requestRecreate("criteria");
     }
 
-    createGradientBuilder() {
-        return new ConicGradientBuilder(this.#angle, this.#x, this.#y, this.getColorStops());
-    }
-}
-
-class ConicGradientBuilder extends GradientBuilder {
-    #angle;
-    #x;
-    #y;
-
-    /**
-     * @param {number} angle 起点角度（rad）
-     * @param {number} x
-     * @param {number} y
-     * @param {readonly ColorStop[]} stops
-     */
-    constructor(angle, x, y, stops) {
-        super(stops);
-        this.#angle = angle;
-        this.#x = x;
-        this.#y = y;
-    }
     /**
      * @param {CanvasRenderingContext2D} ctx
      */
