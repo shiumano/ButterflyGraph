@@ -2,6 +2,7 @@ import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
 import { Gradient } from "./Gradients/gradient.js";
 import { AnimationManager } from "./Animations/animationManager.js";
+import { direct } from "../Utils/unitConversion.js";
 
 /**
  * @import { Vector2 } from "./vector2.js";
@@ -397,7 +398,27 @@ export class DrawObject {
         const descriptor = getDesctiptor(this, prop);
         /** @type {(value: this[P]) => void} */
         const apl = descriptor?.set?.bind(this) ?? ((value) => { this[prop] = value; });
-        return this.addAnimation(this.#animKey(prop), (value) => apl(convert(value)));
+
+        /**
+         * TSを丁寧に黙らせる
+         * 0. 前提として、unitConversion.js/direct関数は、入力をそのまま出力するだけの関数
+         * 1. animateの引数のconvertにnumber => this[P]ではない関数を入れようとしたら、その段階で型エラー
+         * 2. direct関数はnumver => numberで、それがまかり通ってる時点でthis[P]はnumber
+         * 3. ということでthis[P] => voidであるaplはnumber => voidである
+         * 4. addAnimationの引数はnumber => void、そしてaplも前述の理由でnumber => void
+         * 5. unitConversion.js/directは入力=出力なので、func(direct(arg))はfunc(arg)と全く同じ結果になる
+         * よって、このチェックが通ればaplをそのままaddAnimationの引数に渡してもいい
+         * PERF: 案外ここで作った(value) => apl(convert(value))がself timeを食う direct関数のselfはなんと0だが……
+         *     : ただし！逆にapplyがmegamorphicになって若干applyのコストが上がる けど無名関数が挟まるよりは少しマシ
+         *     : 今後JITが拗ねたら捨てていい
+         * @template T
+         * @param {(value: number) => T} func
+         * @param {Function} _
+         * @returns {_ is (value: number) => T}
+         */
+        const check = (func, _) => func === direct;
+
+        return this.addAnimation(this.#animKey(prop), check(convert, apl) ? apl : (value) => apl(convert(value)));
     }
 
     /**
