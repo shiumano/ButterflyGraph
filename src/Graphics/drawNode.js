@@ -57,10 +57,9 @@ export class DrawNode {
     #visible = true;
     #showBounds = false;
 
-    /**
-     * @type {[number, number, number, number, number, number]}
-     */
-    #transformMatrix = [0, 0, 0, 0, 0, 0];
+    // PERF: ﾍｧ? Canvas API相手にFloat64Array???
+    //     : でも実際renderのJS率が10%減ったから……
+    #transformMatrix = new Float64Array(6);
     #hasTransform = false;
 
     constructor() {
@@ -195,10 +194,8 @@ export class DrawNode {
         ctx.save();
 
         if (this.#hasTransform) {
-            // PERF: ここスプレッドつかってるけど全引数をインデックスアクセスで出してもそんな改善しなかった
-            //     : 毎フレーム1000回やるエグいケースでも差がないので問題ないと言っていいでしょう
-            //     : そもそもそんな複雑なものCanvas APIで描こうと思うな WebGLでやれ
-            ctx.transform(...this.#transformMatrix);
+            const matrix = this.#transformMatrix;
+            ctx.transform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
         }
 
         if (this.#alpha !== 1) {
