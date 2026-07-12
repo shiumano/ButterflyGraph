@@ -99,6 +99,7 @@ export class Gradient {
 
             // キャッシュに保存
             this.#cache.set(ctx, gradient);
+            this.#gradientChanged = false;
         }
 
         return gradient;
