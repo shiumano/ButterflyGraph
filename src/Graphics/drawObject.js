@@ -2,6 +2,7 @@ import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
 import { Gradient } from "./Gradients/gradient.js";
 import { AnimationManager } from "./Animations/animationManager.js";
+import { direct } from "../Utils/unitConversion.js";
 
 /**
  * @import { Vector2 } from "./vector2.js";
@@ -26,23 +27,23 @@ import { AnimationManager } from "./Animations/animationManager.js";
  *   fillStyle?: string | CanvasGradient | CanvasPattern | Gradient
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
  * }} DrawObjectOptions
- * @typedef {"transform" | "object" | "zIndex"} RecreateReason
+ * @typedef {"transform" | "object" | "animationRegister" | "timed" | "children" | "zIndex"} RecreateReason
  * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
  */
 
 /**
  * @template {GenericDrawNode} T
  * @typedef {{
- *   t: number | undefined
+ *   t: number
  *   node: T?
- * }} DrawNodeCache t ... number:対応する時刻 undefined:時間的に不変
+ * }} DrawNodeCache
  */
 
 // FIXME: get-onlyプロパティは弾くことができてない アニメーションのターゲットにしたら実行時エラーでドボン
 /**
  * @template T
  * @typedef {{
- *   [K in keyof T]: T[K] extends Function ? never : K
+ *   [K in keyof T]: T[K] extends Function ? never : K extends string ? K : never
  * }[keyof T]} Properties
  */
 
@@ -80,14 +81,19 @@ export class DrawObject {
     #contentChanged = true;
     /** @type {DrawNodeCache<T>} */
     #nodeCache = {
-        t: undefined,
+        t: NaN,
         node: null
     };
 
-    /** @type {{[K in keyof this]?: AnimationManager<this[K]>}} */
-    #animations = {};
+    /** @type {Map<string, AnimationManager>}} */
+    #animationsMap = new Map();
+    /** @type {AnimationManager[]} */
+    #animations = [];
 
     #animated = false;
+
+    /** @type {RecreateReason?} */
+    #lastRecreateReason = null;
 
     /**
      * @param {DrawObjectOptions} options
@@ -294,7 +300,7 @@ export class DrawObject {
         if (this.#timed === value) return;
 
         this.#timed = value;
-        this.requestRecreate(this, "object");
+        this.requestRecreate(this, "timed");
     }
 
     get animated() { return this.#animated; }
@@ -315,6 +321,8 @@ export class DrawObject {
     get contentChanged() { return this.#contentChanged || !this.perfectlyOptimized; }
     set contentChanged(value) { this.#contentChanged = value; }
 
+    get lastRecreateReason() { return this.#lastRecreateReason; }
+
     get cachedNode() { return this.#nodeCache.node; }
 
     /**
@@ -323,6 +331,9 @@ export class DrawObject {
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {
+        if (this.lastRecreateReason === reason) return;
+        this.#lastRecreateReason = reason;
+
         this.#contentChanged = true;
         // console.log(reason, "changed by", this.constructor.name, performance.now())
         switch (reason) {
@@ -349,29 +360,65 @@ export class DrawObject {
 
     /**
      * AnimationManagerを登録する
-     * @template {Properties<this>} P
-     * @param {P} target
-     * @param {(value: number) => this[P]} applyer
+     * @param {string} key
+     * @param {(value: number) => void} applyer
+     * @param {number} startValue
      */
-    registerAnimationFor(target, applyer) {
+    addAnimation(key, applyer, startValue = 0) {
         this.#animated = true;
-        this.requestRecreate(this, "object");
+        this.requestRecreate(this, "animationRegister");
 
-        const startValue = this[target];
-
-        const manager = new AnimationManager(typeof startValue === "number" ? startValue : 0, applyer);
-        this.#animations[target] = manager;
+        const manager = new AnimationManager(startValue, applyer);
+        this.#animationsMap.set(key, manager);
+        this.#animations.push(manager);
 
         return manager;
     }
 
     /**
      * AnimationManagerを取得する
-     * @template {Properties<this>} P
-     * @param {P} target
+     * @param {string} key
      */
-    getAnimationFor(target) {
-        return this.#animations[target];
+    getAnimation(key) {
+        return this.#animationsMap.get(key);
+    }
+
+    #randomPrefix = Math.random().toFixed(10);
+    /** @param {string} key  */
+    #animKey(key) { return this.#randomPrefix + key; }
+    /**
+     * @template {Properties<this>} P
+     * @param {P} prop
+     * @param {(value: number) => this[P]} convert
+     */
+    animate(prop, convert) {
+        const manager = this.getAnimation(this.#animKey(prop));
+        if (manager !== undefined) return manager;
+
+        const descriptor = getDesctiptor(this, prop);
+        /** @type {(value: this[P]) => void} */
+        const apl = descriptor?.set?.bind(this) ?? ((value) => { this[prop] = value; });
+
+        /**
+         * TSを丁寧に黙らせる
+         * 0. 前提として、unitConversion.js/direct関数は、入力をそのまま出力するだけの関数
+         * 1. animateの引数のconvertにnumber => this[P]ではない関数を入れようとしたら、その段階で型エラー
+         * 2. direct関数はnumver => numberで、それがまかり通ってる時点でthis[P]はnumber
+         * 3. ということでthis[P] => voidであるaplはnumber => voidである
+         * 4. addAnimationの引数はnumber => void、そしてaplも前述の理由でnumber => void
+         * 5. unitConversion.js/directは入力=出力なので、func(direct(arg))はfunc(arg)と全く同じ結果になる
+         * よって、このチェックが通ればaplをそのままaddAnimationの引数に渡してもいい
+         * PERF: 案外ここで作った(value) => apl(convert(value))がself timeを食う direct関数のselfはなんと0だが……
+         *     : ただし！逆にapplyがmegamorphicになって若干applyのコストが上がる けど無名関数が挟まるよりは少しマシ
+         *     : 今後JITが拗ねたら捨てていい
+         * @template T
+         * @param {(value: number) => T} func
+         * @param {Function} _
+         * @returns {_ is (value: number) => T}
+         */
+        const check = (func, _) => func === direct;
+
+        return this.addAnimation(this.#animKey(prop), check(convert, apl) ? apl : (value) => apl(convert(value)));
     }
 
     /**
@@ -379,13 +426,8 @@ export class DrawObject {
      * @param {number} t
      */
     calculateAnimations(t) {
-        for (const target in this.#animations) {
-            const manager = this.#animations[target];
-            if (manager === undefined) continue;  // こうしないとTSは信用してくれない
-
-            const calculatedValue = manager.get(t);
-
-            this[target] = calculatedValue;
+        for (let i = 0; i < this.#animations.length; i++) {
+            this.#animations[i].apply(t);
         }
     }
 
@@ -395,11 +437,8 @@ export class DrawObject {
      * @returns {DrawNodeOptions}
      */
     calculateOptions(t) {
-        const fillStyle = this.fillStyle instanceof Gradient
-            ? this.fillStyle.getGradientBuilder() : this.fillStyle;
-
-        const strokeStyle = this.strokeStyle instanceof Gradient
-            ? this.strokeStyle.getGradientBuilder() : this.strokeStyle;
+        const fillStyle = this.fillStyle;
+        const strokeStyle = this.strokeStyle;
 
         return {
             x: this.x,
@@ -447,22 +486,22 @@ export class DrawObject {
      * @param {number} t
      */
     getSnapshot(t) {
-        if (this.animated) {
-            this.calculateAnimations(t);
-        }
-
         const nodeCache = this.#nodeCache;
         if (nodeCache.node === null
-            || (nodeCache.t !== undefined && nodeCache.t !== t)
+            || ((this.timed || this.animated) && nodeCache.t !== t)
             || this.transformChanged
             || this.objectChanged
         ) {
-            nodeCache.t = this.timed ? t : undefined;
+            this.calculateAnimations(t);
+
+            nodeCache.t = t;
             nodeCache.node = this.updateNode(t);
 
             this.#transformChanged = false;
             this.#objectChanged = false;
         }
+
+        this.#lastRecreateReason = null;
 
         return nodeCache.node;
     }
@@ -474,4 +513,20 @@ export class DrawObject {
 
     #perfectlyOptimized = this.isPerfectlyOptimized();
     get perfectlyOptimized() { return this.#perfectlyOptimized; }
+}
+
+/**
+ * @template T
+ * @param {T} obj
+ * @param {{[K in keyof T]: K extends string ? K : never}[keyof T]} prop
+ */
+function getDesctiptor(obj, prop) {
+    let searchTarget = obj;
+    while (searchTarget !== null) {
+        const descriptor = Object.getOwnPropertyDescriptor(searchTarget, prop);
+        if (descriptor !== undefined) {
+            return descriptor;
+        }
+        searchTarget = Object.getPrototypeOf(searchTarget);
+    }
 }

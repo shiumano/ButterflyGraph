@@ -10,10 +10,11 @@
 export class Gradient {
     /** @type {ColorStop[]} */
     #colorStops = [];
-    /** @type {GradientBuilder?} */
-    #builderCache = null;
     #gradientChanged = true;
     #stopsChanged = true;
+
+    /** @type {WeakMap<RenderingContext, CanvasGradient>} */
+    #cache = new WeakMap();
 
     /** @type {Readonly<Readonly<ColorStop[]>>?} */
     #frozenStops = null;
@@ -83,54 +84,13 @@ export class Gradient {
         }
     }
 
-    createGradientBuilder() {
-        return new GradientBuilder(this.getColorStops());
-    }
-
-    getGradientBuilder() {
-        let builder = this.#builderCache;
-
-        if (this.#gradientChanged || builder === null) {
-            builder = this.createGradientBuilder();
-            this.#builderCache = builder;
-            this.#gradientChanged = false;
-        }
-
-        return builder;
-    }
-
-    // 直接CanvasGradientを取得できる糖衣
-    /**
-     * @param {CanvasRenderingContext2D} ctx
-     */
-    getGradient(ctx) {
-        return this.getGradientBuilder().getGradient(ctx);
-    }
-}
-
-/**
- * ctxからCanvasGradientを作成する
- */
-export class GradientBuilder {
-    /** @type {readonly ColorStop[]} */
-    #colorStops = [];
-    /** @type {WeakMap<RenderingContext, CanvasGradient>} */
-    #cache = new WeakMap();
-
-    /**
-     * @param {readonly ColorStop[]} stops
-     */
-    constructor(stops) {
-        this.#colorStops = Object.isFrozen(stops) ? stops : [...stops];  // 受け取った時点で別のオブジェクトであるべき 既に凍ってるなら問題ない
-    }
-
     /**
      * @param {CanvasRenderingContext2D} ctx
      */
     getGradient(ctx) {
         // 同じctxの場合：作り直すのは無駄なので再利用
         // 違うctxの場合：使い回せないので再作成
-        let gradient = this.#cache.get(ctx);
+        let gradient = this.#gradientChanged ? undefined : this.#cache.get(ctx);
 
         if (gradient === undefined) {
             // --- Gradient を作る ---
@@ -139,6 +99,7 @@ export class GradientBuilder {
 
             // キャッシュに保存
             this.#cache.set(ctx, gradient);
+            this.#gradientChanged = false;
         }
 
         return gradient;

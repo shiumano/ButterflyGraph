@@ -1,5 +1,5 @@
 import { Anchor } from "./anchor.js";
-import { Gradient, GradientBuilder } from "./Gradients/gradient.js";
+import { Gradient } from "./Gradients/gradient.js";
 
 /**
  * @import { Vector2 } from "./vector2"
@@ -18,8 +18,8 @@ import { Gradient, GradientBuilder } from "./Gradients/gradient.js";
  *   parentWidth: number
  *   parentHeight: number
  *   alpha: number
- *   fillStyle: string | CanvasGradient | CanvasPattern | Gradient | GradientBuilder | undefined
- *   strokeStyle: string | CanvasGradient | CanvasPattern | Gradient | GradientBuilder | undefined
+ *   fillStyle: string | CanvasGradient | CanvasPattern | Gradient | undefined
+ *   strokeStyle: string | CanvasGradient | CanvasPattern | Gradient | undefined
  *   visible: boolean
  *   showBounds: boolean
  *   transformChanged: boolean
@@ -48,19 +48,18 @@ export class DrawNode {
     #alpha = 1;
     /** @type {string | CanvasGradient | CanvasPattern | undefined} */
     #fillStyle = undefined;
-    /** @type {GradientBuilder | undefined} */
+    /** @type {Gradient | undefined} */
     #fillGradient = undefined;
     /** @type {string | CanvasGradient | CanvasPattern | undefined} */
     #strokeStyle = undefined;
-    /** @type {GradientBuilder | undefined} */
+    /** @type {Gradient | undefined} */
     #strokeGradient = undefined;
     #visible = true;
     #showBounds = false;
 
-    /**
-     * @type {[number, number, number, number, number, number]}
-     */
-    #transformMatrix = [0, 0, 0, 0, 0, 0];
+    // PERF: ﾍｧ? Canvas API相手にFloat64Array???
+    //     : でも実際renderのJS率が10%減ったから……
+    #transformMatrix = new Float64Array(6);
     #hasTransform = false;
 
     constructor() {
@@ -109,47 +108,53 @@ export class DrawNode {
      * @param {Readonly<T>} options
      */
     read(options) {
-        const {
-            x, y, rotation,
-            width, height,
-            scaleX, scaleY,
-            anchor, origin,
-            originOffsetX, originOffsetY,
-            parentWidth, parentHeight,
-            alpha,
-            fillStyle, strokeStyle,
-            visible, showBounds,
-            transformChanged, objectChanged
-        } = options;
+        const { transformChanged, objectChanged } = options;
 
-        this.#width = width;
-        this.#height = height;
-        this.#alpha = alpha;
+        const tOpt = this.options;
 
-        // type判定は先にやっておく、drawではnullチェックのみとする
-        if (fillStyle instanceof Gradient) {
-            this.#fillGradient = fillStyle.getGradientBuilder();
-        } else if (fillStyle instanceof GradientBuilder) {
-            this.#fillGradient = fillStyle;
-        } else {
-            this.#fillStyle = fillStyle;
+        if (objectChanged) {
+            const { width, height, fillStyle, strokeStyle, showBounds } = options;
+            this.#width = width;
+            this.#height = height;
+
+            // type判定は先にやっておく、drawではnullチェックのみとする
+            if (fillStyle instanceof Gradient) {
+                this.#fillStyle = undefined;
+                this.#fillGradient = fillStyle;
+            } else {
+                this.#fillStyle = fillStyle;
+                this.#fillGradient = undefined;
+            }
+
+            if (strokeStyle instanceof Gradient) {
+                this.#strokeGradient = strokeStyle;
+            } else {
+                this.#strokeStyle = strokeStyle;
+            }
+
+            this.#showBounds = showBounds ?? false;
+
+            // options状態をコピー
+            tOpt.width = width; tOpt.height = height;
+            tOpt.fillStyle = fillStyle; tOpt.strokeStyle = strokeStyle;
+            tOpt.showBounds = showBounds;
         }
 
-        if (strokeStyle instanceof Gradient) {
-            this.#strokeGradient = strokeStyle.getGradientBuilder();
-        } else if (strokeStyle instanceof GradientBuilder) {
-            this.#strokeGradient = strokeStyle;
-        } else {
-            this.#strokeStyle = strokeStyle;
-        }
+        if (transformChanged) {
+            const {
+                x, y, rotation,
+                scaleX, scaleY,
+                anchor, origin,
+                originOffsetX, originOffsetY,
+                parentWidth, parentHeight,
+                alpha, visible,
+            } = options;
 
-        this.#visible = visible;
-        this.#showBounds = showBounds ?? false;
+            this.#alpha = alpha;
+            this.#visible = visible;
+            const drawX = x - originOffsetX + parentWidth * anchor.x;
+            const drawY = y - originOffsetY + parentHeight * anchor.y;
 
-        const drawX = x - originOffsetX + parentWidth * anchor.x;
-        const drawY = y - originOffsetY + parentHeight * anchor.y;
-
-        if (options.transformChanged) {
             const hasTransform = drawX !== 0 || drawY !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
             this.#hasTransform = hasTransform;
             if (hasTransform) {
@@ -167,19 +172,15 @@ export class DrawNode {
                 transformMatrix[5] = drawY + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
                 // クソややこしいね！translateとrotateとscaleが恋しいよ
             }
+
+            tOpt.x = x; tOpt.y = y; tOpt.rotation = rotation;
+            tOpt.scaleX = scaleX; tOpt.scaleY = scaleY;
+            tOpt.anchor = anchor; tOpt.origin = origin;
+            tOpt.originOffsetX = originOffsetX; tOpt.originOffsetY = originOffsetY;
+            tOpt.parentWidth = parentWidth; tOpt.parentHeight = parentHeight;
+            tOpt.alpha = alpha; tOpt.visible = visible;
         }
 
-        // options状態をコピー
-        const tOpt = this.options;
-        tOpt.x = x; tOpt.y = y; tOpt.rotation = rotation;
-        tOpt.width = width; tOpt.height = height;
-        tOpt.scaleX = scaleX; tOpt.scaleY = scaleY;
-        tOpt.anchor = anchor; tOpt.origin = origin;
-        tOpt.originOffsetX = originOffsetX; tOpt.originOffsetY = originOffsetY;
-        tOpt.parentWidth = parentWidth; tOpt.parentHeight = parentHeight;
-        tOpt.alpha = alpha;
-        tOpt.fillStyle = fillStyle; tOpt.strokeStyle = strokeStyle;
-        tOpt.visible = visible; tOpt.showBounds = showBounds;
         tOpt.transformChanged = transformChanged; tOpt.objectChanged = objectChanged;
     }
 
@@ -193,10 +194,8 @@ export class DrawNode {
         ctx.save();
 
         if (this.#hasTransform) {
-            // PERF: ここスプレッドつかってるけど全引数をインデックスアクセスで出してもそんな改善しなかった
-            //     : 毎フレーム1000回やるエグいケースでも差がないので問題ないと言っていいでしょう
-            //     : そもそもそんな複雑なものCanvas APIで描こうと思うな WebGLでやれ
-            ctx.transform(...this.#transformMatrix);
+            const matrix = this.#transformMatrix;
+            ctx.transform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
         }
 
         if (this.#alpha !== 1) {

@@ -1,4 +1,4 @@
-import { Gradient, GradientBuilder } from "./gradient.js";
+import { Gradient } from "./gradient.js";
 
 /**
  * @import { ColorStop } from "./gradient.js";
@@ -43,32 +43,6 @@ export class LinearGradient extends Gradient {
         this.#x1 = x;
         this.#y1 = y;
         this.requestRecreate("criteria");
-    }
-
-    createGradientBuilder() {
-        return new LinearGradientBuilder(this.#x0, this.#y0, this.#x1, this.#y1, this.getColorStops());
-    }
-}
-
-class LinearGradientBuilder extends GradientBuilder {
-    #x0;
-    #y0;
-    #x1;
-    #y1;
-
-    /**
-     * @param {number} x0
-     * @param {number} y0
-     * @param {number} x1
-     * @param {number} y1
-     * @param {readonly ColorStop[]} stops
-     */
-    constructor(x0, y0, x1, y1, stops) {
-        super(stops);
-        this.#x0 = x0;
-        this.#y0 = y0;
-        this.#x1 = x1;
-        this.#y1 = y1;
     }
 
     /**

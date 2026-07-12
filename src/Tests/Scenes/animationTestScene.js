@@ -19,14 +19,13 @@ export class AnimationTestScene extends TestScene {
             color: "white",
         });
 
-        const xAnim = rect.registerAnimationFor("x", direct);
-        xAnim.to(500, 2000).to(0, 2000).easeInOutQuad(500, 1500).delay(1000).set(0);
+        const rectAnim = rect.animate("x", direct);
+        rectAnim.to(500, 2000).to(0, 2000).easeInOutQuad(500, 1500).delay(1000).set(0);
 
-        const textAnim = textObj.registerAnimationFor("text", (v) => v.toFixed(2));
-        textAnim.to(10000, 10000);
+        textObj.animate("text", (value) => value.toFixed(2)).to(10000, 10000);
 
         this.addButton("Override animation", ev => {
-            xAnim.jump(this.toLocalTime(ev.timeStamp)).set(0).easeOut(500, 500);
+            rectAnim.jump(this.toLocalTime(ev.timeStamp)).set(0).easeOut(500, 500);
         });
 
         this.root.addChild(rect, textObj);
