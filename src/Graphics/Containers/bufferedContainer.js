@@ -5,12 +5,14 @@ import { Container, ContainerNode } from "./container.js";
  * @typedef {ContainerOptions & {
  *   follow?: "all" | "scale" | "none"
  *   resolutionScale?: number
+ *   imageSmoothing?: boolean
  *   supersize?: boolean
  *   redrawRainbow?: boolean
  * }} BufferedContainerOptions
  * @typedef {ContainerNodeOptions & {
  *   follow: "all" | "scale" | "none"
  *   resolutionScale: number
+ *   imageSmoothing: boolean
  *   supersize: boolean
  *   redrawRainbow?: boolean
  * }} BufferedContainerNodeOptions
@@ -30,7 +32,8 @@ export class BufferedContainer extends Container {
     #supersize;
     #follow;
     #resolutionScale;
-    #redrawRainbow = false;
+    #imageSmoothing;
+    #redrawRainbow;
 
     /**
      * @param {BufferedContainerOptions} options
@@ -41,6 +44,7 @@ export class BufferedContainer extends Container {
         this.#supersize = options.supersize ?? false;
         this.#follow = options.follow ?? "scale";  // PERF: follow = scale、見た目の割にめっちゃ軽い 0.5pxの位置のズレなんてわからん
         this.#resolutionScale = options.resolutionScale ?? 1;
+        this.#imageSmoothing = options.imageSmoothing ?? true;
         this.#redrawRainbow = options.redrawRainbow ?? false;
     }
 
@@ -92,6 +96,14 @@ export class BufferedContainer extends Container {
         this.requestRecreate(this, "object");
     }
 
+    get imageSmoothing() { return this.#imageSmoothing; }
+    set imageSmoothing(value) {
+        if (this.#imageSmoothing === value) return;
+
+        this.#imageSmoothing = value;
+        this.requestRecreate(this, "object");
+    }
+
     /**
      * @param {number} t
      * @returns {BufferedContainerNodeOptions}
@@ -104,6 +116,7 @@ export class BufferedContainer extends Container {
             supersize: this.supersize && !this.clip,
             follow: this.follow,
             resolutionScale: this.resolutionScale,
+            imageSmoothing: this.imageSmoothing,
             redrawRainbow: this.redrawRainbow
         });
 
@@ -114,9 +127,7 @@ export class BufferedContainer extends Container {
      * @param {number} t
      */
     updateNode(t) {
-        if (this.timed || this.objectChanged) {
-            this._updateChildren(t);
-        }
+        this._updateChildren(t);
 
         const cachedNode = this.cachedNode ?? new BufferedContainerNode();
 
@@ -176,7 +187,7 @@ class BufferedContainerNode extends ContainerNode {
     #supersize = false;
     #follow = "scale";
     #resolutionScale = 1;
-    #incompletePosition = true;
+    #imageSmoothing = true;
     #drawOffsetX = 0;
     #drawOffsetY = 0;
     #drawScaleX = 1;
@@ -199,6 +210,7 @@ class BufferedContainerNode extends ContainerNode {
             /** @type {BufferedContainerNodeOptions["follow"]} */
             follow: "scale",
             resolutionScale: 1,
+            imageSmoothing: true,
             supersize: false,
             redrawRainbow: true
         });
@@ -208,19 +220,31 @@ class BufferedContainerNode extends ContainerNode {
      * @param {Readonly<BufferedContainerNodeOptions>} options
      */
     read(options) {
-        this.#redrawRainbow = options.redrawRainbow ?? false;
-
-        this.#supersize = options.supersize;
-        this.#follow = options.follow;
-        this.#resolutionScale = options.resolutionScale;
-
-        // 複雑な条件は事前に固定
-        this.#incompletePosition = !options.supersize && options.follow !== "all" || options.resolutionScale !== 1;
-
         if (options.objectChanged) {
+            const {
+                follow, resolutionScale, imageSmoothing, supersize, redrawRainbow
+            } = options;
+
+            this.#follow = options.follow;
+            this.#resolutionScale = options.resolutionScale;
+
+            this.#supersize = options.supersize;
+            this.#redrawRainbow = options.redrawRainbow ?? false;
+
+            // 1:1であればimageSmoothingは不要
+            const pixelJust = supersize || (follow === "all" && resolutionScale === 1);
+            this.#imageSmoothing = !pixelJust && imageSmoothing;
+
             // 内容が変化したので、描画済みビットマップを破棄
             deRef(this.#bitmap);
             this.#bitmap = null;
+
+            const tOpt = this.options;
+            tOpt.follow = follow;
+            tOpt.resolutionScale = resolutionScale;
+            tOpt.imageSmoothing = imageSmoothing;
+            tOpt.supersize = supersize;
+            tOpt.redrawRainbow = redrawRainbow;
         }
 
         super.read(options);
@@ -331,7 +355,7 @@ class BufferedContainerNode extends ContainerNode {
             ctx.scale(this.#drawScaleX, this.#drawScaleY);
         }
 
-        ctx.imageSmoothingEnabled = this.#incompletePosition;
+        ctx.imageSmoothingEnabled = this.#imageSmoothing;
         ctx.drawImage(
             this.#bitmap,
             -this.#drawOffsetX,
