@@ -9,20 +9,20 @@ import { degreeToRadian } from "../../Utils/unitConversion.js";
 export class GradientTestScene extends TestScene {
     async load() {
         const linearGradient = new LinearGradient(0, 0, 200, 200, [
-            { position: 0, color: "yellow" },
-            { position: 1, color: "blue" }
+            { offset: 0, color: "yellow" },
+            { offset: 1, color: "blue" }
         ]);
         const radialGradient = new RadialGradient(
             100, 100, 0,
             100, 100, 100,
             [
-                { position: 0, color: "blue" },
-                { position: 1, color: "red" }
+                { offset: 0, color: "blue" },
+                { offset: 1, color: "red" }
             ]
         );
         const conicGradient = new ConicGradient(0, 100, 100, [
-            { position: 0, color: "red" },
-            { position: 1, color: "yellow" }
+            { offset: 0, color: "red" },
+            { offset: 1, color: "yellow" }
         ]);
 
         const linearGradRect = new Rectangle({

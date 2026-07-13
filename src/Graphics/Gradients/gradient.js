@@ -1,6 +1,6 @@
 /**
  * @import { GenericDrawObject } from "@core/Graphics/drawObject.js";
- * @typedef {{ position: number, color: string }} ColorStop
+ * @typedef {{ offset: number, color: string }} ColorStop
  * @typedef {"stops" | "criteria"} GradientRecreateReason
  */
 
@@ -29,11 +29,11 @@ export class Gradient {
     }
 
     /**
-     * @param {number} position 0〜1
+     * @param {number} offset 0〜1
      * @param {string} color CSS color
      */
-    addColorStop(position, color) {
-        this.#colorStops.push({ position, color });
+    addColorStop(offset, color) {
+        this.#colorStops.push({ offset: offset, color });
         this.requestRecreate("stops");
     }
 
@@ -117,7 +117,7 @@ export class Gradient {
     #applyStops(grad) {
         for (let i = 0; i < this.#colorStops.length; i++) {
             const cs = this.#colorStops[i];
-            grad.addColorStop(cs.position, cs.color);
+            grad.addColorStop(cs.offset, cs.color);
         }
     }
 }
