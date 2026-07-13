@@ -10,7 +10,6 @@
 export class Gradient {
     /** @type {ColorStop[]} */
     #colorStops = [];
-    #gradientChanged = true;
     #stopsChanged = true;
 
     /** @type {WeakMap<RenderingContext, CanvasGradient>} */
@@ -73,7 +72,7 @@ export class Gradient {
      * @param {GradientRecreateReason} reason
      */
     requestRecreate(reason) {
-        this.#gradientChanged = true;
+        this.#cache = new WeakMap();  // WeakMapにclear()は無い、つくりなおすしか無い
 
         if (reason === "stops") {
             this.#stopsChanged = true;
@@ -90,7 +89,7 @@ export class Gradient {
     getGradient(ctx) {
         // 同じctxの場合：作り直すのは無駄なので再利用
         // 違うctxの場合：使い回せないので再作成
-        let gradient = this.#gradientChanged ? undefined : this.#cache.get(ctx);
+        let gradient = this.#cache.get(ctx);
 
         if (gradient === undefined) {
             // --- Gradient を作る ---
@@ -99,7 +98,6 @@ export class Gradient {
 
             // キャッシュに保存
             this.#cache.set(ctx, gradient);
-            this.#gradientChanged = false;
         }
 
         return gradient;
