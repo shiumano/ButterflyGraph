@@ -45,6 +45,7 @@ export class BufferedContainerTestScene extends TestScene {
         this.addSelector("Follow mode", ["none", "scale", "all"], bufferedContainer.follow, value => bufferedContainer.follow = value);
         this.addBindToggle("Supersize", bufferedContainer, "supersize", value => value);
         this.addBindToggle("Redraw rainbow", bufferedContainer, "redrawRainbow", value => value);
+        this.addBindToggle("Image smoothing", bufferedContainer, "imageSmoothing", value => value);
         this.addSlider("Position offset", 0, 400, 400, value => {
             bufferedContainer.x = value / -2;
             normalContainer.x = value / 2;
