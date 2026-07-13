@@ -16,8 +16,8 @@ export class ComplexTreeTestScene extends TestScene {
             fillStyle: new LinearGradient(
                 0, 0, 0, 1000,
                 [
-                    { position: 0, color: "red" },
-                    { position: 1, color: "blue" }
+                    { offset: 0, color: "red" },
+                    { offset: 1, color: "blue" }
                 ]
             ),
             width: 1000,  // すごく適当
