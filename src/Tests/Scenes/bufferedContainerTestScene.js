@@ -9,7 +9,9 @@ import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 export class BufferedContainerTestScene extends TestScene {
     async load() {
         const rect1 = new Rectangle({
+            x: 50, y: 100,
             width: 100, height: 200,
+            origin: Anchor.centre,
             color: "red"
         });
         const circle1 = new Circle({
@@ -41,6 +43,10 @@ export class BufferedContainerTestScene extends TestScene {
             children: [rect2, circle2, line2]
         });
 
+        const wrapContainer = new Container({
+            anchor: Anchor.centre, children: [bufferedContainer, normalContainer]
+        });
+
         this.addBindSlider("Resolution scale", 0.1, 2, bufferedContainer, "resolutionScale", direct);
         this.addSelector("Follow mode", ["none", "scale", "all"], bufferedContainer.follow, value => bufferedContainer.follow = value);
         this.addBindToggle("Supersize", bufferedContainer, "supersize", value => value);
@@ -50,14 +56,22 @@ export class BufferedContainerTestScene extends TestScene {
             bufferedContainer.x = value / -2;
             normalContainer.x = value / 2;
         });
-        this.addSlider("Scale (both)", 0.5, 5, 1, value => {
-            bufferedContainer.scale = value;
-            normalContainer.scale = value;
+        this.addSlider("X Scale (both)", -1, 5, 1, value => {
+            bufferedContainer.scaleX = value;
+            normalContainer.scaleX = value;
+        });
+        this.addSlider("Y Scale (both)", -1, 5, 1, value => {
+            bufferedContainer.scaleY = value;
+            normalContainer.scaleY = value;
         });
         this.addSlider("Rotation (both)", -360, 360, 0, value => {
             const rad = degreeToRadian(value);
             bufferedContainer.rotation = rad;
             normalContainer.rotation = rad;
+        });
+        this.addToggle("Clipping (both)", false, value => {
+            bufferedContainer.clip = value;
+            normalContainer.clip = value;
         });
         this.addSlider("Alpha (both)", 0, 1, 1, value => {
             bufferedContainer.alpha = value;
@@ -67,8 +81,15 @@ export class BufferedContainerTestScene extends TestScene {
             bufferedContainer.showBounds = value;
             normalContainer.showBounds = value;
         });
+        this.addBindSlider("Scale X (Wrap container)", -1, 5, wrapContainer, "scaleX", direct);
+        this.addBindSlider("Scale Y (Wrap container)", -1, 5, wrapContainer, "scaleY", direct);
+        this.addButton("Animation child (both)", (ev) => {
+            const t = this.toLocalTime(ev.timeStamp);
 
-        this.root.addChild(bufferedContainer, normalContainer);
+            rect1.animate("rotation", direct).jump(t).set(0).to(Math.PI * 2, 60000);
+            rect2.animate("rotation", direct).jump(t).set(0).to(Math.PI * 2, 60000);
+        });
+
+        this.root.addChild(wrapContainer);
     }
-
 }
