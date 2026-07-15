@@ -194,7 +194,7 @@ class BufferedContainerNode extends ContainerNode {
     #drawScaleY = 1;
     /** @type {ImageBitmap?} */
     #bitmap = null;
-    /** @type {DOMMatrix?} */
+    /** @type {DOMMatrix2DInit?} */
     #oldTrasnform = null;
     #oldScaleX = 1;
     #oldScaleY = 1;
@@ -251,7 +251,7 @@ class BufferedContainerNode extends ContainerNode {
     }
 
     /**
-     * @param {DOMMatrix} transform
+     * @param {DOMMatrix2DInit} transform
      * @param {number} canvasWidth
      * @param {number} canvasHeight
      */
@@ -365,8 +365,8 @@ class BufferedContainerNode extends ContainerNode {
 }
 
 /**
- * @param {DOMMatrix} a
- * @param {DOMMatrix} b
+ * @param {DOMMatrix2DInit} a
+ * @param {DOMMatrix2DInit} b
  */
 function matEquals(a, b) {
     return (
