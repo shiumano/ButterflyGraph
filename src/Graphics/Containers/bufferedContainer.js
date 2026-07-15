@@ -18,6 +18,10 @@ import { Container, ContainerNode } from "./container.js";
  * }} BufferedContainerNodeOptions
  */
 
+// 実験した範囲で一番でかかった誤差は 1.7877678004651898e-7
+// ということで一応 1e-6としている 現実的に1.000001倍のスケールに気づける人間など居ない
+const SCALE_DIFF_EPSILON = 0.000001;
+
 /**
  * 描画内容をOffscreenCanvasに描画して、それを表示するContainer
  * 想定している使い方は、globalCompositeOperationを変更するなどして破壊的描画をする際のサンドボックスにすること
@@ -188,19 +192,28 @@ class BufferedContainerNode extends ContainerNode {
     #follow = "scale";
     #resolutionScale = 1;
     #imageSmoothing = true;
-    #drawOffsetX = 0;
-    #drawOffsetY = 0;
-    #drawScaleX = 1;
-    #drawScaleY = 1;
+
+    #fullTrackPos = false;
+
+    // デバッグ用!! でもおもろいから残した!!!!!!!!
+    #redrawRainbow = false;
+
+    // PERF: DRY原則とかそんなことを言ってられる余裕はない
+    #width = 0;
+    #height = 0;
+
     /** @type {ImageBitmap?} */
     #bitmap = null;
     /** @type {DOMMatrix2DInit?} */
     #oldTrasnform = null;
-    #oldScaleX = 1;
-    #oldScaleY = 1;
 
-    // デバッグ用!! でもおもろいから残した!!!!!!!!
-    #redrawRainbow = false;
+    #drawWidth = 0;
+    #drawHeight = 0;
+
+    #drawOffsetX = 0;
+    #drawOffsetY = 0;
+
+    #oldScale = NaN;
 
     /**
      * @returns {BufferedContainerNodeOptions}
@@ -222,17 +235,27 @@ class BufferedContainerNode extends ContainerNode {
     read(options) {
         if (options.objectChanged) {
             const {
+                width, height,
                 follow, resolutionScale, imageSmoothing, supersize, redrawRainbow
             } = options;
 
-            this.#follow = options.follow;
-            this.#resolutionScale = options.resolutionScale;
+            this.#width = width;
+            this.#height = height;
 
-            this.#supersize = options.supersize;
-            this.#redrawRainbow = options.redrawRainbow ?? false;
+            this.#follow = follow;
+
+            const fullTrackPos = follow === "all" || supersize;
+            this.#fullTrackPos = fullTrackPos;
+
+            // スケールを合わせるなら1倍超えのレンダリングスケールに意味はない
+            // そしてsuppersize * resolutionScale = 100なんてやろうものならいとも容易く爆散する
+            this.#resolutionScale = (fullTrackPos || follow === "scale") ? Math.min(resolutionScale, 1) : resolutionScale;
+
+            this.#supersize = supersize;
+            this.#redrawRainbow = redrawRainbow;
 
             // 1:1であればimageSmoothingは不要
-            const pixelJust = supersize || (follow === "all" && resolutionScale === 1);
+            const pixelJust = fullTrackPos && resolutionScale >= 1;
             this.#imageSmoothing = !pixelJust && imageSmoothing;
 
             // 内容が変化したので、描画済みビットマップを破棄
@@ -256,79 +279,186 @@ class BufferedContainerNode extends ContainerNode {
      * @param {number} canvasHeight
      */
     renderBuffer(transform, canvasWidth, canvasHeight) {
-        if (this.#bufferCtx === null) return;
+        const canvas = this.#buffer;
+        const ctx = this.#bufferCtx;
+        const { a = 1, b = 0, c = 0, d = 1, e = 0, f = 0 } = transform;
 
-        this.#bufferCtx.reset();
+        if (ctx === null) return;
 
-        const transformX = transform.e;
-        const transformY = transform.f;
-        const scaleX = (this.#follow !== "none" ? Math.hypot(transform.a, transform.b) : 1) * this.#resolutionScale;  // HACK: 神の行になりつつある
-        const scaleY = (this.#follow !== "none" ? Math.hypot(transform.c, transform.d) : 1) * this.#resolutionScale;  // HACK: 神の行になりつつある
-        // FIXME: follow = "all"でも回転するとぼやける
-        // TODO: AABBだるいからあとでやる 休ませてくれ……
-        // const transformRotation = Math.atan2(transform.b, transform.a);
+        const width = this.#width;
+        const height = this.#height;
 
-        if (scaleX === 0 || scaleY === 0) return;  // 描画するものは何もない
-        // FIXME: scaleXまたはscaleYが負の値だとバグる
-        // TODO: 一旦逃げるが、左右or上下が反転したものが描画できるようにいつか直す
-        if (scaleX < 0 || scaleY < 0) return;
+        const resolutionScale = this.#resolutionScale;
 
-        let width;
-        let height;
+        if (resolutionScale === 0) return;  // 何pxで描けば良いって言うんですか？
 
-        let drawOffsetX = 0;
-        let drawOffsetY = 0;
+        const rScale = 1 / resolutionScale;
 
+        ctx.reset();
         if (this.#supersize) {
-            width = canvasWidth;
-            height = canvasHeight;
-            drawOffsetX = transformX;
-            drawOffsetY = transformY;
+            this.#setupSupersizeContext(
+                a, b, c, d, e, f,
+                canvasWidth, canvasHeight,
+                canvas, ctx, resolutionScale
+            );
         } else {
-            width = this.width * scaleX + 3;  // 正確にはceil(width*scaleX) + 2
-            height = this.height * scaleY + 3;
+            if (width === 0 || height === 0) return;  // 強制的にクリップされるので描くものがない
 
             if (this.#follow === "all") {
-                drawOffsetX = transformX % 1 + 1;
-                drawOffsetY = transformY % 1 + 1;
-            } else if (this.#follow === "scale") {
-                drawOffsetX = 1;
-                drawOffsetY = 1;
+                this.#setupAllFollowContext(
+                    a, b, c, d, e, f,
+                    canvas, ctx, width, height, resolutionScale, rScale
+                );
+            } else {
+                this.#setupAllowDriftContext(
+                    a, b, c, d,
+                    canvas, ctx, width, height, resolutionScale
+                );
             }
         }
 
-        this.#bufferWidth = width;
-        this.#bufferHeight = height;
-        this.#oldTrasnform = transform;
-        this.#oldScaleX = scaleX;
-        this.#oldScaleY = scaleY;
-        this.#drawOffsetX = drawOffsetX;
-        this.#drawOffsetY = drawOffsetY;
-        this.#drawScaleX = 1 / scaleX;
-        this.#drawScaleY = 1 / scaleY;
-
-        this.#buffer.width = width;
-        this.#buffer.height = height;
         if (this.#redrawRainbow) {
-            this.#bufferCtx.fillStyle = `hsl(${performance.now() / 1000 % 1}turn 100% 50% / 0.5)`;
-            this.#bufferCtx.fillRect(0, 0, width, height);
+            ctx.save();
+            ctx.resetTransform();
+            ctx.fillStyle = `hsl(${performance.now() / 1000 % 1}turn 100% 50% / 0.5)`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
         }
 
-        if (drawOffsetX !== 0 || drawOffsetY !== 0) {
-            this.#bufferCtx.translate(drawOffsetX, drawOffsetY);
-        }
-
-        if (scaleX !== 1 || scaleY !== 1) {
-            this.#bufferCtx.scale(scaleX, scaleY);
-        }
-
-        super.draw(this.#bufferCtx);
+        super.draw(ctx);
 
         registry.unregister(this);
         deRef(this.#bitmap);  // もういらないよ！
         this.#bitmap = this.#buffer.transferToImageBitmap();
         incRef(this.#bitmap);  // これ使うよ！
         registry.register(this, this.#bitmap);
+
+        this.#oldTrasnform = transform;
+    }
+
+    /**
+     * @param {number} a @param {number} b @param {number} c @param {number} d @param {number} e @param {number} f
+     * @param {number} canvasWidth @param {number} canvasHeight
+     * @param {OffscreenCanvas} canvas @param {CanvasRenderingContext2D} ctx @param {number} resolutionScale
+     */
+    #setupSupersizeContext(
+        a, b, c, d, e, f,
+        canvasWidth, canvasHeight,
+        canvas, ctx, resolutionScale
+    ) {
+        // number | 0 → 雑floor なにが雑って符号付き32bit整数でオーバーフローする
+        // ただし今回の相手はCanvas、2147483Kディスプレイなんて使ったら死ぬ
+        const bufferWidth = canvasWidth * resolutionScale | 0 + 1;
+        const bufferHeight = canvasHeight * resolutionScale | 0 + 1;
+
+        if (this.#bufferWidth !== bufferWidth) {
+            canvas.width = this.#bufferWidth = bufferWidth;
+        }
+        if (this.#bufferHeight !== bufferHeight) {
+            canvas.height = this.#bufferHeight = bufferHeight;
+        }
+
+        this.#drawOffsetX = e;
+        this.#drawOffsetY = f;
+
+        this.#drawWidth = bufferWidth / resolutionScale;
+        this.#drawHeight = bufferHeight / resolutionScale;
+
+        ctx.setTransform(
+            a * resolutionScale,
+            b * resolutionScale,
+            c * resolutionScale,
+            d * resolutionScale,
+            e * resolutionScale,
+            f * resolutionScale
+        );
+    }
+
+    /**
+     * @param {number} a @param {number} b @param {number} c @param {number} d @param {number} e @param {number} f
+     * @param {OffscreenCanvas} canvas @param {CanvasRenderingContext2D} ctx
+     * @param {number} width @param {number} height  @param {number} resolutionScale @param {number} rScale
+     */
+    #setupAllFollowContext(
+        a, b, c, d, e, f,
+        canvas, ctx, width, height, resolutionScale, rScale
+    ) {
+        const topLeftX = 0; const topLeftY = 0;
+        const topRightX = width * a; const topRightY = width * b;
+        const bottomLeftX = height * c; const bottomLeftY = height * d;
+        const bottomRightX = topRightX + bottomLeftX; const bottomRightY = topRightY + bottomLeftY;
+
+        const top = Math.min(topLeftY, topRightY, bottomLeftY, bottomRightY);
+        const bottom = Math.max(topLeftY, topRightY, bottomLeftY, bottomRightY);
+        const left = Math.min(topLeftX, topRightX, bottomLeftX, bottomRightX);
+        const right = Math.max(topLeftX, topRightX, bottomLeftX, bottomRightX);
+
+        const bufferWidth = ((right - left) * resolutionScale | 0) + 5;
+        const bufferHeight = ((bottom - top) * resolutionScale | 0) + 5;
+
+        if (this.#bufferWidth !== bufferWidth) {
+            canvas.width = this.#bufferWidth = bufferWidth;
+        }
+        if (this.#bufferHeight !== bufferHeight) {
+            canvas.height = this.#bufferHeight = bufferHeight;
+        }
+
+        const misalignmentX = e % (rScale);
+        const misalignmentY = f % (rScale);
+
+        const alignedLeft = (left * resolutionScale | 0) / resolutionScale;
+        const alignedTop = (top * resolutionScale | 0) / resolutionScale;
+
+        const offsetX = -alignedLeft + 2 * rScale + misalignmentX;
+        const offsetY = -alignedTop + 2 * rScale + misalignmentY;
+
+        this.#drawOffsetX = offsetX;
+        this.#drawOffsetY = offsetY;
+
+        this.#drawWidth = bufferWidth / resolutionScale;
+        this.#drawHeight = bufferHeight / resolutionScale;
+
+        ctx.setTransform(
+            a * resolutionScale,
+            b * resolutionScale,
+            c * resolutionScale,
+            d * resolutionScale,
+            offsetX * resolutionScale,
+            offsetY * resolutionScale
+        );
+    }
+
+    /**
+     * @param {number} a @param {number} b @param {number} c @param {number} d
+     * @param {OffscreenCanvas} canvas @param {CanvasRenderingContext2D} ctx
+     * @param {number} width @param {number} height  @param {number} resolutionScale
+     */
+    #setupAllowDriftContext(
+        a, b, c, d,
+        canvas, ctx, width, height, resolutionScale
+    ) {
+        const transformScale = this.#follow === "scale"
+            ? Math.max(Math.hypot(a, b), Math.hypot(c, d))  // XとYのスケールで、より大きい方を選ぶ
+            : 1;  // follow === "none"、tansformは無視
+
+        const bufferWidth = (Math.abs(width * resolutionScale * transformScale) | 0) + 3;
+        const bufferHeight = (Math.abs(height * resolutionScale * transformScale) | 0) + 3;
+
+        if (this.#bufferWidth !== bufferWidth) {
+            canvas.width = this.#bufferWidth = bufferWidth;
+        }
+        if (this.#bufferHeight !== bufferHeight) {
+            canvas.height = this.#bufferHeight = bufferHeight;
+        }
+
+        this.#oldScale = transformScale;
+
+        ctx.transform(
+            resolutionScale * transformScale,
+            0, 0,
+            resolutionScale * transformScale,
+            1, 1
+        );
     }
 
     /**
@@ -338,29 +468,36 @@ class BufferedContainerNode extends ContainerNode {
         const transform = ctx.getTransform();
         const canvasWidth = ctx.canvas.width;
         const canvasHeight = ctx.canvas.height;
+
+        const resolutionScale = this.#resolutionScale;
         if (this.#oldTrasnform === null
             || this.#bitmap === null
             || this.#supersize && (
-                this.#bufferWidth !== canvasWidth
-                || this.#bufferHeight !== canvasHeight)
+                this.#bufferWidth !== (canvasWidth * resolutionScale | 0)
+                || this.#bufferHeight !== (canvasHeight * resolutionScale | 0))
             || this.#follow === "all" && !matEquals(transform, this.#oldTrasnform)
-            || this.#follow === "scale" && !scaleEquals(transform, this.#oldScaleX, this.#oldScaleY)
+            || this.#follow === "scale" && !scaleEquals(transform, this.#oldScale)
         ) {
             this.renderBuffer(transform, canvasWidth, canvasHeight);
         }
 
         if (this.#bitmap === null) return;
 
-        if (this.#drawScaleX !== 1 || this.#drawScaleY !== 1) {
-            ctx.scale(this.#drawScaleX, this.#drawScaleY);
-        }
-
         ctx.imageSmoothingEnabled = this.#imageSmoothing;
-        ctx.drawImage(
-            this.#bitmap,
-            -this.#drawOffsetX,
-            -this.#drawOffsetY,
-        );
+
+        if (this.#fullTrackPos) {
+            ctx.resetTransform();
+            ctx.drawImage(this.#bitmap,
+                0, 0,
+                this.#bufferWidth, this.#bufferHeight,
+                transform.e - this.#drawOffsetX, transform.f - this.#drawOffsetY,
+                this.#drawWidth, this.#drawHeight
+            );
+        } else {
+            const drawScale = 1 / resolutionScale / this.#oldScale;
+            ctx.scale(drawScale, drawScale);
+            ctx.drawImage(this.#bitmap, -1, -1);
+        }
     }
 }
 
@@ -381,12 +518,13 @@ function matEquals(a, b) {
 
 /**
  * @param {DOMMatrix} matrix
- * @param {number} scaleX
- * @param {number} scaleY
+ * @param {number} scale
  */
-function scaleEquals(matrix, scaleX, scaleY) {
-    return (
-        Math.hypot(matrix.a, matrix.b) === scaleX &&
-        Math.hypot(matrix.c, matrix.d) === scaleY
-    );
+function scaleEquals(matrix, scale) {
+    const diff = Math.max(
+        Math.hypot(matrix.a, matrix.b),
+        Math.hypot(matrix.c, matrix.d)
+    ) - scale;
+
+    return -SCALE_DIFF_EPSILON < diff && diff < SCALE_DIFF_EPSILON;
 }
