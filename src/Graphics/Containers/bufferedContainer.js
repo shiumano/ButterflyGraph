@@ -14,7 +14,7 @@ import { Container, ContainerNode } from "./container.js";
  *   resolutionScale: number
  *   imageSmoothing: boolean
  *   supersize: boolean
- *   redrawRainbow?: boolean
+ *   redrawRainbow: boolean
  * }} BufferedContainerNodeOptions
  */
 
