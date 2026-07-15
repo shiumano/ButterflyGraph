@@ -154,7 +154,10 @@ export class Container extends DrawObject {
                 break;
         }
 
-        super.requestRecreate(this, "object");
+        if (sender.parent === this) {
+            super.requestRecreate(this, "object");
+        }
+
         super.requestRecreate(sender, reason);
     }
 
