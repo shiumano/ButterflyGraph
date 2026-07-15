@@ -29,6 +29,7 @@ const SCALE_DIFF_EPSILON = 0.000001;
  * パフォーマンスはCanvas APIのdrawImageが非常に低速なため、内部のオブジェクトが数十個を超えないと軽量化としての意味はない
  * また、内容が変化しまくるものをBufferedContainerに入れるべきではない
  *
+ * 念押しで言うが、これはパフォーマンスのためのものじゃない。表現のためのものだ。
  * 使うときは慎重に、使わなきゃいけないときにだけ使うこと
  * @extends Container<BufferedContainerNode>
  */
@@ -52,7 +53,9 @@ export class BufferedContainer extends Container {
         this.#redrawRainbow = options.redrawRainbow ?? false;
     }
 
-    // FIXME: childrenの描画範囲の計算をしていないため、supersizeでない場合強制的にクリップされる
+    /**
+     * childrenの描画範囲の計算をしていないため、supersizeでない場合強制的にクリップされる
+     */
     get clip() { return super.clip || !this.supersize; }
     set clip(value) { super.clip = value; }
 
@@ -72,6 +75,7 @@ export class BufferedContainer extends Container {
 
     /**
      * 更新する条件
+     *
      * "all": 位置とスケール
      * "scale": スケールのみ
      * "none": 最初に描画されたまま
@@ -134,8 +138,8 @@ export class BufferedContainer extends Container {
         this._updateChildren(t);
 
         const cachedNode = this.cachedNode ?? new BufferedContainerNode();
-
         cachedNode.read(this);
+
         return cachedNode;
     }
 
