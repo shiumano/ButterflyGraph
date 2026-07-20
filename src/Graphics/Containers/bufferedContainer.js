@@ -481,8 +481,7 @@ class BufferedContainerNode extends ContainerNode {
      */
     draw(ctx) {
         const transform = ctx.getTransform();
-        const canvasWidth = ctx.canvas.width;
-        const canvasHeight = ctx.canvas.height;
+        const { width: canvasWidth, height: canvasHeight } = ctx.canvas;
 
         const resolutionScale = this.#resolutionScale;
         if (this.#oldTrasnform === null
