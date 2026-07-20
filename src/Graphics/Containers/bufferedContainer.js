@@ -224,7 +224,9 @@ class BufferedContainerNode extends ContainerNode {
     #drawOffsetX = 0;
     #drawOffsetY = 0;
 
-    #oldScale = NaN;
+    #oldScale = 0;
+    #oldCanvasWidth = 0;
+    #oldCanvasHeight = 0;
 
     /**
      * @returns {BufferedContainerNodeOptions}
@@ -363,9 +365,11 @@ class BufferedContainerNode extends ContainerNode {
         const bufferHeight = canvasHeight * resolutionScale | 0 + 1;
 
         if (this.#bufferWidth !== bufferWidth) {
+            this.#oldCanvasWidth = canvasWidth;
             canvas.width = this.#bufferWidth = bufferWidth;
         }
         if (this.#bufferHeight !== bufferHeight) {
+            this.#oldCanvasHeight = canvasHeight;
             canvas.height = this.#bufferHeight = bufferHeight;
         }
 
@@ -394,10 +398,10 @@ class BufferedContainerNode extends ContainerNode {
         a, b, c, d, e, f,
         canvas, ctx, width, height, resolutionScale, rScale
     ) {
-        const topLeftX = 0; const topLeftY = 0;
-        const topRightX = width * a; const topRightY = width * b;
-        const bottomLeftX = height * c; const bottomLeftY = height * d;
-        const bottomRightX = topRightX + bottomLeftX; const bottomRightY = topRightY + bottomLeftY;
+        const topLeftX = 0, topLeftY = 0;
+        const topRightX = width * a, topRightY = width * b;
+        const bottomLeftX = height * c, bottomLeftY = height * d;
+        const bottomRightX = topRightX + bottomLeftX, bottomRightY = topRightY + bottomLeftY;
 
         const top = Math.min(topLeftY, topRightY, bottomLeftY, bottomRightY);
         const bottom = Math.max(topLeftY, topRightY, bottomLeftY, bottomRightY);
@@ -464,7 +468,7 @@ class BufferedContainerNode extends ContainerNode {
 
         this.#oldScale = transformScale;
 
-        ctx.transform(
+        ctx.setTransform(
             resolutionScale * transformScale,
             0, 0,
             resolutionScale * transformScale,
@@ -477,17 +481,17 @@ class BufferedContainerNode extends ContainerNode {
      */
     draw(ctx) {
         const transform = ctx.getTransform();
-        const canvasWidth = ctx.canvas.width;
-        const canvasHeight = ctx.canvas.height;
+        const { width: canvasWidth, height: canvasHeight } = ctx.canvas;
 
         const resolutionScale = this.#resolutionScale;
         if (this.#oldTrasnform === null
             || this.#bitmap === null
-            || this.#supersize && (
-                this.#bufferWidth !== (canvasWidth * resolutionScale | 0)
-                || this.#bufferHeight !== (canvasHeight * resolutionScale | 0))
-            || this.#follow === "all" && !matEquals(transform, this.#oldTrasnform)
             || this.#follow === "scale" && !scaleEquals(transform, this.#oldScale)
+            || this.#follow === "all" && !matEquals(transform, this.#oldTrasnform)
+            || this.#supersize && (
+                this.#oldCanvasWidth !== canvasWidth
+                || this.#oldCanvasHeight !== canvasHeight
+                || !matEquals(transform, this.#oldTrasnform))
         ) {
             this.renderBuffer(transform, canvasWidth, canvasHeight);
         }
