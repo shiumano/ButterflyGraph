@@ -224,7 +224,9 @@ class BufferedContainerNode extends ContainerNode {
     #drawOffsetX = 0;
     #drawOffsetY = 0;
 
-    #oldScale = NaN;
+    #oldScale = 0;
+    #oldCanvasWidth = 0;
+    #oldCanvasHeight = 0;
 
     /**
      * @returns {BufferedContainerNodeOptions}
@@ -363,9 +365,11 @@ class BufferedContainerNode extends ContainerNode {
         const bufferHeight = canvasHeight * resolutionScale | 0 + 1;
 
         if (this.#bufferWidth !== bufferWidth) {
+            this.#oldCanvasWidth = canvasWidth;
             canvas.width = this.#bufferWidth = bufferWidth;
         }
         if (this.#bufferHeight !== bufferHeight) {
+            this.#oldCanvasHeight = canvasHeight;
             canvas.height = this.#bufferHeight = bufferHeight;
         }
 
@@ -483,11 +487,12 @@ class BufferedContainerNode extends ContainerNode {
         const resolutionScale = this.#resolutionScale;
         if (this.#oldTrasnform === null
             || this.#bitmap === null
-            || this.#supersize && (
-                this.#bufferWidth !== (canvasWidth * resolutionScale | 0)
-                || this.#bufferHeight !== (canvasHeight * resolutionScale | 0))
-            || this.#follow === "all" && !matEquals(transform, this.#oldTrasnform)
             || this.#follow === "scale" && !scaleEquals(transform, this.#oldScale)
+            || this.#follow === "all" && !matEquals(transform, this.#oldTrasnform)
+            || this.#supersize && (
+                this.#oldCanvasWidth !== canvasWidth
+                || this.#oldCanvasHeight !== canvasHeight
+                || !matEquals(transform, this.#oldTrasnform))
         ) {
             this.renderBuffer(transform, canvasWidth, canvasHeight);
         }
