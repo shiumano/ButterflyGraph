@@ -1,8 +1,10 @@
 import { HTMLCanvasRenderer } from "../../Graphics/Rendering/HTMLCanvasRenderer.js";
 import { Container } from "../../Graphics/Containers/container.js";
+import { includes } from "../../Utils/metaPrg.js";
 
 /**
- * @import { GenericDrawObject, Properties } from "@core/Graphics/drawObject.js"
+ * @import { GenericDrawObject } from "@core/Graphics/drawObject.js"
+ * @import { Properties } from "@core/Utils/metaPrg.js"
  * @typedef {{
  *   testArea: HTMLElement
  *   controlArea: HTMLElement
@@ -394,16 +396,4 @@ export class TestScene {
 
         this.addToggle(label, initialValue, (value) => target[property] = convert(value));
     }
-}
-
-// 型ガード関数まで始めちゃったらTSだろ
-/**
- * @template {string} T
- * @param {readonly T[]} arr
- * @param {string} item
- * @returns {item is T}
- */
-function includes(arr, item) {
-    // includesの型が少々早すぎる
-    return arr.includes(/** @type {T} */(item));
 }

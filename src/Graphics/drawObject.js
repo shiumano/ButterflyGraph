@@ -3,10 +3,12 @@ import { DrawNode } from "./drawNode.js";
 import { Gradient } from "./Gradients/gradient.js";
 import { AnimationManager } from "./Animations/animationManager.js";
 import { direct } from "../Utils/unitConversion.js";
+import { getDesctiptor } from "../Utils/metaPrg.js";
 
 /**
  * @import { Vector2 } from "./vector2.js";
- * @import { DrawNodeOptions, GenericDrawNode, NodeOptions } from "./drawNode.js"
+ * @import { DrawNodeOptions, GenericDrawNode } from "./drawNode.js"
+ * @import { Properties } from "@core/Utils/metaPrg.js"
  * @typedef {{
  *   x?: number
  *   y?: number
@@ -37,14 +39,6 @@ import { direct } from "../Utils/unitConversion.js";
  *   t: number
  *   node: T?
  * }} DrawNodeCache
- */
-
-// FIXME: get-onlyプロパティは弾くことができてない アニメーションのターゲットにしたら実行時エラーでドボン
-/**
- * @template T
- * @typedef {{
- *   [K in keyof T]: T[K] extends Function ? never : K extends string ? K : never
- * }[keyof T]} Properties
  */
 
 /**
@@ -524,20 +518,4 @@ export class DrawObject {
 
     #perfectlyOptimized = this.isPerfectlyOptimized();
     get perfectlyOptimized() { return this.#perfectlyOptimized; }
-}
-
-/**
- * @template T
- * @param {T} obj
- * @param {{[K in keyof T]: K extends string ? K : never}[keyof T]} prop
- */
-function getDesctiptor(obj, prop) {
-    let searchTarget = obj;
-    while (searchTarget !== null) {
-        const descriptor = Object.getOwnPropertyDescriptor(searchTarget, prop);
-        if (descriptor !== undefined) {
-            return descriptor;
-        }
-        searchTarget = Object.getPrototypeOf(searchTarget);
-    }
 }
