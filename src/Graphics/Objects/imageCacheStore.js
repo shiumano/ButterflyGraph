@@ -25,6 +25,8 @@ export class ImageCacheStore {
     /** @type {Map<bigint, Promise<void | ImageBitmap>>} */
     static #inflight = new Map();
 
+    static #lastUse = 0;
+
     /**
      * BlobをキーにするためFNV-1aハッシュを生成
      * @param {Blob} blob
@@ -99,12 +101,12 @@ export class ImageCacheStore {
     }
 
     /**
-     * 最終使用時刻を更新
+     * 最終利用情報を更新
      * @param {bigint} key
      */
     static touch(key) {
         const v = this.#cacheMap.get(key);
-        if (v) v.lastUsed = performance.now();
+        if (v) v.lastUsed = this.#lastUse++;
     }
 
     /**
