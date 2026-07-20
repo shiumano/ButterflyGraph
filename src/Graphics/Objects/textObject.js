@@ -49,20 +49,29 @@ export class TextObject extends DrawObject {
     /**
      * @param {TextOptions} options
      */
-    constructor(options = {}) {
+    constructor({
+        text = "",
+        font = FONT_DEFAULT,
+        fill = true,
+        strokeWidth = 0,
+        sizeReference = "actual",
+        autoSizeUpdate = true,
+        ...options
+    } = {}) {
         super(options);
         if (TextObject.#ctx) {
             TextObject.#ctx.textBaseline = "top";
         }
 
-        this.#fill = options.fill ?? true;
-        this.#strokeWidth = Math.max(options.strokeWidth ?? 0, 0);
+        this.#text = text;
+        this.#font = font;
 
-        this.#text = options.text ?? "";
-        this.#font = options.font ?? FONT_DEFAULT;
+        this.#fill = fill;
+        this.#strokeWidth = Math.max(strokeWidth, 0);
 
-        this.#sizeReference = options.sizeReference ?? "actual";
-        this.#autoSizeUpdate = options.autoSizeUpdate ?? true;
+
+        this.#sizeReference = sizeReference;
+        this.#autoSizeUpdate = autoSizeUpdate;
 
         this.#updateMetrics();
     }

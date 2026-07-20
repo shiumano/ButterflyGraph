@@ -45,13 +45,16 @@ class Butterfly extends DrawObject {
     /**
      * @param {ButterflyOptions} options
      */
-    constructor(options) {
+    constructor({
+        dark = true,
+        ...options
+    }) {
         super(options);
 
-        this.#dark = options.dark ?? true;
+        this.#dark = dark;
 
-        this.fillStyle = this.dark ? "#A78BFA" : "#6A5ACD";
-        this.strokeStyle = this.dark ? "#F5F7FA" : "#111";
+        this.fillStyle = dark ? "#A78BFA" : "#6A5ACD";
+        this.strokeStyle = dark ? "#F5F7FA" : "#111";
     }
 
     get timed() { return false; }

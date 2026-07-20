@@ -98,32 +98,43 @@ export class DrawObject {
     /**
      * @param {DrawObjectOptions} options
      */
-    constructor(options = {}) {
-        this.#x = options.x ?? 0;
-        this.#y = options.y ?? 0;
-        this.#rotation = options.rotation ?? 0;
+    constructor({
+        x = 0, y = 0, rotation = 0,
+        width = 0, height = 0,
+        scaleX, scaleY, scale = 1,
+        alpha = 1,
+        anchor = Anchor.topLeft, origin = Anchor.topLeft,
+        zIndex = 0,
+        visible = true,
+        timed = true,
+        showBounds = false,
+        fillStyle, strokeStyle, color
+    } = {}) {
+        this.#x = x;
+        this.#y = y;
+        this.#rotation = rotation;
 
-        this.#width = options.width ?? 0;
-        this.#height = options.height ?? 0;
+        this.#width = width;
+        this.#height = height;
 
-        this.#scaleX = options.scaleX ?? options.scale ?? 1;
-        this.#scaleY = options.scaleY ?? options.scale ?? 1;
+        this.#scaleX = scaleX ?? scale;
+        this.#scaleY = scaleY ?? scale;
 
-        this.#alpha = options.alpha ?? 1;
+        this.#alpha = alpha;
 
-        this.#anchor = options.anchor ?? Anchor.topLeft;
-        this.#origin = options.origin ?? Anchor.topLeft;
+        this.#anchor = anchor;
+        this.#origin = origin;
 
-        this.#zIndex = options.zIndex ?? 0;
+        this.#zIndex = zIndex;
 
-        this.#visible = options.visible ?? true;
+        this.#visible = visible;
 
-        this.#timed = options.timed ?? true;
+        this.#timed = timed;
 
-        this.#showBounds = options.showBounds ?? false;
+        this.#showBounds = showBounds;
 
-        this.#fillStyle = options.fillStyle ?? options.color;
-        this.#strokeStyle = options.strokeStyle;
+        this.#fillStyle = fillStyle ?? color;
+        this.#strokeStyle = strokeStyle;
 
         if (this.#fillStyle instanceof Gradient) {
             this.#fillStyle.mountTo(this);

@@ -43,14 +43,21 @@ export class BufferedContainer extends Container {
     /**
      * @param {BufferedContainerOptions} options
      */
-    constructor(options = {}) {
+    constructor({
+        supersize = false,
+        follow = "scale",  // PERF: follow = scale、見た目の割にめっちゃ軽い 0.5pxの位置のズレなんてわからん
+        resolutionScale = 1,
+        imageSmoothing = true,
+        redrawRainbow = false,
+        ...options
+    } = {}) {
         super(options);
 
-        this.#supersize = options.supersize ?? false;
-        this.#follow = options.follow ?? "scale";  // PERF: follow = scale、見た目の割にめっちゃ軽い 0.5pxの位置のズレなんてわからん
-        this.#resolutionScale = options.resolutionScale ?? 1;
-        this.#imageSmoothing = options.imageSmoothing ?? true;
-        this.#redrawRainbow = options.redrawRainbow ?? false;
+        this.#supersize = supersize;
+        this.#follow = follow;
+        this.#resolutionScale = resolutionScale;
+        this.#imageSmoothing = imageSmoothing;
+        this.#redrawRainbow = redrawRainbow;
     }
 
     /**

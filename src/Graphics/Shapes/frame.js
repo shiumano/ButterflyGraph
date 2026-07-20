@@ -21,10 +21,13 @@ export class Frame extends DrawObject {
     /**
      * @param {FrameOptions} options
      */
-    constructor(options = {}) {
+    constructor({
+        lineWidth = 0,
+        ...options
+    } = {}) {
         super(options);
 
-        this.#lineWidth = options.lineWidth ?? 0;
+        this.#lineWidth = lineWidth;
     }
 
     get timed() { return false; }
