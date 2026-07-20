@@ -36,7 +36,6 @@ import { Gradient } from "./Gradients/gradient.js";
 // しょうがない: ……そろそろCanvasRenderingContext2Dの再実装になってきたね でも互換レイヤーだから仕方ない
 /**
  * x, yを起点として、オブジェクトを描画するためのクラス。
- * イミュータブルとし、変更があった場合は再作成する。
  * @template {DrawNodeOptions} T
  */
 export class DrawNode {
