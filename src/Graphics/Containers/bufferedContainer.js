@@ -464,7 +464,7 @@ class BufferedContainerNode extends ContainerNode {
 
         this.#oldScale = transformScale;
 
-        ctx.transform(
+        ctx.setTransform(
             resolutionScale * transformScale,
             0, 0,
             resolutionScale * transformScale,
