@@ -8,22 +8,25 @@ import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 
 export class BufferedContainerTestScene extends TestScene {
     async load() {
-        const rect1 = new Rectangle({
+        const rectOptions = {
             x: 50, y: 100,
             width: 100, height: 200,
             origin: Anchor.centre,
             color: "red"
-        });
-        const circle1 = new Circle({
+        };
+        const circleOptions = {
             x: 0, y: 100,
             radius: 150,
             color: "lime"
-        });
-        const line1 = new Rectangle({
+        };
+        const lineOptions = {
             x: 0, y: 50,
             width: 200, height: 1,
             color: "white"
-        });
+        };
+        const rect1 = new Rectangle(rectOptions);
+        const circle1 = new Circle(circleOptions);
+        const line1 = new Rectangle(lineOptions);
         const bufferedContainer = new BufferedContainer({
             x: -200,
             width: 200, height: 200,
@@ -32,9 +35,9 @@ export class BufferedContainerTestScene extends TestScene {
             children: [rect1, circle1, line1]
         });
 
-        const rect2 = new Rectangle(rect1);  // これでオブジェクトプロパティをコピーしたオブジェクトを作れる 適当〜
-        const circle2 = new Circle(circle1);
-        const line2 = new Rectangle(line1);
+        const rect2 = new Rectangle(rectOptions);
+        const circle2 = new Circle(circleOptions);
+        const line2 = new Rectangle(lineOptions);
         const normalContainer = new Container({
             x: 200,
             width: 200, height: 200,
