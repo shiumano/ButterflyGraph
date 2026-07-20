@@ -34,19 +34,23 @@ export class Container extends DrawObject {
     /**
      * @param {ContainerOptions} options
      */
-    constructor(options = {}) {
+    constructor({
+        children,
+        clip = false,
+        ...options
+    } = {}) {
         super(options);
 
-        const children = options.children?.slice() ?? [];  // Containerの持ち物になった時点で再作成
-        this.#children = children;
-        this.#clip = options.clip ?? false;
+        const myChildren = children?.slice() ?? [];  // Containerの持ち物になった時点で再作成
+        this.#children = myChildren;
+        this.#clip = clip;
 
         let childrenTimed = false;
         let childrenAnimated = false;
         let childrenPerfect = true;  // だったらどれほどいいことか
 
-        for (let i = 0; i < children.length; i++) {
-            const child = children[i];
+        for (let i = 0; i < myChildren.length; i++) {
+            const child = myChildren[i];
             child.parent = this;
             childrenTimed ||= child.timed;
             childrenAnimated ||= child.animated;

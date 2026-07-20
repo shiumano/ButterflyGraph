@@ -21,10 +21,12 @@ export class Circle extends DrawObject {
     /**
      * @param {CircleOptions} options
      */
-    constructor(options = {}) {
+    constructor({
+        radius = 0,
+        ...options
+    } = {}) {
         super(options);
 
-        const radius = options.radius ?? 0;
         this.#radius = radius;
         super.width = radius * 2;
         super.height = radius * 2;

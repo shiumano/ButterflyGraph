@@ -25,13 +25,15 @@ export class Donut extends DrawObject {
     /**
      * @param {DonutOptions} options
      */
-    constructor(options = {}) {
+    constructor({
+        radius = 0, lineWidth = 0,
+        ...options
+    } = {}) {
         super(options);
         if (options.color !== undefined) {
             this.color = options.color;
         }
-        const radius = options.radius ?? 0;
-        const lineWidth = options.lineWidth ?? 0;
+
         this.#radius = radius;
         this.#lineWidth = lineWidth;
         super.width = radius * 2;

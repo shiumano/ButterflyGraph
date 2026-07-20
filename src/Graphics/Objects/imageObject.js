@@ -10,7 +10,7 @@ import { ImageCacheStore } from "./imageCacheStore.js";
  * @import { ImageInfo } from "./imageCacheStore.js";
  * @typedef {DrawObjectOptions & {
  *   fps?: number
- *   imageAlign?: Vector2
+ *   imageAlign?: Readonly<Vector2>
  *   imageSmoothing?: boolean
  *   loop?: boolean
  *   image?: Blob
@@ -41,20 +41,27 @@ export class ImageObject extends DrawObject {
     /**
      * @param {ImageObjectOptions} options
      */
-    constructor(options = {}) {
+    constructor({
+        fps = 0,
+        imageAlign = Anchor.topLeft,
+        imageSmoothing = true,
+        loop = true,
+        image,
+        ...options
+    } = {}) {
         super(options);
 
         super.width = 0;
         super.height = 0;
 
-        this.#fps = options.fps ?? 0;
-        this.#imageAlign = options.imageAlign ?? Anchor.topLeft;
-        this.#imageSmoothing = options.imageSmoothing ?? true;
-        this.#loop = options.loop ?? true;
+        this.#fps = fps;
+        this.#imageAlign = imageAlign;
+        this.#imageSmoothing = imageSmoothing;
+        this.#loop = loop;
 
-        if (options.image !== undefined) {
+        if (image !== undefined) {
             // awaitじゃないため不安定 できればawait ImageObject.load(blobs)でちゃんとロードして欲しい
-            this.load([options.image]);
+            this.load([image]);
         }
 
         this.#updateTimeInfo();
