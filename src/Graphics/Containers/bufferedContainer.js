@@ -394,10 +394,10 @@ class BufferedContainerNode extends ContainerNode {
         a, b, c, d, e, f,
         canvas, ctx, width, height, resolutionScale, rScale
     ) {
-        const topLeftX = 0; const topLeftY = 0;
-        const topRightX = width * a; const topRightY = width * b;
-        const bottomLeftX = height * c; const bottomLeftY = height * d;
-        const bottomRightX = topRightX + bottomLeftX; const bottomRightY = topRightY + bottomLeftY;
+        const topLeftX = 0, topLeftY = 0;
+        const topRightX = width * a, topRightY = width * b;
+        const bottomLeftX = height * c, bottomLeftY = height * d;
+        const bottomRightX = topRightX + bottomLeftX, bottomRightY = topRightY + bottomLeftY;
 
         const top = Math.min(topLeftY, topRightY, bottomLeftY, bottomRightY);
         const bottom = Math.max(topLeftY, topRightY, bottomLeftY, bottomRightY);
