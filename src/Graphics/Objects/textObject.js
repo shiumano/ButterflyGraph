@@ -18,6 +18,7 @@ import { DrawNode } from "../drawNode.js";
  *   fill: boolean
  *   strokeWidth: number
  *   textAscent: number
+ *   autoSizeUpdate: boolean
  * }} TextNodeOptions
  */
 
@@ -94,11 +95,12 @@ export class TextObject extends DrawObject {
 
         this.#strokeWidth = clampedValue;
 
-        if (this.text.length !== 0) {
+        if (this.text.length !== 0 && this.autoSizeUpdate) {
             super.width = this.#textWidth + this.strokeWidth;
             super.height = this.#textHeight + this.strokeWidth;
-            this.requestRecreate(this, "object");
         }
+
+        this.requestRecreate(this, "object");
     }
 
     get width() { return super.width; }
@@ -134,6 +136,13 @@ export class TextObject extends DrawObject {
         this.requestRecreate(this, "object");
     };
 
+    /**
+     * テキストのサイズを取得するか否か
+     * FPS表示みたいな、頻繁に変わるけど配置が大体あってれば問題ないやつはfalseがオススメ
+     *
+     * trueの場合、通常通りwidthとheight、任意の座標のanchorを使用できる
+     * falseの場合、widthとheightは0とされ、定義済みanchorのみ使用可能(そしてY軸がやや不正確)
+     */
     get autoSizeUpdate() { return this.#autoSizeUpdate; }
     set autoSizeUpdate(value) {
         if (this.#autoSizeUpdate === value) return;
@@ -146,37 +155,38 @@ export class TextObject extends DrawObject {
     get textAscent() { return this.#textAscent; }
 
     #updateMetrics() {
-        if (!this.autoSizeUpdate) return;
-
         // WARN: いつフォントが読み込まれたかどうかはわからない
         // TODO: どうにか呼ばせる。必要なときだけ。新たなPERFコメは生み出したくない
-        if (this.#text.length === 0) {
-            // 0文字ならサイズは0！終了！
+        if (TextObject.#ctx === null
+            || this.#text.length === 0
+            || !this.autoSizeUpdate
+        ) {
             this.#textWidth = 0;
             this.#textHeight = 0;
 
             super.width = 0;
             super.height = 0;
-        } else {
-            if (TextObject.#ctx === null) return;
-            if (this.font !== TextObject.#ctxFont) {
-                TextObject.#ctx.font = this.font;
-                TextObject.#ctxFont = this.font;
-            }
-            const metrics = TextObject.#ctx.measureText(this.text);
-            this.#textWidth = metrics.width;
-            if (this.sizeReference === "actual") {
-                this.#textHeight = metrics.actualBoundingBoxDescent + metrics.actualBoundingBoxAscent;
-                this.#textAscent = metrics.actualBoundingBoxAscent;
-            }
-            else {
-                this.#textHeight = metrics.fontBoundingBoxDescent + metrics.fontBoundingBoxAscent;
-                this.#textAscent = metrics.fontBoundingBoxAscent;
-            }
 
-            super.width = this.#textWidth + this.strokeWidth;
-            super.height = this.#textHeight + this.strokeWidth;
+            return;
         }
+
+        if (this.font !== TextObject.#ctxFont) {
+            TextObject.#ctx.font = this.font;
+            TextObject.#ctxFont = this.font;
+        }
+        const metrics = TextObject.#ctx.measureText(this.text);
+        this.#textWidth = metrics.width;
+        if (this.sizeReference === "actual") {
+            this.#textHeight = metrics.actualBoundingBoxDescent + metrics.actualBoundingBoxAscent;
+            this.#textAscent = metrics.actualBoundingBoxAscent;
+        }
+        else {
+            this.#textHeight = metrics.fontBoundingBoxDescent + metrics.fontBoundingBoxAscent;
+            this.#textAscent = metrics.fontBoundingBoxAscent;
+        }
+
+        super.width = this.#textWidth + this.strokeWidth;
+        super.height = this.#textHeight + this.strokeWidth;
     }
 
     /**
@@ -191,7 +201,8 @@ export class TextObject extends DrawObject {
             font: this.font,
             fill: this.fill,
             strokeWidth: this.strokeWidth,
-            textAscent: this.#textAscent
+            textAscent: this.#textAscent,
+            autoSizeUpdate: this.#autoSizeUpdate
         });
 
         return options;
@@ -221,6 +232,10 @@ class TextNode extends DrawNode {
     #strokeWidth = 0;
     #offsetX = 0;
     #offsetY = 0;
+    /** @type {CanvasTextAlign} */
+    #align = "start";
+    /** @type {CanvasTextBaseline} */
+    #baseline = "top";
 
     /**
      * @returns {TextNodeOptions}
@@ -231,7 +246,8 @@ class TextNode extends DrawNode {
             font: FONT_DEFAULT,
             fill: true,
             strokeWidth: 0,
-            textAscent: 0
+            textAscent: 0,
+            autoSizeUpdate: true
         });
     }
 
@@ -239,13 +255,59 @@ class TextNode extends DrawNode {
      * @param {Readonly<TextNodeOptions>} options
      */
     read(options) {
-        const { text, font, fill, strokeWidth, textAscent } = options;
+        const { text, font, fill, strokeWidth, textAscent, autoSizeUpdate } = options;
         this.#text = text;
         this.#font = font;
         this.#fill = fill;
         this.#strokeWidth = strokeWidth;
-        this.#offsetX = strokeWidth / 2;
-        this.#offsetY = strokeWidth / 2 + textAscent;
+
+        if (autoSizeUpdate) {
+            this.#align = "start";
+            this.#baseline = "top";
+            this.#offsetX = strokeWidth / 2;
+            this.#offsetY = strokeWidth / 2 + textAscent;
+        } else {
+            // Canvas設定でまぁまぁ合わせてあげる "まぁまぁ"ね
+            const { origin: {
+                x: originX, y: originY
+            } } = options;
+
+            switch (originX) {
+                case 0:
+                    this.#align = "start";
+                    this.#offsetX = strokeWidth / 2;
+                    break;
+                case 0.5:
+                    this.#align = "center";
+                    this.#offsetX = 0;
+                    break;
+                case 1:
+                    this.#align = "end";
+                    this.#offsetX = -strokeWidth / 2;
+                    break;
+                default:
+                    this.#align = "center";  // 間を取って
+                    this.#offsetX = 0;
+            }
+
+            switch (originY) {
+                case 0:
+                    this.#baseline = "top";
+                    this.#offsetY = strokeWidth / 2;
+                    break;
+                case 0.5:
+                    this.#baseline = "middle";
+                    this.#offsetY = 0;
+                    break;
+                case 1:
+                    this.#baseline = "bottom";
+                    this.#offsetY = -strokeWidth / 2;
+                    break;
+                default:
+                    this.#baseline = "middle";
+                    this.#offsetY = 0;
+            }
+        }
 
         const tOpt = this.options;
         tOpt.text = text;
@@ -253,6 +315,7 @@ class TextNode extends DrawNode {
         tOpt.fill = fill;
         tOpt.strokeWidth = strokeWidth;
         tOpt.textAscent = textAscent;
+        tOpt.autoSizeUpdate = autoSizeUpdate;
 
         super.read(options);
     }
@@ -261,9 +324,8 @@ class TextNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        // PERF: 毎回設定するのは嫌だが、フレームワーク的ロックを行わない以上ctxの状態は信用できない
-        ctx.textAlign = "start";
-        ctx.textBaseline = "top";
+        ctx.textAlign = this.#align;
+        ctx.textBaseline = this.#baseline;
         ctx.font = this.#font;
         ctx.direction = "ltr";
 
