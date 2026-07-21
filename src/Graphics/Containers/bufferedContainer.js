@@ -1,4 +1,5 @@
 import { Container, ContainerNode } from "./container.js";
+import { classOf } from "../../Utils/metaPrg.js";
 
 /**
  * @import { ContainerOptions, ContainerNodeOptions } from "@core/Graphics/Containers/container.js"
@@ -150,7 +151,7 @@ export class BufferedContainer extends Container {
         return cachedNode;
     }
 
-    isPerfectlyOptimized() { return this.constructor === BufferedContainer; }
+    isPerfectlyOptimized() { return classOf(this) === BufferedContainer; }
 }
 
 // WARN: お前ごときがGCになるのか？

@@ -1,5 +1,6 @@
 import { DrawObject } from "../drawObject.js";
 import { DrawNode } from "../drawNode.js";
+import { classOf } from "../../Utils/metaPrg.js";
 
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
@@ -34,7 +35,7 @@ export class Rectangle extends DrawObject {
         return node;
     }
 
-    isPerfectlyOptimized() { return this.constructor === Rectangle; }
+    isPerfectlyOptimized() { return classOf(this) === Rectangle; }
 }
 
 /**

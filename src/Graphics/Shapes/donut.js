@@ -1,6 +1,7 @@
 
 import { DrawObject } from "../drawObject.js";
 import { DrawNode } from "../drawNode.js";
+import { classOf } from "../../Utils/metaPrg.js";
 
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
@@ -92,7 +93,7 @@ export class Donut extends DrawObject {
         return node;
     }
 
-    isPerfectlyOptimized() { return this.constructor === Donut; }
+    isPerfectlyOptimized() { return classOf(this) === Donut; }
 }
 
 /**

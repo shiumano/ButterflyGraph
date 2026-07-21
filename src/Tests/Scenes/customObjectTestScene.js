@@ -3,6 +3,7 @@ import { DrawNode } from "../../Graphics/drawNode.js";
 import { TestScene } from "./testScene.js";
 import { Anchor } from "../../Graphics/anchor.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
+import { classOf } from "../../Utils/metaPrg.js";
 
 export class CustomObjectTestScene extends TestScene {
     async load() {
@@ -103,7 +104,7 @@ class Butterfly extends DrawObject {
         return cachedNode;
     }
 
-    isPerfectlyOptimized() { return this.constructor === Butterfly; }
+    isPerfectlyOptimized() { return classOf(this) === Butterfly; }
 }
 
 /**
