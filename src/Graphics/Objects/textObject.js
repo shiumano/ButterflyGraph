@@ -1,5 +1,6 @@
 import { DrawObject } from "../drawObject.js";
 import { DrawNode } from "../drawNode.js";
+import { classOf } from "../../Utils/metaPrg.js";
 
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
@@ -219,7 +220,7 @@ export class TextObject extends DrawObject {
 
     }
 
-    isPerfectlyOptimized() { return this.constructor === TextObject; }
+    isPerfectlyOptimized() { return classOf(this) === TextObject; }
 }
 
 /**

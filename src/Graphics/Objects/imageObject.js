@@ -2,6 +2,7 @@ import { Anchor } from "../anchor.js";
 import { DrawNode } from "../drawNode.js";
 import { DrawObject } from "../drawObject.js";
 import { ImageCacheStore } from "./imageCacheStore.js";
+import { classOf } from "../../Utils/metaPrg.js";
 
 /**
  * @import { Vector2 } from "@core/Graphics/vector2.js";
@@ -200,7 +201,7 @@ export class ImageObject extends DrawObject {
         return node;
     }
 
-    isPerfectlyOptimized() { return this.constructor === ImageObject; }
+    isPerfectlyOptimized() { return classOf(this) === ImageObject; }
 }
 
 /**

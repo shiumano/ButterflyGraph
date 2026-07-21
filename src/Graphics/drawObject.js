@@ -3,7 +3,7 @@ import { DrawNode } from "./drawNode.js";
 import { Gradient } from "./Gradients/gradient.js";
 import { AnimationManager } from "./Animations/animationManager.js";
 import { direct } from "../Utils/unitConversion.js";
-import { getDesctiptor } from "../Utils/metaPrg.js";
+import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
 
 /**
  * @import { Vector2 } from "./vector2.js";
@@ -514,7 +514,7 @@ export class DrawObject {
     /**
      * requestRecreate(sender, reason)を確実に呼び出し、キャッシュが再利用可能であると保証しますか？
      */
-    isPerfectlyOptimized() { return this.constructor === DrawObject; }
+    isPerfectlyOptimized() { return classOf(this) === DrawObject; }
 
     #perfectlyOptimized = this.isPerfectlyOptimized();
     get perfectlyOptimized() { return this.#perfectlyOptimized; }
