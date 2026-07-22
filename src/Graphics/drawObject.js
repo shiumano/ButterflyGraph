@@ -526,4 +526,9 @@ export class DrawObject {
 
     #perfectlyOptimized = this.isPerfectlyOptimized();
     get perfectlyOptimized() { return this.#perfectlyOptimized; }
+
+    // スーパー簡易グローバルID
+    static #globalCreatedCount = 0;
+    #globalId = DrawObject.#globalCreatedCount++;
+    get globalId() { return this.#globalId; }
 }
