@@ -73,6 +73,8 @@ export class DrawObject {
     #transformChanged = true;
     #objectChanged = true;
     #contentChanged = true;
+    #transformCacheInvalid = true;
+
     /** @type {DrawNodeCache<T>} */
     #nodeCache = {
         t: NaN,
@@ -326,6 +328,9 @@ export class DrawObject {
     get contentChanged() { return this.#contentChanged || !this.perfectlyOptimized; }
     set contentChanged(value) { this.#contentChanged = value; }
 
+    get transformCacheInvalid() { return this.#transformCacheInvalid || !this.perfectlyOptimized; }
+    set transformCacheInvalid(value) { this.#transformCacheInvalid = value; }
+
     get lastRecreateReason() { return this.#lastRecreateReason; }
 
     get cachedNode() { return this.#nodeCache.node; }
@@ -344,6 +349,9 @@ export class DrawObject {
         switch (reason) {
             case "transform":
                 this.#transformChanged = true;
+                if (sender === this) {
+                    this.#transformCacheInvalid = true;
+                }
                 break;
             case "object":
                 this.#objectChanged = true;
