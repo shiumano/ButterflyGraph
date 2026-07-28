@@ -1,16 +1,11 @@
 /**
- * @import { DrawObject } from "@core/Graphics/drawObject.js";
- * @import { GenericDrawNode } from "@core/Graphics/drawNode.js"
- */
-
-/**
- * DrawObjectインスタンスからnewできるクラスタイプを取得する
+ * オブジェクトインスタンスからnewできるクラスタイプを取得する
  *
- * @remarks ただし、推論は基底クラスになる
+ * @remarks ただし、推論は雑なabstract型になる
  *
  * 本物の型が欲しければ classOf< typeof Circle >(new Circle()) みたいにジェネリクス指定が必要
  * JSDocの場合は/** @ type {typeof Circle} * / (classOf(new Circle()))になる
- * @template {typeof DrawObject<GenericDrawNode>} T
+ * @template {abstract new (...args: any) => any} T
  * @param {InstanceType<T>} obj
  */
 export function classOf(obj) {
