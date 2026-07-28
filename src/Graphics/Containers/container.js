@@ -119,48 +119,49 @@ export class Container extends DrawObject {
             case "children":
             case "timed":
             case "animationRegister":
-                if (sender.parent !== this) break;
-                // console.log({ reason, cTimed: this.#childrenTimed, sTimed: sender.timed, cAnim: this.#childrenAnimated, sAmin: sender.animated });
-                if (this.#childrenTimed && !sender.timed ||
-                    this.#childrenAnimated && !sender.animated
-                ) {
-                    let childrenTimed = false;
-                    let childrenAnimated = false;
-                    for (let i = 0; i < children.length; i++) {
-                        const child = children[i];
-                        childrenTimed ||= child.timed;
-                        childrenAnimated ||= child.animated;
+                if (sender.parent === this) {
+                    // console.log({ reason, cTimed: this.#childrenTimed, sTimed: sender.timed, cAnim: this.#childrenAnimated, sAmin: sender.animated });
+                    if (this.#childrenTimed && !sender.timed ||
+                        this.#childrenAnimated && !sender.animated
+                    ) {
+                        let childrenTimed = false;
+                        let childrenAnimated = false;
+                        for (let i = 0; i < children.length; i++) {
+                            const child = children[i];
+                            childrenTimed ||= child.timed;
+                            childrenAnimated ||= child.animated;
+                        }
+                        this.#childrenTimed = childrenTimed;
+                        this.#childrenAnimated = childrenAnimated;
+                    } else {
+                        this.#childrenTimed ||= sender.timed;
+                        this.#childrenAnimated ||= sender.animated;
                     }
-                    this.#childrenTimed = childrenTimed;
-                    this.#childrenAnimated = childrenAnimated;
-                } else {
-                    this.#childrenTimed ||= sender.timed;
-                    this.#childrenAnimated ||= sender.animated;
+
+                    if (!this.perfectlyOptimized && sender.perfectlyOptimized) {
+                        const thisOptimized = this.isPerfectlyOptimized();
+                        let childrenPerfect = true;
+                        for (let i = 0; i < children.length; i++) {
+                            const child = children[i];
+                            childrenPerfect &&= child.perfectlyOptimized;
+                        }
+                        this.#perfectlyOptimized = thisOptimized && childrenPerfect;
+                    } else {
+                        this.#perfectlyOptimized &&= sender.perfectlyOptimized;
+                    }
                 }
+                super.requestRecreate(this, "object");
                 break;
             case "zIndex":
                 if (sender.parent !== this) break;
                 this.#frozenChildren = null;  // zIndexの変化でchildrenの順番が変わる可能性があるので、キャッシュを破棄する
                 this.#children.sort((a, b) => a.zIndex - b.zIndex);
+                super.requestRecreate(this, "object");
                 break;
-            case "children":
+            default:
                 if (sender.parent !== this) break;
-                if (!this.perfectlyOptimized && sender.perfectlyOptimized) {
-                    const thisOptimized = this.isPerfectlyOptimized();
-                    let childrenPerfect = true;
-                    for (let i = 0; i < children.length; i++) {
-                        const child = children[i];
-                        childrenPerfect &&= child.perfectlyOptimized;
-                    }
-                    this.#perfectlyOptimized = thisOptimized && childrenPerfect;
-                } else {
-                    this.#perfectlyOptimized &&= sender.perfectlyOptimized;
-                }
+                super.requestRecreate(this, "object");
                 break;
-        }
-
-        if (sender.parent === this) {
-            super.requestRecreate(this, "object");
         }
 
         super.requestRecreate(sender, reason);
