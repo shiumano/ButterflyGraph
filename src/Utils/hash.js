@@ -1,3 +1,8 @@
+import { ensureCacheAsync } from "./memory.js";
+
+/** @type {WeakMap<Blob, bigint>} */
+const blobHash = new WeakMap();
+
 /**
  * FNV-1aハッシュを計算する
  * @param {Uint8Array} bytes
@@ -11,6 +16,17 @@ export function fnv1a64(bytes) {
     return hash;
 }
 
+/**
+ * BlobをキーにするためFNV-1aハッシュを生成
+ * @param {Blob} blob
+ */
+export async function hashBlob(blob) {
+    return ensureCacheAsync(blobHash, blob, async () => {
+        const buf = await blob.arrayBuffer();
+        const hash = fnv1a64(new Uint8Array(buf));
+        return hash;
+    });
+}
 
 // await crypto.subtle.digestは安全なコンテキストじゃないと使えない
 // いらないよね？ただpngのハッシュをキーにしたいだけなんだから
