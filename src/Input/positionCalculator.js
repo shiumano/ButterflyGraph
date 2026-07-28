@@ -54,7 +54,6 @@ export class PositionCalculator {
      */
     #calculateWorldTransform(target) {
         const branchLine = this.#branchLineArr;
-        branchLine.length = 0;
         /** @type {GenericDrawObject?} */
         let revCurrentObj = target;
         while (revCurrentObj !== null) {
@@ -91,26 +90,21 @@ export class PositionCalculator {
                 obj.transformCacheInvalid = false;
             }
         }
+
+        branchLine.length = 0;
         this.#invalidParentsId.clear();  // 一番上からターゲットの場所まで回してなかったんだから、もう使わないんですよ
 
         const matrix = ensureCache(PositionCalculator.#worldMatrixCache, target, createInitialMatrix);
         return { transformInvalid, matrix };
     }
 
-    /** @type {PositionCalculator[]} */
-    #calculatorsArr = [];
     /**
      * @param {number} objId
      */
     #addInvalidId(objId) {
-        const strongReference = this.#calculatorsArr;
-        PositionCalculator.#registeredCalculators.deref(strongReference);
-
-        for (let i = 0; i < strongReference.length; i++) {
-            strongReference[i].#invalidParentsId.add(objId);
-        }
-
-        strongReference.length = 0;
+        PositionCalculator.#registeredCalculators.forEach((calculator) => {
+            calculator.#invalidParentsId.add(objId);
+        });
     }
 }
 
