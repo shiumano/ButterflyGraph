@@ -2,6 +2,7 @@ import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 import { Anchor, allAnchors } from "../../Graphics/anchor.js";
 import { ImageObject } from "../../Graphics/Objects/imageObject.js";
 import { TestScene } from "./testScene.js";
+import { ImageInfo } from "../../Graphics/Objects/imageInfo.js";
 
 const shidev_logo_data_base64 = `data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAGAAAAAgCAMAAADaHo1mAAAAElBMVEX/5eWqqqraAEkzMzONAMQW
@@ -48,18 +49,29 @@ cp0Mx4CbAAAAAElFTkSuQmCC`;
 
 export class ImageObjectTestScene extends TestScene {
     async load() {
+        const shidevLogoImage = await ImageInfo.fromURL(shidev_logo_data_base64);
+
+        const animFrames = [
+            await ImageInfo.fromURL(frame_0_data_base64),
+            await ImageInfo.fromURL(frame_1_data_base64),
+            await ImageInfo.fromURL(frame_2_data_base64),
+            await ImageInfo.fromURL(frame_3_data_base64),
+            await ImageInfo.fromURL(frame_4_data_base64),
+        ];
         const imageObj = new ImageObject({
             y: -200,
             anchor: Anchor.centre,
             origin: Anchor.centre,
-            scale: 5
+            scale: 5,
+            images: [shidevLogoImage]
         });
 
         const animImageObj = new ImageObject({
             y: 200,
             anchor: Anchor.centre,
             origin: Anchor.centre,
-            fps: 1
+            fps: 1,
+            images: animFrames
         });
 
         this.addBindSlider("Logo scale", 0.5, 20, imageObj, "scale", direct);
@@ -70,18 +82,5 @@ export class ImageObjectTestScene extends TestScene {
         this.addSelector("Animation image align", allAnchors, "topLeft", value => animImageObj.imageAlign = Anchor[value]);
 
         this.root.addChild(imageObj, animImageObj);
-
-        const shidevLogoBlob = await fetch(shidev_logo_data_base64).then(resp => resp.blob());
-
-        const animFrames = [
-            await fetch(frame_0_data_base64).then(resp => resp.blob()),
-            await fetch(frame_1_data_base64).then(resp => resp.blob()),
-            await fetch(frame_2_data_base64).then(resp => resp.blob()),
-            await fetch(frame_3_data_base64).then(resp => resp.blob()),
-            await fetch(frame_4_data_base64).then(resp => resp.blob())
-        ];
-
-        await imageObj.load([shidevLogoBlob]);
-        await animImageObj.load(animFrames);
     }
 }
