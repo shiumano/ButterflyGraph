@@ -1,5 +1,6 @@
 import { Anchor } from "./anchor.js";
 import { Gradient } from "./Gradients/gradient.js";
+import { classOf } from "../Utils/metaPrg.js";
 
 /**
  * @import { Vector2 } from "./vector2"
@@ -57,7 +58,7 @@ export class DrawNode {
     #hasTransform = false;
 
     constructor() {
-        if (this.constructor === DrawNode) {
+        if (classOf(this) === DrawNode) {
             console.warn("Constructing abstract class!");
         }
     }
