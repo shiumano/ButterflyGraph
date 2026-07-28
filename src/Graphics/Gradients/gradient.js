@@ -4,6 +4,8 @@
  * @typedef {"stops" | "criteria"} GradientRecreateReason
  */
 
+import { WeakArray } from "../../Utils/memory.js";
+
 /**
  * グラデーションを表すオブジェクト
  */
@@ -18,8 +20,8 @@ export class Gradient {
     /** @type {Readonly<Readonly<ColorStop[]>>?} */
     #frozenStops = null;
 
-    /** @type {Set<GenericDrawObject>} */
-    #mountedObjects = new Set();
+    /** @type {WeakArray<GenericDrawObject>} */
+    #mountedObjects = new WeakArray();
 
     /**
      * @param {ColorStop[]} stops
@@ -58,14 +60,16 @@ export class Gradient {
      * @param {GenericDrawObject} object
      */
     mountTo(object) {
-        this.#mountedObjects.add(object);
+        if (!this.#mountedObjects.includes(object)) {
+            this.#mountedObjects.push(object);
+        }
     }
 
     /**
      * @param {GenericDrawObject} object
      */
     unmountFrom(object) {
-        this.#mountedObjects.delete(object);
+        this.#mountedObjects.remove(object);
     }
 
     /**
@@ -78,9 +82,9 @@ export class Gradient {
             this.#stopsChanged = true;
         }
 
-        for (const obj of this.#mountedObjects) {
+        this.#mountedObjects.forEach((obj) => {
             obj.requestRecreate(obj, "object");
-        }
+        });
     }
 
     /**
