@@ -28,6 +28,7 @@ import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
  *   color?: string | CanvasGradient | CanvasPattern | Gradient
  *   fillStyle?: string | CanvasGradient | CanvasPattern | Gradient
  *   strokeStyle?: string | CanvasGradient | CanvasPattern | Gradient
+ *   name?: string
  * }} DrawObjectOptions
  * @typedef {"transform" | "object" | "animationRegister" | "timed" | "children" | "zIndex"} RecreateReason
  * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
@@ -45,6 +46,8 @@ import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
  * @template {GenericDrawNode} T
  */
 export class DrawObject {
+    #name;  // DevToolsでトップに出る
+
     #x;
     #y;
     #rotation;
@@ -104,8 +107,11 @@ export class DrawObject {
         visible = true,
         timed = true,
         showBounds = false,
-        fillStyle, strokeStyle, color
+        fillStyle, strokeStyle, color,
+        name = classOf(this).name
     } = {}) {
+        this.#name = name;
+
         this.#x = x;
         this.#y = y;
         this.#rotation = rotation;
@@ -141,6 +147,8 @@ export class DrawObject {
 
         this.#updateOriginOffset();
     }
+
+    get name() { return this.#name; }
 
     get x() { return this.#x; }
     set x(value) {
