@@ -312,8 +312,6 @@ export class Container extends DrawObject {
 
     get [children_nodes]() { return this.#childrenNodes; }
 
-    // ジェネリクス×リフレクションは型が崩壊する
-    /** @returns {boolean} */
     isPerfectlyOptimized() { return classOf(this) === Container; }
 
     #perfectlyOptimized;
