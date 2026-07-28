@@ -52,8 +52,8 @@ export class DrawNode {
     #visible = true;
     #showBounds = false;
 
-    #t_a = 0; #t_b = 0; #t_c = 0;
-    #t_d = 0; #t_e = 0; #t_f = 0;
+    #t_a = 1; #t_b = 0; #t_c = 0;
+    #t_d = 1; #t_e = 0; #t_f = 0;
 
     #hasTransform = false;
 
