@@ -97,20 +97,13 @@ export class PositionCalculator {
         return { transformInvalid, matrix };
     }
 
-    /** @type {PositionCalculator[]} */
-    #calculatorsArr = [];
     /**
      * @param {number} objId
      */
     #addInvalidId(objId) {
-        const strongReference = this.#calculatorsArr;
-        PositionCalculator.#registeredCalculators.deref(strongReference);
-
-        for (let i = 0; i < strongReference.length; i++) {
-            strongReference[i].#invalidParentsId.add(objId);
-        }
-
-        strongReference.length = 0;
+        PositionCalculator.#registeredCalculators.forEach((calculator) => {
+            calculator.#invalidParentsId.add(objId);
+        });
     }
 }
 
