@@ -52,9 +52,9 @@ export class DrawNode {
     #visible = true;
     #showBounds = false;
 
-    // PERF: ﾍｧ? Canvas API相手にFloat64Array???
-    //     : でも実際renderのJS率が10%減ったから……
-    #transformMatrix = new Float64Array(6);
+    #t_a = 1; #t_b = 0; #t_c = 0;
+    #t_d = 1; #t_e = 0; #t_f = 0;
+
     #hasTransform = false;
 
     constructor() {
@@ -153,18 +153,16 @@ export class DrawNode {
             const hasTransform = drawX !== 0 || drawY !== 0 || rotation !== 0 || scaleX !== 1 || scaleY !== 1;
             this.#hasTransform = hasTransform;
             if (hasTransform) {
-                const transformMatrix = this.#transformMatrix;
                 // 回転のサイン・コサインを計算
                 const rCos = Math.cos(rotation);
                 const rSin = Math.sin(rotation);
 
-                // 行列の各成分を計算
-                transformMatrix[0] = scaleX * rCos;
-                transformMatrix[1] = scaleX * rSin;
-                transformMatrix[2] = -scaleY * rSin;
-                transformMatrix[3] = scaleY * rCos;
-                transformMatrix[4] = drawX + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
-                transformMatrix[5] = drawY + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
+                this.#t_a = scaleX * rCos;
+                this.#t_b = scaleX * rSin;
+                this.#t_c = -scaleY * rSin;
+                this.#t_d = scaleY * rCos;
+                this.#t_e = drawX + originOffsetX - originOffsetX * rCos + originOffsetY * rSin;
+                this.#t_f = drawY + originOffsetY - originOffsetX * rSin - originOffsetY * rCos;
                 // クソややこしいね！translateとrotateとscaleが恋しいよ
             }
 
@@ -189,8 +187,10 @@ export class DrawNode {
         ctx.save();
 
         if (this.#hasTransform) {
-            const matrix = this.#transformMatrix;
-            ctx.transform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+            ctx.transform(
+                this.#t_a, this.#t_b, this.#t_c,
+                this.#t_d, this.#t_e, this.#t_f
+            );
         }
 
         if (this.#alpha !== 1) {
