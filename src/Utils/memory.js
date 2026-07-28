@@ -81,9 +81,9 @@ export class WeakArray {
 }
 
 /**
- * @template {WeakKey} K
+ * @template K
  * @template V
- * @param {WeakMap<K, V>} map
+ * @param {K extends WeakKey ? WeakMap<K, V> | Map<K, V> : Map<K, V>} map
  * @param {K} key
  * @param {() => V} create
  */
@@ -92,6 +92,22 @@ export function ensureCache(map, key, create) {
     if (current !== undefined) return current;
 
     const created = create();
+    map.set(key, created);
+    return created;
+}
+
+/**
+ * @template K
+ * @template V
+ * @param {K extends WeakKey ? WeakMap<K, V> | Map<K, V> : Map<K, V>} map
+ * @param {K} key
+ * @param {() => Promise<V>} create
+ */
+export async function ensureCacheAsync(map, key, create) {
+    const current = map.get(key);
+    if (current !== undefined) return current;
+
+    const created = await create();
     map.set(key, created);
     return created;
 }
