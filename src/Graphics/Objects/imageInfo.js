@@ -47,7 +47,10 @@ export class ImageInfo {
      * @param {string} url
      */
     static async fromURL(url) {
-        const blob = await this.#URLBlob.getOrInsertComputed(url, () => fetchBlob(url));
+        const blob = await this.#URLBlob.getOrInsertComputed(
+            url,
+            () => fetchBlob(url).catch(err => { this.#URLBlob.delete(url); throw err; })
+        );
         const hash = await hashBlob(blob);
 
         const cache = this.#hashImageInfo.get(hash);
