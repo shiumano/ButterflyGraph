@@ -32,8 +32,10 @@ export class Donut extends DrawObject {
         ...options
     } = {}) {
         super(options);
+        super.timed = false;
+
         if (options.color !== undefined) {
-            this.color = options.color;
+            this.strokeStyle = options.color;
         }
 
         this.#radius = radius;
@@ -41,6 +43,9 @@ export class Donut extends DrawObject {
         super.width = radius * 2;
         super.height = radius * 2;
     }
+
+    get timed() { return false; }
+    set timed(_) { }
 
     get radius() { return this.#radius; }
     set radius(value) {
@@ -77,8 +82,8 @@ export class Donut extends DrawObject {
         const baseOptions = super.calculateOptions(t);
 
         const options = Object.assign(baseOptions, {
-            radius: this.radius,
-            lineWidth: this.lineWidth
+            radius: this.#radius,
+            lineWidth: this.#lineWidth
         });
 
         return options;

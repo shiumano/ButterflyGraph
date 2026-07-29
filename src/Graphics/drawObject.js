@@ -349,7 +349,7 @@ export class DrawObject {
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {
-        if (this.lastRecreateReason === reason) return;
+        if (this.#lastRecreateReason === reason) return;
         this.#lastRecreateReason = reason;
 
         this.#contentChanged = true;
@@ -366,7 +366,7 @@ export class DrawObject {
                 break;
         }
 
-        this.parent?.requestRecreate(this, reason);
+        this.#parent?.requestRecreate(this, reason);
     }
 
     // PERF: この4回の乗算のキャッシュがマジで効いた
@@ -462,24 +462,24 @@ export class DrawObject {
         const strokeStyle = this.strokeStyle;
 
         return {
-            x: this.x,
-            y: this.y,
-            rotation: this.rotation,
-            width: this.width,
-            height: this.height,
-            scaleX: this.scaleX,
-            scaleY: this.scaleY,
-            anchor: this.anchor,
-            origin: this.origin,
-            originOffsetX: this.originOffsetX,
-            originOffsetY: this.originOffsetY,
+            x: this.#x,
+            y: this.#y,
+            rotation: this.#rotation,
+            width: this.#width,
+            height: this.#height,
+            scaleX: this.#scaleX,
+            scaleY: this.#scaleY,
+            anchor: this.#anchor,
+            origin: this.#origin,
+            originOffsetX: this.#originOffsetX,
+            originOffsetY: this.#originOffsetY,
             parentWidth: this.parentWidth,
             parentHeight: this.parentHeight,
-            alpha: this.alpha,
-            fillStyle: fillStyle,
-            strokeStyle: strokeStyle,
-            visible: this.visible,
-            showBounds: this.showBounds,
+            alpha: this.#alpha,
+            fillStyle: this.#fillStyle,
+            strokeStyle: this.#strokeStyle,
+            visible: this.#visible,
+            showBounds: this.#showBounds,
             transformChanged: this.transformChanged,
             objectChanged: this.objectChanged,
         };
@@ -509,7 +509,7 @@ export class DrawObject {
     getSnapshot(t) {
         const nodeCache = this.#nodeCache;
         if (nodeCache.node === null
-            || ((this.timed || this.animated) && nodeCache.t !== t)
+            || ((this.#timed || this.#animated) && nodeCache.t !== t)
             || this.transformChanged
             || this.objectChanged
         ) {

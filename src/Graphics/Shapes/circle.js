@@ -29,6 +29,8 @@ export class Circle extends DrawObject {
     } = {}) {
         super(options);
 
+        super.timed = false;
+
         this.#radius = radius;
         super.width = radius * 2;
         super.height = radius * 2;
@@ -62,7 +64,7 @@ export class Circle extends DrawObject {
         const baseOptions = super.calculateOptions(t);
 
         const options = Object.assign(baseOptions, {
-            radius: this.radius
+            radius: this.#radius
         });
 
         return options;

@@ -20,6 +20,7 @@ export class Rectangle extends DrawObject {
      */
     constructor(options = {}) {
         super(options);
+        super.timed = false;
     }
 
     get timed() { return false; }

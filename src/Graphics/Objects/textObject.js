@@ -96,9 +96,9 @@ export class TextObject extends DrawObject {
 
         this.#strokeWidth = clampedValue;
 
-        if (this.text.length !== 0 && this.autoSizeUpdate) {
-            super.width = this.#textWidth + this.strokeWidth;
-            super.height = this.#textHeight + this.strokeWidth;
+        if (this.#text.length !== 0 && this.#autoSizeUpdate) {
+            super.width = this.#textWidth + this.#strokeWidth;
+            super.height = this.#textHeight + this.#strokeWidth;
         }
 
         this.requestRecreate(this, "object");
@@ -160,7 +160,7 @@ export class TextObject extends DrawObject {
         // TODO: どうにか呼ばせる。必要なときだけ。新たなPERFコメは生み出したくない
         if (TextObject.#ctx === null
             || this.#text.length === 0
-            || !this.autoSizeUpdate
+            || !this.#autoSizeUpdate
         ) {
             this.#textWidth = 0;
             this.#textHeight = 0;
@@ -171,11 +171,11 @@ export class TextObject extends DrawObject {
             return;
         }
 
-        if (this.font !== TextObject.#ctxFont) {
-            TextObject.#ctx.font = this.font;
-            TextObject.#ctxFont = this.font;
+        if (this.#font !== TextObject.#ctxFont) {
+            TextObject.#ctx.font = this.#font;
+            TextObject.#ctxFont = this.#font;
         }
-        const metrics = TextObject.#ctx.measureText(this.text);
+        const metrics = TextObject.#ctx.measureText(this.#text);
         this.#textWidth = metrics.width;
         if (this.sizeReference === "actual") {
             this.#textHeight = metrics.actualBoundingBoxDescent + metrics.actualBoundingBoxAscent;
@@ -186,8 +186,8 @@ export class TextObject extends DrawObject {
             this.#textAscent = metrics.fontBoundingBoxAscent;
         }
 
-        super.width = this.#textWidth + this.strokeWidth;
-        super.height = this.#textHeight + this.strokeWidth;
+        super.width = this.#textWidth + this.#strokeWidth;
+        super.height = this.#textHeight + this.#strokeWidth;
     }
 
     /**
@@ -198,10 +198,10 @@ export class TextObject extends DrawObject {
         const baseOptions = super.calculateOptions(t);
 
         const options = Object.assign(baseOptions, {
-            text: this.text,
-            font: this.font,
-            fill: this.fill,
-            strokeWidth: this.strokeWidth,
+            text: this.#text,
+            font: this.#font,
+            fill: this.#fill,
+            strokeWidth: this.#strokeWidth,
             textAscent: this.#textAscent,
             autoSizeUpdate: this.#autoSizeUpdate
         });

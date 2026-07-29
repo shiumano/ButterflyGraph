@@ -51,6 +51,7 @@ export class ImageObject extends DrawObject {
     } = {}) {
         super(options);
 
+        super.timed = true;
         super.width = 0;
         super.height = 0;
 
@@ -175,7 +176,7 @@ export class ImageObject extends DrawObject {
             imageInfo: imageInfo,
             offsetX: offsetX,
             offsetY: offsetY,
-            imageSmoothing: this.imageSmoothing
+            imageSmoothing: this.#imageSmoothing
         });
 
         return options;
