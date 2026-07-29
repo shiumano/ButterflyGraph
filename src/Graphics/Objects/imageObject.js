@@ -1,23 +1,22 @@
 import { Anchor } from "../anchor.js";
 import { DrawNode } from "../drawNode.js";
 import { DrawObject } from "../drawObject.js";
-import { ImageCacheStore } from "./imageCacheStore.js";
 import { classOf } from "../../Utils/metaPrg.js";
 
 /**
  * @import { Vector2 } from "@core/Graphics/vector2.js";
  * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
- * @import { ImageInfo } from "./imageCacheStore.js";
+ * @import { ImageInfo } from "./imageInfo.js";
  * @typedef {DrawObjectOptions & {
  *   fps?: number
  *   imageAlign?: Readonly<Vector2>
  *   imageSmoothing?: boolean
  *   loop?: boolean
- *   image?: Blob
+ *   images?: ImageInfo[]
  * }} ImageObjectOptions
  * @typedef {DrawNodeOptions & {
- *   hash: bigint | null
+ *   imageInfo: ImageInfo | null
  *   offsetX: number
  *   offsetY: number
  *   imageSmoothing: boolean
@@ -47,7 +46,7 @@ export class ImageObject extends DrawObject {
         imageAlign = Anchor.topLeft,
         imageSmoothing = true,
         loop = true,
-        image,
+        images = [],
         ...options
     } = {}) {
         super(options);
@@ -60,10 +59,7 @@ export class ImageObject extends DrawObject {
         this.#imageSmoothing = imageSmoothing;
         this.#loop = loop;
 
-        if (image !== undefined) {
-            // awaitじゃないため不安定 できればawait ImageObject.load(blobs)でちゃんとロードして欲しい
-            this.load([image]);
-        }
+        this.load(images);
 
         this.#updateTimeInfo();
     }
@@ -120,10 +116,10 @@ export class ImageObject extends DrawObject {
     }
 
     /**
-     * @param {Blob[]} blobs
+     * @param {ImageInfo[]} images
      */
-    async load(blobs) {
-        if (blobs.length === 0) {
+    load(images) {
+        if (images.length === 0) {
             this.#images = [];
             this.#frameCount = 0;
             super.width = 0;
@@ -133,14 +129,10 @@ export class ImageObject extends DrawObject {
             return;
         }
 
-        const images = await Promise.all(
-            blobs.map(blob => ImageCacheStore.loadBlob(blob))
-        );
-
         super.width = Math.max(...images.map(image => image.width));
         super.height = Math.max(...images.map(image => image.height));
 
-        this.#images = images;
+        this.#images = images.slice();  // 自分のものにする
         this.#frameCount = images.length;
 
         this.#updateTimeInfo();
@@ -164,7 +156,7 @@ export class ImageObject extends DrawObject {
 
         if (imageInfo === undefined) {
             const options = Object.assign(baseOptions, {
-                hash: null,
+                imageInfo: null,
                 offsetX: 0,
                 offsetY: 0,
                 imageSmoothing: false
@@ -172,7 +164,7 @@ export class ImageObject extends DrawObject {
             return options;
         }
 
-        if (this.cachedNode?.options.hash !== imageInfo.hash) {
+        if (this.cachedNode?.options.imageInfo !== imageInfo) {
             this.requestRecreate(this, "object");
         }
 
@@ -180,7 +172,7 @@ export class ImageObject extends DrawObject {
         const offsetY = (this.height - imageInfo.height) * this.#imageAlign.y;
 
         const options = Object.assign(baseOptions, {
-            hash: imageInfo.hash,
+            imageInfo: imageInfo,
             offsetX: offsetX,
             offsetY: offsetY,
             imageSmoothing: this.imageSmoothing
@@ -208,8 +200,8 @@ export class ImageObject extends DrawObject {
  * @extends {DrawNode<ImageNodeOptions>}
  */
 class ImageNode extends DrawNode {
-    /** @type {BigInt?} */
-    #hash = null;
+    /** @type {ImageInfo?} */
+    #imageInfo = null;
     #offsetX = 0;
     #offsetY = 0;
     #imageSmoothing = true;
@@ -219,7 +211,7 @@ class ImageNode extends DrawNode {
      */
     createDefaultOptions() {
         return Object.assign(super.createDefaultOptions(), {
-            hash: null,
+            imageInfo: null,
             offsetX: 0,
             offsetY: 0,
             imageSmoothing: true
@@ -230,15 +222,15 @@ class ImageNode extends DrawNode {
      * @param {Readonly<ImageNodeOptions>} options
      */
     read(options) {
-        const { hash, offsetX, offsetY, imageSmoothing } = options;
+        const { imageInfo, offsetX, offsetY, imageSmoothing } = options;
 
-        this.#hash = hash;
+        this.#imageInfo = imageInfo;
         this.#offsetX = offsetX;
         this.#offsetY = offsetY;
         this.#imageSmoothing = imageSmoothing;
 
         const tOpt = this.options;
-        tOpt.hash = hash;
+        tOpt.imageInfo = imageInfo;
         tOpt.offsetX = offsetX;
         tOpt.offsetY = offsetY;
         tOpt.imageSmoothing = imageSmoothing;
@@ -250,10 +242,8 @@ class ImageNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        if (this.#hash === null) return;
-
-        const bitmap = ImageCacheStore.getOrOrder(this.#hash);
-        if (bitmap !== null) {
+        const bitmap = this.#imageInfo?.getOrOrder();
+        if (bitmap !== null && bitmap !== undefined) {
             ctx.imageSmoothingEnabled = this.#imageSmoothing;
             ctx.drawImage(bitmap, this.#offsetX, this.#offsetY);
         } else {
