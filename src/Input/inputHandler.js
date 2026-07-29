@@ -8,8 +8,7 @@ import { PositionCalculator } from "./positionCalculator.js";
 
 export class InputHandler {
     #canvas;
-    #targetCalculator;
-    #parentCalculator;
+    #target;
 
     #rectCache;
 
@@ -21,8 +20,7 @@ export class InputHandler {
         this.#canvas = canvas;
         this.#rectCache = ElementRectCache.getCache(canvas);
 
-        this.#targetCalculator = new PositionCalculator(target);
-        this.#parentCalculator = target.parent !== null ? new PositionCalculator(target.parent) : null;
+        this.#target = target;
     }
 
     /**
@@ -40,8 +38,11 @@ export class InputHandler {
             const canvasX = (ev.clientX - rect.left) * dpr;
             const canvasY = (ev.clientY - rect.top) * dpr;
 
-            const { x: lx, y: ly } = this.#targetCalculator.getLocalPos(canvasX, canvasY);
-            const { x: px = 0, y: py = 0 } = this.#parentCalculator?.getLocalPos(canvasX, canvasY) ?? {};
+            const target = this.#target;
+            const parent = target.parent;
+
+            const { x: lx, y: ly } = PositionCalculator.getLocalPos(this.#target, canvasX, canvasY);
+            const { x: px = 0, y: py = 0 } = parent !== null ? PositionCalculator.getLocalPos(parent, canvasX, canvasY) : {};
 
             listener(lx, ly, px, py);
         });

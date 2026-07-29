@@ -9,16 +9,15 @@ export class ElementRectCache {
     /** @type {WeakMap<HTMLElement, ElementRectCache>} */
     static #cacheRegistory = new WeakMap();
 
-    // 参考: https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes/Private_elements#プライベートコンストラクターをシミュレーション
-    static #constructing = false;
+    static #constructKey = Symbol();
     /**
+     * @param {symbol} key
      * @param {HTMLElement} element
      */
-    constructor(element) {
-        if (!ElementRectCache.#constructing) {
+    constructor(key, element) {
+        if (key !== ElementRectCache.#constructKey) {
             throw new TypeError("ElementRectCache is not constructible.");
         }
-        ElementRectCache.#constructing = false;
 
         this.#element = element;
 
@@ -32,10 +31,10 @@ export class ElementRectCache {
      * @param {HTMLElement} element
      */
     static getCache(element) {
-        return this.#cacheRegistory.getOrInsertComputed(element, () => {
-            this.#constructing = true;
-            return new ElementRectCache(element);
-        });
+        return this.#cacheRegistory.getOrInsertComputed(
+            element,
+            () => new ElementRectCache(this.#constructKey, element)
+        );
     }
 
     // キャッシュの更新処理
