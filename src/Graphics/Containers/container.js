@@ -1,6 +1,7 @@
 import { DrawNode } from "../drawNode.js";
 import { DrawObject } from "../drawObject.js";
 import { classOf } from "../../Utils/metaPrg.js";
+import { nullArray } from "../../Utils/statics.js";
 
 /**
  * @import { DrawNodeOptions, GenericDrawNode } from "@core/Graphics/drawNode.js"
@@ -253,7 +254,7 @@ export class Container extends DrawObject {
         this.#childrenTimed = false;
         this.#childrenAnimated = false;
         this.#perfectlyOptimized = this.isPerfectlyOptimized();
-        this.#frozenChildren = [];  // 何もないなら最初から空配列でいい
+        this.#frozenChildren = nullArray;  // 何もないなら最初から空配列でいい
         this.requestRecreate(this, "children");
     }
 

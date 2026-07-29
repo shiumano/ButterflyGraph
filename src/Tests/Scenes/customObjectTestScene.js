@@ -4,6 +4,7 @@ import { TestScene } from "./testScene.js";
 import { Anchor } from "../../Graphics/anchor.js";
 import { degreeToRadian, direct } from "../../Utils/unitConversion.js";
 import { classOf } from "../../Utils/metaPrg.js";
+import { nullPath } from "../../Utils/statics.js";
 
 export class CustomObjectTestScene extends TestScene {
     async load() {
@@ -111,12 +112,9 @@ class Butterfly extends DrawObject {
  * @extends {DrawNode<ButterflyNodeOptions>}
  */
 class ButterflyNode extends DrawNode {
-    // WARN: ゴミ もうちょっとこううまくできないものかねぇ
-    static #nullPath = new Path2D();
-
-    #nodesPath = ButterflyNode.#nullPath;
-    #bodyPath = ButterflyNode.#nullPath;
-    #strokePath = ButterflyNode.#nullPath;
+    #nodesPath = nullPath;
+    #bodyPath = nullPath;
+    #strokePath = nullPath;
 
     /**
      * @param {Readonly<ButterflyNodeOptions>} options
