@@ -2,6 +2,7 @@
 import { DrawObject } from "../drawObject.js";
 import { DrawNode } from "../drawNode.js";
 import { classOf } from "../../Utils/metaPrg.js";
+import { nullPath } from "../../Utils/statics.js";
 
 /**
  * @import { DrawObjectOptions } from "@core/Graphics/drawObject.js"
@@ -100,10 +101,7 @@ export class Donut extends DrawObject {
  * @extends {DrawNode<DonutNodeOptions>}
  */
 class DonutNode extends DrawNode {
-    static #nullPath = new Path2D();
-
-    /** @type {Path2D} */
-    #path = DonutNode.#nullPath;
+    #path = nullPath;
     #lineWidth = 0;
     #lineRadius = 0;
 

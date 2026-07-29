@@ -12,7 +12,7 @@ export class CircleTestScene extends TestScene {
 
         this.addBindSlider("X Position", -500, 500, circle, "x", direct);
         this.addBindSlider("Y Position", -500, 500, circle, "y", direct);
-        this.addBindSlider("Radius", 10, 200, circle, "radius", direct);
+        this.addBindSlider("Radius", 0, 200, circle, "radius", direct);
 
         this.addButton("Random Color", () => {
             circle.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
