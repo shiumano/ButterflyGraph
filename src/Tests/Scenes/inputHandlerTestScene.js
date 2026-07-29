@@ -31,6 +31,7 @@ export class InputHandlerTestScene extends TestScene {
         });
 
         const circleContainer = new Container({
+            name: "cyan container",
             x: 50, y: 50,
             width: 200, height: 200,
             origin: Anchor.centre,
@@ -43,6 +44,7 @@ export class InputHandlerTestScene extends TestScene {
             ]
         });
         const donutContainer = new Container({
+            name: "lime container",
             x: 300, y: 50,
             width: 200, height: 200,
             origin: Anchor.centre,
@@ -54,6 +56,7 @@ export class InputHandlerTestScene extends TestScene {
             ]
         });
         const parentContainer = new Container({
+            name: "pink container",
             x: 500, y: 500,
             width: 200, height: 200,
             origin: Anchor.centre,
