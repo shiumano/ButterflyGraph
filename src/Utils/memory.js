@@ -32,11 +32,11 @@ export class WeakArray {
      * @param {T} obj
      */
     includes(obj) {
-        const stringReference = this.#tmpStrongRefs;
-        this.deref(stringReference);
+        const strongReference = this.#tmpStrongRefs;
+        this.deref(strongReference);
 
-        const objIncludes = stringReference.includes(obj);
-        stringReference.length = 0;
+        const objIncludes = strongReference.includes(obj);
+        strongReference.length = 0;
 
         return objIncludes;
     }
