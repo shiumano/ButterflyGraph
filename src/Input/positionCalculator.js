@@ -2,107 +2,99 @@
  * @import { GenericDrawObject } from "@core/Graphics/drawObject.js"
  */
 
-import { WeakArray } from "../Utils/memory.js";
-
+/** @type {Readonly<Float64Array>} */
 const identityMatrix = createInitialMatrix();
 
 export class PositionCalculator {
-    /** @type {WeakMap<GenericDrawObject, Float64Array>} */
-    static #transformCache = new WeakMap();
-    /** @type {WeakMap<GenericDrawObject, Float64Array>} */
-    static #worldMatrixCache = new WeakMap();
-    /** @type {WeakArray<PositionCalculator>} */
-    static #registeredCalculators = new WeakArray();
+    /** @type {WeakMap<GenericDrawObject, PositionCalculator>} */
+    static #attachedCalculators = new WeakMap();
 
-    /** @type {Set<number>} */
-    #invalidParentsId = new Set();
+    static #lastVersion = 0;
 
-    #target;
+    #calclatedVersion = -1;
+    #parentVersion = -1;
 
-    #rMatrix = createInitialMatrix();
+    #localTransform = createInitialMatrix();
+    #worldTransform = createInitialMatrix();
 
+    #rTransform = createInitialMatrix();
+
+    #targetId = -1;  // 自分からDrawObjectを参照しないという強い意思
+
+    static #constructKey = Symbol();
+    /**
+     * @param {Symbol} key
+     * @param {GenericDrawObject} target
+     */
+    constructor(key, target) {
+        if (key !== PositionCalculator.#constructKey) {
+            throw new TypeError("ElementRectCache is not constructible.");
+        }
+
+        this.#targetId = target.globalId;
+        this.#calculateTransform(target);
+    }
+
+    // PERF: いちいちこの程度のラムダを生成するだけでも目立つコストが発生する
+    //     : 他が軽いから浮き出てきちゃう
     /**
      * @param {GenericDrawObject} target
      */
-    constructor(target) {
-        this.#target = target;
-
-        PositionCalculator.#registeredCalculators.push(this);
-
-        const { matrix } = this.#calculateWorldTransform(target);
-        invertMatrix(matrix, this.#rMatrix);
-    }
+    static #createCalulator = (target) => new PositionCalculator(this.#constructKey, target);
 
     /**
+     * @param {GenericDrawObject} target
      * @param {number} lx
      * @param {number} ly
      */
-    getLocalPos(lx, ly) {
-        const { transformInvalid, matrix } = this.#calculateWorldTransform(this.#target);
-        const rMatrix = this.#rMatrix;
-        if (transformInvalid) invertMatrix(matrix, rMatrix);
-        const pos = worldToLocal(lx, ly, rMatrix);
+    static getLocalPos(target, lx, ly) {
+        const calculator = this.#attachedCalculators.getOrInsertComputed(target, this.#createCalulator);
+        const rTransform = calculator.#calculateTransform(target);
+        const pos = worldToLocal(lx, ly, rTransform);
 
         return pos;
     }
 
-    // PERF: arrayのnewはやめよう！
-    /** @type {GenericDrawObject[]} */
-    #branchLineArr = [];
     /**
      * @param {GenericDrawObject} target
      */
-    #calculateWorldTransform(target) {
-        const branchLine = this.#branchLineArr;
-        /** @type {GenericDrawObject?} */
-        let revCurrentObj = target;
-        while (revCurrentObj !== null) {
-            branchLine.push(revCurrentObj);
-            revCurrentObj = revCurrentObj.parent;
+    #calculateTransform(target) {
+        if (target.globalId !== this.#targetId) throw new Error("An incorrect target was specified.");
+
+        const parent = target.parent;
+
+        const localTransform = this.#localTransform;
+        const worldTransform = this.#worldTransform;
+
+        let parentVersion;
+        let parentWorldTransform;
+        if (parent !== null) {
+            const parentCalculator = PositionCalculator.#attachedCalculators.getOrInsertComputed(
+                parent, PositionCalculator.#createCalulator
+            );
+
+            parentCalculator.#calculateTransform(parent);
+
+            parentWorldTransform = parentCalculator.#worldTransform;
+            parentVersion = parentCalculator.#calclatedVersion;
+        } else {
+            parentWorldTransform = identityMatrix;
+            parentVersion = -1;
         }
 
-        let transformInvalid = false;
-        for (let i = branchLine.length - 1; i >= 0; i--) {
-            const obj = branchLine[i];
+        if (target.transformCacheInvalid || this.#parentVersion !== parentVersion) {
+            calculateMatrix(target, this.#localTransform);
+            target.transformCacheInvalid = false;
 
-            const transformCacheInvalid = obj.transformCacheInvalid;
-            if (transformCacheInvalid) {
-                this.#addInvalidId(obj.globalId);
-            }
+            // console.log("target:", target.name, "parent:", parent?.name)
+            multiplyMatrix(parentWorldTransform, localTransform, worldTransform);
+            invertMatrix(worldTransform, this.#rTransform);
 
-            transformInvalid ||= transformCacheInvalid || this.#invalidParentsId.has(obj.globalId);
-
-            if (transformInvalid) {
-                const objMatrix = transformCache.getOrInsertComputed(obj, createInitialMatrix);
-                calculateMatrix(obj, objMatrix);
-
-                const worldMatrix = worldMatrixCache.getOrInsertComputed(obj, createInitialMatrix);
-                if (obj.parent !== null) {
-                    parentWorldMatrix = worldMatrixCache.getOrInsertComputed(obj.parent, createInitialMatrix);
-                    // parentWorldMatrixは既に計算されているはず！
-                    multiplyMatrix(parentWorldMatrix, objMatrix, worldMatrix);
-                } else {
-                    multiplyMatrix(identityMatrix, objMatrix, worldMatrix);
-                }
-
-                obj.transformCacheInvalid = false;
-            }
+            this.#calclatedVersion = PositionCalculator.#lastVersion++;
+            this.#parentVersion = parentVersion;
         }
 
-        branchLine.length = 0;
-        this.#invalidParentsId.clear();  // 一番上からターゲットの場所まで回してなかったんだから、もう使わないんですよ
-
-        const matrix = worldMatrixCache.getOrInsertComputed(target, createInitialMatrix);
-        return { transformInvalid, matrix };
-    }
-
-    /**
-     * @param {number} objId
-     */
-    #addInvalidId(objId) {
-        PositionCalculator.#registeredCalculators.forEach((calculator) => {
-            calculator.#invalidParentsId.add(objId);
-        });
+        return this.#rTransform;
     }
 }
 
