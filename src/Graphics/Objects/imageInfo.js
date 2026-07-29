@@ -1,11 +1,10 @@
 import { hashBlob } from "../../Utils/hash.js";
-import { ensureCacheAsync } from "../../Utils/memory.js";
 
 export class ImageInfo {
     // PERF: BlobやらURLやらをずっと持っておくのはメモリに優しくない これもLRU管理するべきかも
-    /** @type {Map<string, Blob>} */
+    /** @type {Map<string, Promise<Blob>>} */
     static #URLBlob = new Map();
-    /** @type {Map<bigint, string>} */
+    /** @type {Map<bigint, Promise<string>>} */
     static #hashURL = new Map();
     /** @type {Map<bigint, ImageInfo>} */
     static #hashImageInfo = new Map();
@@ -48,7 +47,10 @@ export class ImageInfo {
      * @param {string} url
      */
     static async fromURL(url) {
-        const blob = await ensureCacheAsync(this.#URLBlob, url, () => fetchBlob(url));
+        const blob = await this.#URLBlob.getOrInsertComputed(
+            url,
+            () => fetchBlob(url).catch(err => { this.#URLBlob.delete(url); throw err; })
+        );
         const hash = await hashBlob(blob);
 
         const cache = this.#hashImageInfo.get(hash);
@@ -60,7 +62,7 @@ export class ImageInfo {
         if (url.startsWith("blob:")) {
             // blobスキームは一度きりの存在なので、シリアライズできるようにdataスキームにしておく
             // PERF: そりゃ重いよ？だけどデコード済み画像が大量にある時点で既にオワなのさ
-            url = await ensureCacheAsync(this.#hashURL, hash, () => blobToDataURL(blob));
+            url = await this.#hashURL.getOrInsertComputed(hash, () => blobToDataURL(blob));
         }
         this.#constructing = true;
         const imageInfo = new ImageInfo(url, blob);
