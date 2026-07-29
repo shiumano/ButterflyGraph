@@ -1,5 +1,3 @@
-import { ensureCache } from "../Utils/memory.js";
-
 export class ElementRectCache {
     #element;
     #cache = { top: 0, bottom: 0, left: 0, right: 0 };
@@ -34,7 +32,7 @@ export class ElementRectCache {
      * @param {HTMLElement} element
      */
     static getCache(element) {
-        return ensureCache(ElementRectCache.#cacheRegistory, element, () => {
+        return this.#cacheRegistory.getOrInsertComputed(element, () => {
             this.#constructing = true;
             return new ElementRectCache(element);
         });

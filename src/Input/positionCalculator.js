@@ -2,7 +2,7 @@
  * @import { GenericDrawObject } from "@core/Graphics/drawObject.js"
  */
 
-import { WeakArray, ensureCache } from "../Utils/memory.js";  // 自作
+import { WeakArray } from "../Utils/memory.js";
 
 const identityMatrix = createInitialMatrix();
 
@@ -73,16 +73,14 @@ export class PositionCalculator {
             transformInvalid ||= transformCacheInvalid || this.#invalidParentsId.has(obj.globalId);
 
             if (transformInvalid) {
-                const objMatrix = ensureCache(PositionCalculator.#transformCache, obj, createInitialMatrix);
+                const objMatrix = transformCache.getOrInsertComputed(obj, createInitialMatrix);
                 calculateMatrix(obj, objMatrix);
 
-                const parent = obj.parent;
-                const worldMatrix = ensureCache(PositionCalculator.#worldMatrixCache, obj, createInitialMatrix);
-                if (parent !== null) {
-                    const parentWorldMatrix = ensureCache(PositionCalculator.#worldMatrixCache, parent, createInitialMatrix);
+                const worldMatrix = worldMatrixCache.getOrInsertComputed(obj, createInitialMatrix);
+                if (obj.parent !== null) {
+                    parentWorldMatrix = worldMatrixCache.getOrInsertComputed(obj.parent, createInitialMatrix);
                     // parentWorldMatrixは既に計算されているはず！
                     multiplyMatrix(parentWorldMatrix, objMatrix, worldMatrix);
-
                 } else {
                     multiplyMatrix(identityMatrix, objMatrix, worldMatrix);
                 }
@@ -94,7 +92,7 @@ export class PositionCalculator {
         branchLine.length = 0;
         this.#invalidParentsId.clear();  // 一番上からターゲットの場所まで回してなかったんだから、もう使わないんですよ
 
-        const matrix = ensureCache(PositionCalculator.#worldMatrixCache, target, createInitialMatrix);
+        const matrix = worldMatrixCache.getOrInsertComputed(target, createInitialMatrix);
         return { transformInvalid, matrix };
     }
 
