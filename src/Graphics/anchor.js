@@ -4,20 +4,20 @@ import { Vector2 } from "./vector2.js";
  * 矩形状の3x3の配置を表す
  */
 export const Anchor = Object.freeze({
-    topLeft: new Vector2(0, 0, false),
-    top: new Vector2(0.5, 0, false),
-    topRight: new Vector2(1, 0, false),
-    left: new Vector2(0, 0.5, false),
-    centre: new Vector2(0.5, 0.5, false),
-    right: new Vector2(1, 0.5, false),
-    bottomLeft: new Vector2(0, 1, false),
-    bottom: new Vector2(0.5, 1, false),
-    bottomRight: new Vector2(1, 1, false)
+    topLeft: Vector2.newFreeze({ x: 0, y: 0 }),
+    top: Vector2.newFreeze({ x: 0.5, y: 0 },),
+    topRight: Vector2.newFreeze({ x: 1, y: 0 }),
+    left: Vector2.newFreeze({ x: 0, y: 0.5 }),
+    centre: Vector2.newFreeze({ x: 0.5, y: 0.5 }),
+    right: Vector2.newFreeze({ x: 1, y: 0.5 }),
+    bottomLeft: Vector2.newFreeze({ x: 0, y: 1 }),
+    bottom: Vector2.newFreeze({ x: 0.5, y: 1 }),
+    bottomRight: Vector2.newFreeze({ x: 1, y: 1 })
 });
 
-/** @type {ReadonlyArray<keyof Anchor>} */
+/** @type {ReadonlyArray<keyof typeof Anchor>} */
 export const allAnchors = Object.freeze([
-    "topLeft",    "top",    "topRight",
-    "left",       "centre", "right",
+    "topLeft", "top", "topRight",
+    "left", "centre", "right",
     "bottomLeft", "bottom", "bottomRight"
 ]);

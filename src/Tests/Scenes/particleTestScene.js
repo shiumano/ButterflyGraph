@@ -2,7 +2,6 @@ import { direct } from "../../Utils/unitConversion.js";
 import { Container } from "../../Graphics/Containers/container.js";
 import { Circle } from "../../Graphics/Shapes/circle.js";
 import { TestScene } from "./testScene.js";
-import { Vector2 } from "../../Graphics/vector2.js";
 
 export class ParticleTestScene extends TestScene {
     async load() {
@@ -19,7 +18,7 @@ export class ParticleTestScene extends TestScene {
             });
         });
 
-        const gravityContainer = new Container({ anchor: new Vector2(0.5, 0.2), fillStyle: "cyan", children: particles });
+        const gravityContainer = new Container({ anchor: { x: 0.5, y: 0.2 }, fillStyle: "cyan", children: particles });
         const gravityAnimation = gravityContainer.animate("y", direct);
 
         this.addButton("Splash", (ev) => {

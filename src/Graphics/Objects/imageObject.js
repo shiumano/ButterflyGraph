@@ -85,9 +85,7 @@ export class ImageObject extends DrawObject {
 
     get imageAlign() { return this.#imageAlign; }
     set imageAlign(value) {
-        if (this.#imageAlign.x === value.x
-            && this.#imageAlign.y === value.y
-        ) return;
+        if (this.#imageAlign.equals(value)) return;
 
         this.#imageAlign = value;
         this.requestRecreate(this, "object");

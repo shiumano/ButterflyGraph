@@ -1,3 +1,4 @@
+import { Vector2 } from "./vector2.js";
 import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
 import { Gradient } from "./Gradients/gradient.js";
@@ -6,7 +7,7 @@ import { direct } from "../Utils/unitConversion.js";
 import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
 
 /**
- * @import { Vector2 } from "./vector2.js";
+ * @import { Pos } from "./vector2.js";
  * @import { DrawNodeOptions, GenericDrawNode } from "./drawNode.js"
  * @import { Properties } from "@core/Utils/metaPrg.js"
  * @typedef {{
@@ -19,8 +20,8 @@ import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
  *   scaleX?: number
  *   scaleY?: number
  *   alpha?: number
- *   anchor?: Readonly<Vector2>
- *   origin?: Readonly<Vector2>
+ *   anchor?: Readonly<Pos>
+ *   origin?: Readonly<Pos>
  *   zIndex?: number
  *   visible?: boolean
  *   timed?: boolean
@@ -124,8 +125,8 @@ export class DrawObject {
 
         this.#alpha = alpha;
 
-        this.#anchor = anchor;
-        this.#origin = origin;
+        this.#anchor = Vector2.newFreeze(anchor);
+        this.#origin = Vector2.newFreeze(origin);
 
         this.#zIndex = zIndex;
 

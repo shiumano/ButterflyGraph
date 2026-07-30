@@ -1,29 +1,29 @@
 // 一体何度、Vector2は実装されたのだろうか
 
 /**
+ * @typedef {{x: number, y: number}} Pos
+ */
+
+/**
  * x, yの値を表すシンプルなオブジェクト
  */
 export class Vector2 {
-    #x;
-    #y;
-    #editable;
+    #x = 0;
+    #y = 0;
+    #editable = true;
 
     /**
-     * @overload
-     * @param {number} x
-     * @param {number} y
-     * @param {true} [editable=true]
-     * @returns {Vector2}
-     * @overload
-     * @param {number} x
-     * @param {number} y
-     * @param {false} editable
-     * @returns {Readonly<Vector2>}
+     * @param {Pos} pos
      */
-    constructor(x = 0, y = 0, editable = true) {
-        this.#x = x;
-        this.#y = y;
-        this.#editable = editable;
+    constructor(pos) {
+        if (pos instanceof Vector2) {
+            this.#x = pos.#x;
+            this.#y = pos.#y;
+        } else {
+            const { x = 0, y = 0 } = pos;
+            this.#x = x;
+            this.#y = y;
+        }
     }
 
     get x() { return this.#x; }
@@ -52,13 +52,32 @@ export class Vector2 {
     equals(other) {
         // WARN: Readonly<>にした結果、プライベート要素が滅んだ
         // @ts-expect-error
-        return this.#x === other.#x && this.#y === other.#y;
+        return this === other || this.#x === other.#x && this.#y === other.#y;
     }
 
     /**
      * このVector2オブジェクトの変更不能版を取得する
+     * @returns {Readonly<Vector2>}
      */
     freeze() {
-        return this.#editable ? new Vector2(this.x, this.y, false) : this;
+        if (!this.#editable) {
+            return this;
+        } else {
+            const frozenVector2 = new Vector2(this);
+            frozenVector2.#editable = false;
+            return frozenVector2;
+        }
+    }
+
+    /**
+     * 変更不能なVector2オブジェクトを生成する
+     * @param {Pos} pos
+     */
+    static newFreeze(pos) {
+        return (pos instanceof Vector2 ? pos : new Vector2(pos)).freeze();
+    }
+
+    toJSON() {
+        return { x: this.#x, y: this.#y };
     }
 }
