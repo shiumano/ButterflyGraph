@@ -3,7 +3,7 @@ import { Gradient } from "./Gradients/gradient.js";
 import { classOf } from "../Utils/metaPrg.js";
 
 /**
- * @import { Vector2 } from "./vector2"
+ * @import { Pos } from "./vector2"
  * @typedef {{
  *   x: number
  *   y: number
@@ -12,8 +12,8 @@ import { classOf } from "../Utils/metaPrg.js";
  *   height: number
  *   scaleX: number
  *   scaleY: number
- *   anchor: Readonly<Vector2>
- *   origin: Readonly<Vector2>
+ *   anchor: Readonly<Pos>
+ *   origin: Readonly<Pos>
  *   originOffsetX: number
  *   originOffsetY: number
  *   parentWidth: number
