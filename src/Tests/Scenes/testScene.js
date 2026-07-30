@@ -3,7 +3,7 @@ import { Container } from "../../Graphics/Containers/container.js";
 import { includes } from "../../Utils/metaPrg.js";
 
 /**
- * @import { GenericDrawObject } from "@core/Graphics/drawObject.js"
+ * @import { DrawObject } from "@core/Graphics/drawObject.js"
  * @import { Properties } from "@core/Utils/metaPrg.js"
  * @typedef {{
  *   testArea: HTMLElement
@@ -345,7 +345,7 @@ export class TestScene {
     }
 
     /**
-     * @template {GenericDrawObject} T
+     * @template {DrawObject} T
      * @template {Properties<T>} P
      * @param {string} label
      * @param {number} min
@@ -374,7 +374,7 @@ export class TestScene {
     }
 
     /**
-     * @template {GenericDrawObject} T
+     * @template {DrawObject} T
      * @template {Properties<T>} P
      * @param {string} label
      * @param {T} target

@@ -4,24 +4,22 @@ import { classOf } from "../../Utils/metaPrg.js";
 import { nullArray } from "../../Utils/statics.js";
 
 /**
- * @import { DrawNodeOptions, GenericDrawNode } from "@core/Graphics/drawNode.js"
- * @import { DrawObjectOptions, RecreateReason, GenericDrawObject } from "@core/Graphics/drawObject.js"
+ * @import { DrawNodeOptions } from "@core/Graphics/drawNode.js"
+ * @import { DrawObjectOptions, RecreateReason } from "@core/Graphics/drawObject.js"
  * @typedef {DrawObjectOptions & {
- *   children?: readonly GenericDrawObject[]
+ *   children?: readonly DrawObject[]
  *   clip?: boolean
  * }} ContainerOptions
  * @typedef {DrawNodeOptions & {
- *   children?: GenericDrawNode[]
+ *   children?: DrawNode[]
  *   clip: boolean
  * }} ContainerNodeOptions
- * @typedef {ContainerNode<ContainerNodeOptions>} GenericContainerNode
- * @typedef {Container<GenericContainerNode>} GenericContainer
  */
 
 const children_nodes = Symbol();
 
 /**
- * @template {ContainerNode<ContainerNodeOptions>} T
+ * @template {ContainerNode} [T=ContainerNode]
  * @extends {DrawObject<T>}
  */
 export class Container extends DrawObject {
@@ -30,8 +28,11 @@ export class Container extends DrawObject {
     #childrenAnimated;
     #clip;
 
-    /** @type {readonly GenericDrawObject[] | null} */
+    /** @type {readonly DrawObject[] | null} */
     #frozenChildren = null;
+
+    /** @type {DrawNode[]} */
+    #childrenNodes = [];
 
     /**
      * @param {ContainerOptions} options
@@ -110,7 +111,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {GenericDrawObject} sender
+     * @param {DrawObject} sender
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {
@@ -184,7 +185,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {...GenericDrawObject} children
+     * @param {...DrawObject} children
      */
     addChild(...children) {
         this.#frozenChildren = null;
@@ -213,7 +214,7 @@ export class Container extends DrawObject {
     }
 
     /**
-     * @param {GenericDrawObject} child
+     * @param {DrawObject} child
      */
     removeChild(child) {
         this.#frozenChildren = null;
@@ -297,9 +298,6 @@ export class Container extends DrawObject {
         return cachedNode;
     }
 
-    /** @type {GenericDrawNode[]} */
-    #childrenNodes = [];
-
     /**
      * @param {number} t
      */
@@ -332,11 +330,11 @@ export class Container extends DrawObject {
 }
 
 /**
- * @template {ContainerNodeOptions} T
+ * @template {ContainerNodeOptions} [T=ContainerNodeOptions]
  * @extends {DrawNode<T>}
  */
 export class ContainerNode extends DrawNode {
-    /** @type {GenericDrawNode[]} */
+    /** @type {DrawNode[]} */
     #children = [];
     /** @type {Path2D?} */
     #clipPath = null;

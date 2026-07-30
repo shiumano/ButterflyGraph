@@ -1,12 +1,12 @@
 /**
- * @import { GenericDrawObject } from "@core/Graphics/drawObject.js"
+ * @import { DrawObject } from "@core/Graphics/drawObject.js"
  */
 
 /** @type {Readonly<Float64Array>} */
 const identityMatrix = createInitialMatrix();
 
 export class PositionCalculator {
-    /** @type {WeakMap<GenericDrawObject, PositionCalculator>} */
+    /** @type {WeakMap<DrawObject, PositionCalculator>} */
     static #attachedCalculators = new WeakMap();
 
     static #lastVersion = 0;
@@ -24,7 +24,7 @@ export class PositionCalculator {
     static #constructKey = Symbol();
     /**
      * @param {Symbol} key
-     * @param {GenericDrawObject} target
+     * @param {DrawObject} target
      */
     constructor(key, target) {
         if (key !== PositionCalculator.#constructKey) {
@@ -38,12 +38,12 @@ export class PositionCalculator {
     // PERF: いちいちこの程度のラムダを生成するだけでも目立つコストが発生する
     //     : 他が軽いから浮き出てきちゃう
     /**
-     * @param {GenericDrawObject} target
+     * @param {DrawObject} target
      */
     static #createCalulator = (target) => new PositionCalculator(this.#constructKey, target);
 
     /**
-     * @param {GenericDrawObject} target
+     * @param {DrawObject} target
      * @param {number} lx
      * @param {number} ly
      */
@@ -56,7 +56,7 @@ export class PositionCalculator {
     }
 
     /**
-     * @param {GenericDrawObject} target
+     * @param {DrawObject} target
      */
     #calculateTransform(target) {
         if (target.globalId !== this.#targetId) throw new Error("An incorrect target was specified.");

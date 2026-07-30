@@ -1,5 +1,5 @@
 /**
- * @import { GenericDrawNode } from "@core/Graphics/drawNode.js"
+ * @import { DrawNode } from "@core/Graphics/drawNode.js"
  */
 
 export class Renderer {
@@ -41,7 +41,7 @@ export class Renderer {
     }
 
     /**
-     * @param {GenericDrawNode} drawRoot
+     * @param {DrawNode} drawRoot
      */
     render(drawRoot) {
         if (this.perfMeasure) this.renderTime -= performance.now();

@@ -26,13 +26,12 @@ import { classOf } from "../Utils/metaPrg.js";
  *   transformChanged: boolean
  *   objectChanged: boolean
  * }} DrawNodeOptions
- * @typedef {DrawNode<DrawNodeOptions>} GenericDrawNode
  */
 
 // しょうがない: ……そろそろCanvasRenderingContext2Dの再実装になってきたね でも互換レイヤーだから仕方ない
 /**
  * x, yを起点として、オブジェクトを描画するためのクラス。
- * @template {DrawNodeOptions} T
+ * @template {DrawNodeOptions} [T=DrawNodeOptions]
  */
 export class DrawNode {
     // しょうがない: これはもう、うっかりやらかしてたら爆死するしか無い
