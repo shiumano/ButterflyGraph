@@ -13,6 +13,7 @@ import { InheritedColorTestScene } from "./inheritedColorTestScene.js";
 import { ComplexTreeTestScene } from "./complexTreeTestScene.js";
 import { ParticleTestScene } from "./particleTestScene.js";
 import { InputHandlerTestScene } from "./inputHandlerTestScene.js";
+import { SerializeTestScene } from "./serializeTestScene.js";
 
 /**
  * @import { TestScene } from "./testScene.js";
@@ -35,4 +36,5 @@ export const Scenes = [
     ComplexTreeTestScene,
     ParticleTestScene,
     InputHandlerTestScene,
+    SerializeTestScene,
 ];

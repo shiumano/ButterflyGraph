@@ -358,12 +358,14 @@ export class ContainerNode extends DrawNode {
         const children = options instanceof Container ? options[children_nodes] : options.children ?? [];
         const clip = options.clip;
 
+        const tOpt = this.options;
+
         this.#children = children;
 
         if (clip) {
             if (!this.options.clip
-                || this.width !== options.width
-                || this.height !== options.height
+                || tOpt.width !== options.width
+                || tOpt.height !== options.height
             ) {
                 const clipPath = new Path2D();
                 clipPath.rect(0, 0, options.width, options.height);
@@ -373,8 +375,6 @@ export class ContainerNode extends DrawNode {
             this.#clipPath = null;
         }
 
-        const tOpt = this.options;
-        tOpt.children = children;
         tOpt.clip = clip;
 
         super.read(options);
