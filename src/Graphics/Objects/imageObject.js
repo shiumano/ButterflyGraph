@@ -87,7 +87,7 @@ export class ImageObject extends DrawObject {
     set imageAlign(value) {
         if (this.#imageAlign.equals(value)) return;
 
-        this.#imageAlign = value;
+        this.#imageAlign = value.freeze();
         this.requestRecreate(this, "object");
     }
 
@@ -219,6 +219,8 @@ class ImageNode extends DrawNode {
     #offsetX = 0;
     #offsetY = 0;
     #imageSmoothing = true;
+    #placeholderWidth = 0;
+    #placeholderHeight = 0;
 
     /**
      * @returns {ImageNodeOptions}
@@ -236,18 +238,22 @@ class ImageNode extends DrawNode {
      * @param {Readonly<ImageNodeOptions>} options
      */
     read(options) {
-        const { imageInfo, offsetX, offsetY, imageSmoothing } = options;
+        if (options.objectChanged) {
+            const { width, height, imageInfo, offsetX, offsetY, imageSmoothing } = options;
 
-        this.#imageInfo = imageInfo;
-        this.#offsetX = offsetX;
-        this.#offsetY = offsetY;
-        this.#imageSmoothing = imageSmoothing;
+            this.#imageInfo = imageInfo;
+            this.#offsetX = offsetX;
+            this.#offsetY = offsetY;
+            this.#imageSmoothing = imageSmoothing;
+            this.#placeholderWidth = width;
+            this.#placeholderHeight = height;
 
-        const tOpt = this.options;
-        tOpt.imageInfo = imageInfo;
-        tOpt.offsetX = offsetX;
-        tOpt.offsetY = offsetY;
-        tOpt.imageSmoothing = imageSmoothing;
+            const tOpt = this.options;
+            tOpt.imageInfo = imageInfo;
+            tOpt.offsetX = offsetX;
+            tOpt.offsetY = offsetY;
+            tOpt.imageSmoothing = imageSmoothing;
+        }
 
         super.read(options);
     }
@@ -263,13 +269,13 @@ class ImageNode extends DrawNode {
         } else {
             // プレースホルダー もうちょっと圧少なめでも良いかも
             ctx.fillStyle = "#0ff4";
-            ctx.fillRect(0, 0, this.width, this.height);
+            ctx.fillRect(0, 0, this.#placeholderWidth, this.#placeholderHeight);
 
             ctx.strokeStyle = "#f00f";
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.rect(0.5, 0.5, this.width - 1, this.height - 1);
-            ctx.lineTo(this.width - 1, this.height - 1);
+            ctx.rect(0.5, 0.5, this.#placeholderWidth - 1, this.#placeholderHeight - 1);
+            ctx.lineTo(this.#placeholderWidth - 1, this.#placeholderHeight - 1);
             ctx.closePath();
             ctx.stroke();
         };

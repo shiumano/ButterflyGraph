@@ -356,8 +356,6 @@ export class DrawObject {
     get transformCacheInvalid() { return this.#transformCacheInvalid || !this.perfectlyOptimized; }
     set transformCacheInvalid(value) { this.#transformCacheInvalid = value; }
 
-    get lastRecreateReason() { return this.#lastRecreateReason; }
-
     get cachedNode() { return this.#nodeCache.node; }
 
     /**
@@ -475,9 +473,6 @@ export class DrawObject {
      * @returns {DrawNodeOptions}
      */
     calculateOptions(t) {
-        const fillStyle = this.fillStyle;
-        const strokeStyle = this.strokeStyle;
-
         return {
             x: this.#x,
             y: this.#y,
