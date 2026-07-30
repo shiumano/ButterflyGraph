@@ -24,8 +24,6 @@
             text-align: left;
         }
 
-
-
         canvas {
             display: block;
             /** 余白を消す マジで数十分沼ったし2回ブラウザを殺した **/
@@ -84,20 +82,24 @@
             flex: 1;
         }
     </style>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><text x='12' y='12' text-anchor='middle' dominant-baseline='central'>🦋</text></svg>" />
+    <link rel="icon" href="data:image/svg+xml,
+        <svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
+            <text x='12' y='12' text-anchor='middle' dominant-baseline='central'>🦋</text>
+        </svg>" />
 </head>
 
 <body>
     <div id="app">
         <!-- 上部 -->
         <div id="toolbar">
-            <!-- いったん未実装とする -->
-            <!-- <input id="time-input" type="time" /> -->
             <label id="speed-label" for="speed-slider">Speed: 1.0x</label>
             <input id="speed-slider" type="range" min="-1" max="5" step="0.1" value="1" />
             <label id="zoom-label" for="zoom-slider">Zoom: 1.0x</label>
             <input id="zoom-slider" type="range" min="0.1" max="2" step="0.1" value="1" />
+            <label id="vsync-label" for="vsync-toggle">VSync: true</label>
+            <input id="vsync-toggle" type="checkbox" checked />
+            <label id="renderskip-label" for="renderskip-toggle">Skip render: true</label>
+            <input id="renderskip-toggle" type="checkbox" checked />
             <div id="fps-display">FPS: -- / -- Update: --.--% Exec: --.--%</div>
             <div id="dpi-display">DPI: 1.00x</div>
             <input id="background-color-picker" type="color" />
