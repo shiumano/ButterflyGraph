@@ -50,3 +50,7 @@ export function includes(arr, item) {
  *   [K in keyof T]: T[K] extends Function ? never : K extends string ? K : never
  * }[keyof T]} Properties
  */
+/**
+ * @template T
+ * @typedef {T[keyof T]} ValueOf
+ */
