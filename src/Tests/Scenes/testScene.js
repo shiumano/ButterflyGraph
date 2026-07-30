@@ -1,6 +1,6 @@
 import { HTMLCanvasRenderer } from "../../Graphics/Rendering/HTMLCanvasRenderer.js";
 import { Container } from "../../Graphics/Containers/container.js";
-import { includes } from "../../Utils/metaPrg.js";
+import { classOf, includes } from "../../Utils/metaPrg.js";
 
 /**
  * @import { DrawObject } from "@core/Graphics/drawObject.js"
@@ -117,6 +117,7 @@ export class TestScene {
         const dpr = window.devicePixelRatio;
 
         const root = new Container({
+            name: `${classOf(this).name} root Container`,
             width: renderer.width,
             height: renderer.height,
         });
