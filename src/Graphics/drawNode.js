@@ -228,6 +228,11 @@ export class DrawNode {
 
     // スーパー簡易グローバルID
     static #globalCreatedCount = 0;
+    static get globalCreatedCount() { return this.#globalCreatedCount; }
     #globalId = DrawNode.#globalCreatedCount++;
     get globalId() { return this.#globalId; }
+
+    static #finalizedCount = 0;
+    static #finalizationRegistory = new FinalizationRegistry(() => this.#finalizedCount++);
+    static get finalizedCount() { return this.#finalizedCount; }
 }
