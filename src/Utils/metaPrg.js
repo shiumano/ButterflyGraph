@@ -19,7 +19,7 @@ export function classOf(obj) {
  * @param {T} obj
  * @param {keyof T} prop
  */
-export function getDesctiptor(obj, prop) {
+export function getDescriptor(obj, prop) {
     let searchTarget = obj;
     while (searchTarget !== null) {
         const descriptor = Object.getOwnPropertyDescriptor(searchTarget, prop);

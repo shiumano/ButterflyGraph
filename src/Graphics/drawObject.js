@@ -4,7 +4,7 @@ import { DrawNode } from "./drawNode.js";
 import { Gradient } from "./Gradients/gradient.js";
 import { AnimationManager } from "./Animations/animationManager.js";
 import { direct } from "../Utils/unitConversion.js";
-import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
+import { getDescriptor, classOf } from "../Utils/metaPrg.js";
 
 /**
  * @import { Pos } from "./vector2.js";
@@ -432,7 +432,7 @@ export class DrawObject {
         const manager = this.getAnimation(this.#animKey(prop));
         if (manager !== undefined) return manager;
 
-        const descriptor = getDesctiptor(this, prop);
+        const descriptor = getDescriptor(this, prop);
         /** @type {(value: this[P]) => void} */
         const apl = descriptor?.set?.bind(this) ?? ((value) => { this[prop] = value; });
 
