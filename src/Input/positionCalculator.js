@@ -1,4 +1,5 @@
 /**
+ * @import { Pos } from "@core/Graphics/vector2.js"
  * @import { DrawObject } from "@core/Graphics/drawObject.js"
  */
 
@@ -106,7 +107,7 @@ function createInitialMatrix() {
  * @param {Readonly<{
  *   x: number, y: number, rotation: number,
  *   scaleX: number, scaleY: number,
- *   anchor: {x: number, y: number},
+ *   anchor: Pos,
  *   originOffsetX: number, originOffsetY: number,
  *   parentWidth: number, parentHeight: number
  * }>} options

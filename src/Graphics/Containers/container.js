@@ -189,10 +189,11 @@ export class Container extends DrawObject {
      */
     addChild(...children) {
         this.#frozenChildren = null;
+        const thisChildren = this.#children;
 
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
-            const index = this.#children.indexOf(child);
+            const index = thisChildren.indexOf(child);
             if (index !== -1) continue;  // 既にあるので、追加する意味はない
 
             const oldParent = child.parent;
@@ -202,8 +203,10 @@ export class Container extends DrawObject {
                 oldParent.removeChild(child);  // childを奪う そういう仕様とする
             }
 
-            this.#children.push(child);
-            this.#children.sort((a, b) => a.zIndex - b.zIndex);
+            thisChildren.push(child);
+            if (thisChildren.length > 1 && thisChildren[thisChildren.length - 1].zIndex > child.zIndex) {
+                this.#children.sort((a, b) => a.zIndex - b.zIndex);
+            }
             this.#childrenTimed ||= child.timed;
             this.#childrenAnimated ||= child.animated;
             this.#perfectlyOptimized &&= child.perfectlyOptimized;
@@ -264,16 +267,11 @@ export class Container extends DrawObject {
      * @returns {ContainerNodeOptions}
      */
     calculateOptions(t) {
+        this._updateChildren(t);
+
         const baseOptions = super.calculateOptions(t);
 
-        const childObjects = this.#children;
-        const children = this.cachedNode?.options.children ?? [];
-        children.length = childObjects.length;
-        if (this.timed || this.objectChanged) {
-            for (let i = 0; i < childObjects.length; i++) {
-                children[i] = childObjects[i].getSnapshot(t);
-            }
-        }
+        const children = this.#childrenNodes;
 
         const options = Object.assign(baseOptions, {
             children: children,
@@ -302,12 +300,14 @@ export class Container extends DrawObject {
      * @param {number} t
      */
     _updateChildren(t) {
-        const childrenNodes = this.#childrenNodes;
-        const childObjects = this.#children;
-        for (let i = 0; i < childObjects.length; i++) {
-            childrenNodes[i] = childObjects[i].getSnapshot(t);
+        if (this.#childrenTimed || this.#childrenAnimated || this.objectChanged) {
+            const childrenNodes = this.#childrenNodes;
+            const childObjects = this.#children;
+            for (let i = 0; i < childObjects.length; i++) {
+                childrenNodes[i] = childObjects[i].getSnapshot(t);
+            }
+            childrenNodes.length = childObjects.length;
         }
-        childrenNodes.length = childObjects.length;
     }
 
     get [children_nodes]() { return this.#childrenNodes; }
@@ -382,12 +382,15 @@ export class ContainerNode extends DrawNode {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        if (this.#clipPath !== null) {
-            ctx.clip(this.#clipPath);
+        const clipPath = this.#clipPath;
+        const children = this.#children;
+
+        if (clipPath !== null) {
+            ctx.clip(clipPath);
         }
 
-        for (let i = 0; i < this.#children.length; i++) {
-            this.#children[i].render(ctx);
+        for (let i = 0; i < children.length; i++) {
+            children[i].render(ctx);
         }
     }
 }

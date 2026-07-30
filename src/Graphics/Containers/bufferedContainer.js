@@ -354,7 +354,11 @@ class BufferedContainerNode extends ContainerNode {
 
         registry.unregister(this);
         deRef(this.#bitmap);  // もういらないよ！
+
+        // PERF: ImageBitmapにしておいたほうが軽い
+        //     : ChromeはOffscreenCanvasをそのまま描いてもそう重くないがFirefoxはゴミみたいに重くなる
         this.#bitmap = this.#buffer.transferToImageBitmap();
+
         incRef(this.#bitmap);  // これ使うよ！
         registry.register(this, this.#bitmap);
 
@@ -373,8 +377,8 @@ class BufferedContainerNode extends ContainerNode {
     ) {
         // number | 0 → 雑floor なにが雑って符号付き32bit整数でオーバーフローする
         // ただし今回の相手はCanvas、2147483Kディスプレイなんて使ったら死ぬ
-        const bufferWidth = canvasWidth * resolutionScale | 0 + 1;
-        const bufferHeight = canvasHeight * resolutionScale | 0 + 1;
+        const bufferWidth = (canvasWidth * resolutionScale) | 0 + 1;
+        const bufferHeight = (canvasHeight * resolutionScale) | 0 + 1;
 
         if (this.#bufferWidth !== bufferWidth) {
             this.#oldCanvasWidth = canvasWidth;

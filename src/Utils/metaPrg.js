@@ -19,7 +19,7 @@ export function classOf(obj) {
  * @param {T} obj
  * @param {keyof T} prop
  */
-export function getDesctiptor(obj, prop) {
+export function getDescriptor(obj, prop) {
     let searchTarget = obj;
     while (searchTarget !== null) {
         const descriptor = Object.getOwnPropertyDescriptor(searchTarget, prop);
@@ -49,4 +49,8 @@ export function includes(arr, item) {
  * @typedef {{
  *   [K in keyof T]: T[K] extends Function ? never : K extends string ? K : never
  * }[keyof T]} Properties
+ */
+/**
+ * @template T
+ * @typedef {T[keyof T]} ValueOf
  */

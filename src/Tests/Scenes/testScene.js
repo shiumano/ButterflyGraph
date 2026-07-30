@@ -1,6 +1,6 @@
 import { HTMLCanvasRenderer } from "../../Graphics/Rendering/HTMLCanvasRenderer.js";
 import { Container } from "../../Graphics/Containers/container.js";
-import { includes } from "../../Utils/metaPrg.js";
+import { classOf, includes } from "../../Utils/metaPrg.js";
 
 /**
  * @import { DrawObject } from "@core/Graphics/drawObject.js"
@@ -117,6 +117,7 @@ export class TestScene {
         const dpr = window.devicePixelRatio;
 
         const root = new Container({
+            name: `${classOf(this).name} root Container`,
             width: renderer.width,
             height: renderer.height,
         });
@@ -136,12 +137,13 @@ export class TestScene {
             }
 
             const fps = renderer.frameCount;
-            const updateTimePercent = this.stats.updateTime / 100;
+            const updateTimePercent = this.stats.updateTime / 10;
             const execTimePercent = this.stats.executionTime / 10;
             fpsDisplay.textContent = (
                 `FPS: ${fps} / ${this.animationFrameCount}  `
                 + `Update: ${updateTimePercent.toFixed(2)}% `
-                + `Exec: ${execTimePercent.toFixed(2)}%`);
+                + `Exec: ${execTimePercent.toFixed(2)}%`
+            );
             renderer.frameCount = 0;
             this.stats.updateTime = 0;
             this.stats.executionTime = 0;

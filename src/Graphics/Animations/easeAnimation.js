@@ -1,8 +1,9 @@
 import { AnimationBase } from "./animationBase.js";
 
 /**
- * @enum {number}
+ * @import { ValueOf } from "@core/Utils/metaPrg.js"
  */
+
 export const Easing = Object.freeze({
     none: 0,
     in: 1,
@@ -13,6 +14,9 @@ export const Easing = Object.freeze({
     inSine: 6,
     outSine: 7
 });
+/**
+ * @typedef {ValueOf<typeof Easing>} EasingTypes
+ */
 
 export class EaseAnimation extends AnimationBase{
     #easing;
@@ -21,7 +25,7 @@ export class EaseAnimation extends AnimationBase{
      *
      * @param {number} end
      * @param {number} duration
-     * @param {Easing} easing
+     * @param {EasingTypes} easing
      */
     constructor(end, duration, easing) {
         super(end, duration);
