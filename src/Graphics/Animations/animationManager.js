@@ -18,6 +18,8 @@ export class AnimationManager {
     #latestAnimationIndex = 0;
     #latestUsedAnimationStartTime = 0;
 
+    #prevCalculatedTime = NaN;
+
     #applyer;
 
     /**
@@ -226,6 +228,9 @@ export class AnimationManager {
      * @param {number} t
      */
     apply(t) {
-        this.#applyer(this.getValue(t));
+        if (t !== this.#prevCalculatedTime) {
+            this.#prevCalculatedTime = t;
+            this.#applyer(this.getValue(t));
+        }
     }
 }
