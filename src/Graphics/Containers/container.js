@@ -267,16 +267,11 @@ export class Container extends DrawObject {
      * @returns {ContainerNodeOptions}
      */
     calculateOptions(t) {
+        this._updateChildren(t);
+
         const baseOptions = super.calculateOptions(t);
 
-        const childObjects = this.#children;
-        const children = this.cachedNode?.options.children ?? [];
-        children.length = childObjects.length;
-        if (this.timed || this.objectChanged) {
-            for (let i = 0; i < childObjects.length; i++) {
-                children[i] = childObjects[i].getSnapshot(t);
-            }
-        }
+        const children = this.#childrenNodes;
 
         const options = Object.assign(baseOptions, {
             children: children,
@@ -305,12 +300,14 @@ export class Container extends DrawObject {
      * @param {number} t
      */
     _updateChildren(t) {
-        const childrenNodes = this.#childrenNodes;
-        const childObjects = this.#children;
-        for (let i = 0; i < childObjects.length; i++) {
-            childrenNodes[i] = childObjects[i].getSnapshot(t);
+        if (this.#childrenTimed || this.#childrenAnimated || this.objectChanged) {
+            const childrenNodes = this.#childrenNodes;
+            const childObjects = this.#children;
+            for (let i = 0; i < childObjects.length; i++) {
+                childrenNodes[i] = childObjects[i].getSnapshot(t);
+            }
+            childrenNodes.length = childObjects.length;
         }
-        childrenNodes.length = childObjects.length;
     }
 
     get [children_nodes]() { return this.#childrenNodes; }
