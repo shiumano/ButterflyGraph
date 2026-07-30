@@ -1,7 +1,7 @@
 import { Renderer } from "./renderer.js";
 
 /**
- * @import { GenericDrawNode } from "@core/Graphics/drawNode.js";
+ * @import { DrawNode } from "@core/Graphics/drawNode.js";
  */
 
 // ctxを奪うタイプの初期化処理がある
@@ -80,7 +80,7 @@ export class HTMLCanvasRenderer extends Renderer {
     }
 
     /**
-     * @param {GenericDrawNode} drawRoot
+     * @param {DrawNode} drawRoot
      */
     render(drawRoot) {
         super.render(drawRoot);

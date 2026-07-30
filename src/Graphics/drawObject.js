@@ -8,7 +8,7 @@ import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
 
 /**
  * @import { Pos } from "./vector2.js";
- * @import { DrawNodeOptions, GenericDrawNode } from "./drawNode.js"
+ * @import { DrawNodeOptions } from "./drawNode.js"
  * @import { Properties } from "@core/Utils/metaPrg.js"
  * @typedef {{
  *   x?: number
@@ -32,11 +32,10 @@ import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
  *   name?: string
  * }} DrawObjectOptions
  * @typedef {"transform" | "object" | "animationRegister" | "timed" | "children" | "zIndex"} RecreateReason
- * @typedef {DrawObject<GenericDrawNode>} GenericDrawObject
  */
 
 /**
- * @template {GenericDrawNode} T
+ * @template {DrawNode} T
  * @typedef {{
  *   t: number
  *   node: T?
@@ -44,7 +43,7 @@ import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
  */
 
 /**
- * @template {GenericDrawNode} T
+ * @template {DrawNode} [T=DrawNode]
  */
 export class DrawObject {
     #name;  // DevToolsでトップに出る
@@ -96,7 +95,7 @@ export class DrawObject {
     #lastRecreateReason = null;
 
     // 名前が激突しないという性善説に基づいています
-    /** @type {Map<string, typeof DrawObject<GenericDrawNode>>} */
+    /** @type {Map<string, typeof DrawObject>} */
     static #objectTypes = new Map();
 
     /**
@@ -122,7 +121,7 @@ export class DrawObject {
         fillStyle, strokeStyle, color,
         name
     } = {}) {
-        const thisCls = /** @type {typeof DrawObject<GenericDrawNode>} */ (classOf(this));
+        const thisCls = /** @type {typeof DrawObject} */ (classOf(this));
         // しょうがない: 叶うことならstaticコンストラクタでやりたいところだが、staticコンストラクタは継承しても呼ばれない
         //           : ↓のコストは軽くて無視できるレベルなんで、しょうがないで通す
         DrawObject.#objectTypes.set(thisCls.name, thisCls);
@@ -360,7 +359,7 @@ export class DrawObject {
 
     /**
      * オブジェクトの再生性を要求、情報を親に伝播
-     * @param {GenericDrawObject} sender
+     * @param {DrawObject} sender
      * @param {RecreateReason} reason
      */
     requestRecreate(sender, reason) {

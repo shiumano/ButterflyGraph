@@ -1,5 +1,5 @@
 /**
- * @import { GenericDrawObject } from "@core/Graphics/drawObject.js"
+ * @import { DrawObject } from "@core/Graphics/drawObject.js"
  * @typedef {"click" | "pointermove" | "pointerdown" | "pointerup"} SupportedEvents
  */
 
@@ -14,7 +14,7 @@ export class InputHandler {
 
     /**
      * @param {HTMLCanvasElement} canvas
-     * @param {GenericDrawObject} target
+     * @param {DrawObject} target
      */
     constructor(canvas, target) {
         this.#canvas = canvas;

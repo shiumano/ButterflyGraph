@@ -1,5 +1,5 @@
 /**
- * @import { GenericDrawObject } from "@core/Graphics/drawObject.js";
+ * @import { DrawObject } from "@core/Graphics/drawObject.js";
  * @typedef {{ offset: number, color: string }} ColorStop
  * @typedef {"stops" | "criteria"} GradientRecreateReason
  */
@@ -21,7 +21,7 @@ export class Gradient {
     /** @type {Readonly<Readonly<ColorStop[]>>?} */
     #frozenStops = null;
 
-    /** @type {WeakArray<GenericDrawObject>} */
+    /** @type {WeakArray<DrawObject>} */
     #mountedObjects = new WeakArray();
 
     /** @type {Map<string, typeof Gradient>} */
@@ -72,7 +72,7 @@ export class Gradient {
     }
 
     /**
-     * @param {GenericDrawObject} object
+     * @param {DrawObject} object
      */
     mountTo(object) {
         if (!this.#mountedObjects.includes(object)) {
@@ -81,7 +81,7 @@ export class Gradient {
     }
 
     /**
-     * @param {GenericDrawObject} object
+     * @param {DrawObject} object
      */
     unmountFrom(object) {
         this.#mountedObjects.remove(object);
