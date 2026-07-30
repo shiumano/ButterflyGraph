@@ -10,8 +10,12 @@ import { includes } from "../../Utils/metaPrg.js";
  *   controlArea: HTMLElement
  *   speedSlider: HTMLInputElement
  *   zoomSlider: HTMLInputElement
+ *   vsyncToggle: HTMLInputElement
+ *   renderSkipToggle: HTMLInputElement
  *   fpsDisplay: HTMLElement
  *   dpiDisplay: HTMLElement
+ *   vsyncLabel: HTMLElement
+ *   renderSkipLabel: HTMLElement
  *   startTime: number
  * }} TestSceneOptions
  */
@@ -35,6 +39,9 @@ export class TestScene {
 
     forceRedraw = false;
 
+    vsync = true;
+    renderSkip = true;
+
     fpsUpdateIntervalId;
     animationFrameCount = 0;
 
@@ -50,8 +57,12 @@ export class TestScene {
     /**
      * @param {TestSceneOptions} options
      */
-    constructor(options) {
-        const { testArea, controlArea, speedSlider, zoomSlider, fpsDisplay, dpiDisplay, startTime } = options;
+    constructor({
+        testArea, controlArea,
+        speedSlider, zoomSlider, vsyncToggle, renderSkipToggle,
+        fpsDisplay, dpiDisplay,
+        startTime
+    }) {
 
         const canvas = document.createElement("canvas");
         canvas.width = testArea.clientWidth;
@@ -91,6 +102,16 @@ export class TestScene {
             const newScale = parseFloat(zoomSlider.value);
             this.zoomScale = newScale;
             this.resizeCanvas();
+        });
+
+        const vsync = vsyncToggle.checked;
+        vsyncToggle.addEventListener("input", (ev) => {
+            this.vsync = vsyncToggle.checked;
+        });
+
+        const renderSKip = renderSkipToggle.checked;
+        renderSkipToggle.addEventListener("input", (ev) => {
+            this.renderSkip = renderSkipToggle.checked;
         });
 
         const dpr = window.devicePixelRatio;
@@ -133,6 +154,8 @@ export class TestScene {
         this.startTime = startTime;
         this.speed = speed;
         this.zoomScale = zoomScale;
+        this.vsync = vsync;
+        this.renderSkip = renderSKip;
         this.wrapper = wrapper;
         this.canvas = canvas;
         this.renderer = renderer;
@@ -197,7 +220,7 @@ export class TestScene {
         const snapshot = this.root.getSnapshot(t);
         const endCalc = performance.now();
 
-        if (this.root.contentChanged || this.forceRedraw) {
+        if (!this.renderSkip || this.root.contentChanged || this.forceRedraw) {
             this.renderer.render(snapshot);
             this.root.contentChanged = false;
             this.forceRedraw = false;

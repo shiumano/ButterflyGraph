@@ -1,4 +1,4 @@
-import { waitVsync } from "../Utils/tasks.js";
+import { sleep, waitVsync } from "../Utils/tasks.js";
 import { Scenes } from "./Scenes/index.js";
 
 /**
@@ -12,6 +12,10 @@ const speedLabel = document.getElementById("speed-label");
 const speedSlider = document.getElementById("speed-slider");
 const zoomLabel = document.getElementById("zoom-label");
 const zoomSlider = document.getElementById("zoom-slider");
+const vsyncLabel = document.getElementById("vsync-label");
+const vsyncToggle = document.getElementById("vsync-toggle");
+const renderSkipLabel = document.getElementById("renderskip-label");
+const renderSkipToggle = document.getElementById("renderskip-toggle");
 const fpsDisplay = document.getElementById("fps-display");
 const dpiDisplay = document.getElementById("dpi-display");
 const colorSelector = document.getElementById("background-color-picker");
@@ -24,6 +28,10 @@ if (
     !(speedSlider instanceof HTMLInputElement) ||
     zoomLabel === null ||
     !(zoomSlider instanceof HTMLInputElement) ||
+    vsyncLabel === null ||
+    !(vsyncToggle instanceof HTMLInputElement) ||
+    renderSkipLabel === null ||
+    !(renderSkipToggle instanceof HTMLInputElement) ||
     fpsDisplay === null ||
     dpiDisplay === null ||
     !(colorSelector instanceof HTMLInputElement)
@@ -54,6 +62,12 @@ zoomSlider.addEventListener("dblclick", (e) => {
     zoomLabel.textContent = "Zoom: 1.0x";
     zoomSlider.dispatchEvent(new Event("input"));
 });
+vsyncToggle.addEventListener("input", (e) => {
+    vsyncLabel.textContent = `VSync: ${vsyncToggle.checked}`;
+});
+renderSkipToggle.addEventListener("input", (e) => {
+    renderSkipLabel.innerText = `Skip render: ${renderSkipToggle.checked}`;
+});
 
 /** @type {TestScene?} */
 let currentScene = null;
@@ -74,7 +88,12 @@ Scenes.forEach(async (SceneClass) => {
 
     testsList.appendChild(button);
     if (location.hash.replace("#", "") === SceneClass.name) {
-        const scene = new SceneClass({ testArea, controlArea, speedSlider, zoomSlider, fpsDisplay, dpiDisplay, startTime: Infinity });
+        const scene = new SceneClass({
+            testArea, controlArea,
+            speedSlider, zoomSlider, vsyncToggle, renderSkipToggle,
+            fpsDisplay, dpiDisplay, vsyncLabel, renderSkipLabel,
+            startTime: Infinity
+        });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {
@@ -98,7 +117,12 @@ window.addEventListener("hashchange", async () => {
     if (SceneClass !== undefined) {
         currentScene?.destroy();
 
-        const scene = new SceneClass({ testArea, controlArea, speedSlider, zoomSlider, fpsDisplay, dpiDisplay, startTime: Infinity });
+        const scene = new SceneClass({
+            testArea, controlArea,
+            speedSlider, zoomSlider, vsyncToggle, renderSkipToggle,
+            fpsDisplay, dpiDisplay, vsyncLabel, renderSkipLabel,
+            startTime: Infinity
+        });
         currentScene = scene;
         await scene.load();
         if (!scene.destroyed) {
@@ -110,7 +134,9 @@ window.addEventListener("hashchange", async () => {
 
 async function mainLoop() {
     while (true) {
-        const now = await waitVsync();
+        const useVsync = (currentScene?.vsync ?? true) || document.visibilityState === "hidden";
+        const now = useVsync ? await waitVsync() : await sleep(1);
+
         if (!pause) {
             try {
                 currentScene?.loop(now);
