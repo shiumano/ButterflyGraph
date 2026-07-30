@@ -93,5 +93,6 @@ export async function deserialize(text, reviver = butterflyGraphReviver) {
     // serialize()でシリアライズしたものなら、DrawObjectを引数としているはず
     if (!(parsed instanceof DrawObject)) throw new Error("An object that is not a ButterflyGraph object was parsed.");
 
+    // ジェネリクス持ちの型にinstanceofで判定すると型引数がanyになる 些細なことだがanyで出したくない
     return /** @type {DrawObject} */ (parsed);
 }
