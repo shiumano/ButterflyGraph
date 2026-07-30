@@ -217,7 +217,22 @@ export class TextObject extends DrawObject {
 
         cachedNode.read(this);
         return cachedNode;
+    }
 
+    toOptions() {
+        /** @type {TextOptions} */
+        const options = super.toOptions();
+        delete options.width;
+        delete options.height;
+        delete options.timed;
+        if (this.#text !== "") options.text = this.#text;
+        if (this.#font !== FONT_DEFAULT) options.font = this.#font;
+        if (!this.#fill) options.fill = false;
+        if (this.#strokeWidth !== 0) options.strokeWidth = this.#strokeWidth;
+        if (this.#sizeReference !== "actual") options.sizeReference = this.#sizeReference;
+        if (!this.#autoSizeUpdate) options.autoSizeUpdate = false;
+
+        return options;
     }
 
     isPerfectlyOptimized() { return classOf(this) === TextObject; }

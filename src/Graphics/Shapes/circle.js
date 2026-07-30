@@ -80,6 +80,18 @@ export class Circle extends DrawObject {
         return node;
     }
 
+    toOptions() {
+        /** @type {CircleOptions} */
+        const options = super.toOptions();
+        delete options.width;
+        delete options.height;
+        delete options.strokeStyle;
+        delete options.timed;
+        if (this.#radius !== 0) options.radius = this.#radius;
+
+        return options;
+    }
+
     isPerfectlyOptimized() { return classOf(this) === Circle; }
 }
 

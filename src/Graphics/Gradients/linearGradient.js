@@ -54,4 +54,13 @@ export class LinearGradient extends Gradient {
             this.#x1, this.#y1
         );
     }
+
+    toJSON() {
+        const obj = super.toJSON();
+        obj.args = [
+            this.#x0, this.#y0,
+            this.#x1, this.#y1
+        ];
+        return obj;
+    }
 }

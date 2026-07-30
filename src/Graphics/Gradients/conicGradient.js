@@ -50,4 +50,14 @@ export class ConicGradient extends Gradient {
             this.#y
         );
     }
+
+    toJSON() {
+        const obj = super.toJSON();
+        obj.args = [
+            this.#angle,
+            this.#x,
+            this.#y
+        ];
+        return obj;
+    }
 }

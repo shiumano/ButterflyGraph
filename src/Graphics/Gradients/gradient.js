@@ -4,7 +4,8 @@
  * @typedef {"stops" | "criteria"} GradientRecreateReason
  */
 
-import { WeakArray } from "../../Utils/memory.js";
+import { WeakArray } from "../../Utils/weakArray.js";
+import { classOf } from "../../Utils/metaPrg.js";
 
 /**
  * グラデーションを表すオブジェクト
@@ -23,10 +24,24 @@ export class Gradient {
     /** @type {WeakArray<GenericDrawObject>} */
     #mountedObjects = new WeakArray();
 
+    /** @type {Map<string, typeof Gradient>} */
+    static #objectTypes = new Map();
+    static get gradientTypeNames() { return this.#objectTypes.keys(); }
+
+    /**
+     * @param {string} name
+     */
+    static getTypeByName(name) {
+        return this.#objectTypes.get(name);
+    }
+
     /**
      * @param {ColorStop[]} stops
      */
     constructor(stops = []) {
+        const thisCls = /** @type {typeof Gradient} */ (classOf(this));
+        Gradient.#objectTypes.set(thisCls.name, thisCls);
+
         this.#colorStops = [...stops];  // 受け取った時点でそれは別のオブジェクトであるべき
     }
 
@@ -123,5 +138,13 @@ export class Gradient {
             const cs = this.#colorStops[i];
             grad.addColorStop(cs.offset, cs.color);
         }
+    }
+
+    toJSON() {
+        return {
+            type: classOf(this).name,
+            stops: this.#colorStops,
+            args: /** @type {number[]} */ ([])
+        };
     }
 }

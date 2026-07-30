@@ -1,3 +1,4 @@
+import { Vector2 } from "./vector2.js";
 import { Anchor } from "./anchor.js";
 import { DrawNode } from "./drawNode.js";
 import { Gradient } from "./Gradients/gradient.js";
@@ -6,7 +7,7 @@ import { direct } from "../Utils/unitConversion.js";
 import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
 
 /**
- * @import { Vector2 } from "./vector2.js";
+ * @import { Pos } from "./vector2.js";
  * @import { DrawNodeOptions, GenericDrawNode } from "./drawNode.js"
  * @import { Properties } from "@core/Utils/metaPrg.js"
  * @typedef {{
@@ -19,8 +20,8 @@ import { getDesctiptor, classOf } from "../Utils/metaPrg.js";
  *   scaleX?: number
  *   scaleY?: number
  *   alpha?: number
- *   anchor?: Readonly<Vector2>
- *   origin?: Readonly<Vector2>
+ *   anchor?: Readonly<Pos>
+ *   origin?: Readonly<Pos>
  *   zIndex?: number
  *   visible?: boolean
  *   timed?: boolean
@@ -94,6 +95,17 @@ export class DrawObject {
     /** @type {RecreateReason?} */
     #lastRecreateReason = null;
 
+    // 名前が激突しないという性善説に基づいています
+    /** @type {Map<string, typeof DrawObject<GenericDrawNode>>} */
+    static #objectTypes = new Map();
+
+    /**
+     * @param {string} name
+     */
+    static getTypeByName(name) {
+        return this.#objectTypes.get(name);
+    }
+
     /**
      * @param {DrawObjectOptions} options
      */
@@ -108,9 +120,14 @@ export class DrawObject {
         timed = true,
         showBounds = false,
         fillStyle, strokeStyle, color,
-        name = classOf(this).name
+        name
     } = {}) {
-        this.#name = name;
+        const thisCls = /** @type {typeof DrawObject<GenericDrawNode>} */ (classOf(this));
+        // しょうがない: 叶うことならstaticコンストラクタでやりたいところだが、staticコンストラクタは継承しても呼ばれない
+        //           : ↓のコストは軽くて無視できるレベルなんで、しょうがないで通す
+        DrawObject.#objectTypes.set(thisCls.name, thisCls);
+
+        this.#name = name ?? `${thisCls.name} (${this.#globalId})`;
 
         this.#x = x;
         this.#y = y;
@@ -124,8 +141,8 @@ export class DrawObject {
 
         this.#alpha = alpha;
 
-        this.#anchor = anchor;
-        this.#origin = origin;
+        this.#anchor = Vector2.newFreeze(anchor);
+        this.#origin = Vector2.newFreeze(origin);
 
         this.#zIndex = zIndex;
 
@@ -525,6 +542,36 @@ export class DrawObject {
         this.#lastRecreateReason = null;
 
         return nodeCache.node;
+    }
+
+    toOptions() {
+        /** @type {DrawObjectOptions} */
+        const options = {};
+        if (this.#x !== 0) options.x = this.#x;
+        if (this.#y !== 0) options.y = this.#y;
+        if (this.#rotation !== 0) options.rotation = this.#rotation;
+        if (this.#width !== 0) options.width = this.#width;
+        if (this.#height !== 0) options.height = this.#height;
+        if (this.#scaleX !== 1) options.scaleX = this.#scaleX;
+        if (this.#scaleY !== 1) options.scaleY = this.#scaleY;
+        if (this.#alpha !== 1) options.alpha = this.#alpha;
+        if (!this.#anchor.equals(Anchor.topLeft)) options.anchor = this.#anchor;  // Vector2.toJSONがあるのでシリアライズ安全
+        if (!this.#origin.equals(Anchor.topLeft)) options.origin = this.#origin;
+        if (this.#zIndex !== 0) options.zIndex = this.#zIndex;
+        if (!this.#visible) options.visible = false;
+        if (!this.#timed) options.timed = false;
+        if (this.#showBounds) options.showBounds = true;
+        if (this.#fillStyle !== undefined) options.fillStyle = this.#fillStyle;
+        if (this.#strokeStyle !== undefined) options.strokeStyle = this.#strokeStyle;
+
+        return options;
+    }
+
+    toJSON() {
+        return {
+            type: classOf(this).name,
+            options: this.toOptions()
+        };
     }
 
     /**

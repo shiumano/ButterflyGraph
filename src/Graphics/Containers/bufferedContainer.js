@@ -151,6 +151,18 @@ export class BufferedContainer extends Container {
         return cachedNode;
     }
 
+    toOptions() {
+        /** @type {BufferedContainerOptions} */
+        const options = super.toOptions();
+        if (this.#supersize) options.supersize = true;
+        if (this.#follow !== "scale") options.follow = this.#follow;
+        if (this.#resolutionScale !== 1) options.resolutionScale = this.#resolutionScale;
+        if (!this.#imageSmoothing) options.imageSmoothing = false;
+        if (this.#redrawRainbow) options.redrawRainbow = true;
+
+        return options;
+    }
+
     isPerfectlyOptimized() { return classOf(this) === BufferedContainer; }
 }
 

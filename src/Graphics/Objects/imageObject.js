@@ -85,9 +85,7 @@ export class ImageObject extends DrawObject {
 
     get imageAlign() { return this.#imageAlign; }
     set imageAlign(value) {
-        if (this.#imageAlign.x === value.x
-            && this.#imageAlign.y === value.y
-        ) return;
+        if (this.#imageAlign.equals(value)) return;
 
         this.#imageAlign = value;
         this.requestRecreate(this, "object");
@@ -192,6 +190,21 @@ export class ImageObject extends DrawObject {
         node.read(options);
 
         return node;
+    }
+
+    toOptions() {
+        /** @type {ImageObjectOptions} */
+        const options = super.toOptions();
+        delete options.timed;
+        delete options.width;
+        delete options.height;
+        if (this.#fps !== 0) options.fps = this.#fps;
+        if (!this.#imageAlign.equals(Anchor.topLeft)) options.imageAlign = this.#imageAlign;
+        if (!this.#imageSmoothing) options.imageSmoothing = false;
+        if (!this.#loop) options.loop = false;
+        if (this.#images.length !== 0) options.images = this.#images;
+
+        return options;
     }
 
     isPerfectlyOptimized() { return classOf(this) === ImageObject; }
