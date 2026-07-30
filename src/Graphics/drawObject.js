@@ -95,6 +95,17 @@ export class DrawObject {
     /** @type {RecreateReason?} */
     #lastRecreateReason = null;
 
+    // 名前が激突しないという性善説に基づいています
+    /** @type {Map<string, typeof DrawObject<GenericDrawNode>>} */
+    static #objectTypes = new Map();
+
+    /**
+     * @param {string} name
+     */
+    static getTypeByName(name) {
+        return this.#objectTypes.get(name);
+    }
+
     /**
      * @param {DrawObjectOptions} options
      */
@@ -109,9 +120,14 @@ export class DrawObject {
         timed = true,
         showBounds = false,
         fillStyle, strokeStyle, color,
-        name = classOf(this).name
+        name
     } = {}) {
-        this.#name = name;
+        const thisCls = /** @type {typeof DrawObject<GenericDrawNode>} */ (classOf(this));
+        // しょうがない: 叶うことならstaticコンストラクタでやりたいところだが、staticコンストラクタは継承しても呼ばれない
+        //           : ↓のコストは軽くて無視できるレベルなんで、しょうがないで通す
+        DrawObject.#objectTypes.set(thisCls.name, thisCls);
+
+        this.#name = name ?? `${thisCls.name} (${this.#globalId})`;
 
         this.#x = x;
         this.#y = y;
