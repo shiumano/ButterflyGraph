@@ -354,7 +354,11 @@ class BufferedContainerNode extends ContainerNode {
 
         registry.unregister(this);
         deRef(this.#bitmap);  // もういらないよ！
+
+        // PERF: ImageBitmapにしておいたほうが軽い
+        //     : ChromeはOffscreenCanvasをそのまま描いてもそう重くないがFirefoxはゴミみたいに重くなる
         this.#bitmap = this.#buffer.transferToImageBitmap();
+
         incRef(this.#bitmap);  // これ使うよ！
         registry.register(this, this.#bitmap);
 
