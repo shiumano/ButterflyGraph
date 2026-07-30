@@ -99,6 +99,19 @@ export class Donut extends DrawObject {
         return node;
     }
 
+    toOptions() {
+        /** @type {DonutOptions} */
+        const options = super.toOptions();
+        delete options.width;
+        delete options.height;
+        delete options.fillStyle;
+        delete options.timed;
+        if (this.#radius !== 0) options.radius = this.#radius;
+        if (this.#lineWidth !== 0) options.lineWidth = this.#lineWidth;
+
+        return options;
+    }
+
     isPerfectlyOptimized() { return classOf(this) === Donut; }
 }
 

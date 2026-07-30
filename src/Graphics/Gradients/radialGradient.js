@@ -71,4 +71,13 @@ export class RadialGradient extends Gradient {
             this.#x1, this.#y1, this.#r1
         );
     }
+
+    toJSON() {
+        const obj = super.toJSON();
+        obj.args = [
+            this.#x0, this.#y0, this.#r0,
+            this.#x1, this.#y1, this.#r1
+        ];
+        return obj;
+    }
 }

@@ -139,4 +139,12 @@ export class Gradient {
             grad.addColorStop(cs.offset, cs.color);
         }
     }
+
+    toJSON() {
+        return {
+            type: classOf(this).name,
+            stops: this.#colorStops,
+            args: /** @type {number[]} */ ([])
+        };
+    }
 }

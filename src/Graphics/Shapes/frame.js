@@ -74,6 +74,16 @@ export class Frame extends DrawObject {
         return node;
     }
 
+    toOptions() {
+        /** @type {FrameOptions} */
+        const options = super.toOptions();
+        delete options.fillStyle;
+        delete options.timed;
+        if (this.#lineWidth !== 0) options.lineWidth = this.#lineWidth;
+
+        return options;
+    }
+
     isPerfectlyOptimized() { return classOf(this) === Frame; }
 }
 

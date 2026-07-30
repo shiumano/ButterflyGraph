@@ -314,6 +314,17 @@ export class Container extends DrawObject {
 
     get [children_nodes]() { return this.#childrenNodes; }
 
+    toOptions() {
+        /** @type {ContainerOptions} */
+        const options = super.toOptions();
+        if (!super.timed) options.timed = false;
+        if (this.#clip) options.clip = true;
+        const children = this.getAllChildren();
+        if (children.length !== 0) options.children = children;
+
+        return options;
+    }
+
     isPerfectlyOptimized() { return classOf(this) === Container; }
 
     #perfectlyOptimized;

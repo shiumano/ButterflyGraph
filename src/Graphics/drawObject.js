@@ -544,6 +544,36 @@ export class DrawObject {
         return nodeCache.node;
     }
 
+    toOptions() {
+        /** @type {DrawObjectOptions} */
+        const options = {};
+        if (this.#x !== 0) options.x = this.#x;
+        if (this.#y !== 0) options.y = this.#y;
+        if (this.#rotation !== 0) options.rotation = this.#rotation;
+        if (this.#width !== 0) options.width = this.#width;
+        if (this.#height !== 0) options.height = this.#height;
+        if (this.#scaleX !== 1) options.scaleX = this.#scaleX;
+        if (this.#scaleY !== 1) options.scaleY = this.#scaleY;
+        if (this.#alpha !== 1) options.alpha = this.#alpha;
+        if (!this.#anchor.equals(Anchor.topLeft)) options.anchor = this.#anchor;  // Vector2.toJSONがあるのでシリアライズ安全
+        if (!this.#origin.equals(Anchor.topLeft)) options.origin = this.#origin;
+        if (this.#zIndex !== 0) options.zIndex = this.#zIndex;
+        if (!this.#visible) options.visible = false;
+        if (!this.#timed) options.timed = false;
+        if (this.#showBounds) options.showBounds = true;
+        if (this.#fillStyle !== undefined) options.fillStyle = this.#fillStyle;
+        if (this.#strokeStyle !== undefined) options.strokeStyle = this.#strokeStyle;
+
+        return options;
+    }
+
+    toJSON() {
+        return {
+            type: classOf(this).name,
+            options: this.toOptions()
+        };
+    }
+
     /**
      * requestRecreate(sender, reason)を確実に呼び出し、キャッシュが再利用可能であると保証しますか？
      */

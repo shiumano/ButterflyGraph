@@ -36,6 +36,15 @@ export class Rectangle extends DrawObject {
         return node;
     }
 
+    toOptions() {
+        /** @type {RectangleOptions} */
+        const options = super.toOptions();
+        delete options.strokeStyle;
+        delete options.timed;
+
+        return options;
+    }
+
     isPerfectlyOptimized() { return classOf(this) === Rectangle; }
 }
 

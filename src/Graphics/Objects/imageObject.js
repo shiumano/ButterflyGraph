@@ -192,6 +192,21 @@ export class ImageObject extends DrawObject {
         return node;
     }
 
+    toOptions() {
+        /** @type {ImageObjectOptions} */
+        const options = super.toOptions();
+        delete options.timed;
+        delete options.width;
+        delete options.height;
+        if (this.#fps !== 0) options.fps = this.#fps;
+        if (!this.#imageAlign.equals(Anchor.topLeft)) options.imageAlign = this.#imageAlign;
+        if (!this.#imageSmoothing) options.imageSmoothing = false;
+        if (!this.#loop) options.loop = false;
+        if (this.#images.length !== 0) options.images = this.#images;
+
+        return options;
+    }
+
     isPerfectlyOptimized() { return classOf(this) === ImageObject; }
 }
 
