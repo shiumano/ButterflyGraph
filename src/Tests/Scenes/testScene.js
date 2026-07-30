@@ -137,12 +137,13 @@ export class TestScene {
             }
 
             const fps = renderer.frameCount;
-            const updateTimePercent = this.stats.updateTime / 100;
+            const updateTimePercent = this.stats.updateTime / 10;
             const execTimePercent = this.stats.executionTime / 10;
             fpsDisplay.textContent = (
                 `FPS: ${fps} / ${this.animationFrameCount}  `
                 + `Update: ${updateTimePercent.toFixed(2)}% `
-                + `Exec: ${execTimePercent.toFixed(2)}%`);
+                + `Exec: ${execTimePercent.toFixed(2)}%`
+            );
             renderer.frameCount = 0;
             this.stats.updateTime = 0;
             this.stats.executionTime = 0;
