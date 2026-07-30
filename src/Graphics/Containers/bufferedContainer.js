@@ -210,7 +210,6 @@ class BufferedContainerNode extends ContainerNode {
     // デバッグ用!! でもおもろいから残した!!!!!!!!
     #redrawRainbow = false;
 
-    // PERF: DRY原則とかそんなことを言ってられる余裕はない
     #width = 0;
     #height = 0;
 

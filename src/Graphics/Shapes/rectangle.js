@@ -20,6 +20,7 @@ export class Rectangle extends DrawObject {
      */
     constructor(options = {}) {
         super(options);
+        super.timed = false;
     }
 
     get timed() { return false; }
@@ -42,11 +43,24 @@ export class Rectangle extends DrawObject {
  * @extends {DrawNode<RectangleNodeOptions>}
  */
 export class RectangleNode extends DrawNode {
+    #width = 0;
+    #height = 0;
+
     /**
      * @returns {RectangleNodeOptions}
      */
     createDefaultOptions() {
         return super.createDefaultOptions();
+    }
+
+    /**
+     * @param {Readonly<RectangleNodeOptions>} options
+     */
+    read(options) {
+        this.#width = options.width;
+        this.#height = options.height;
+
+        super.read(options);
     }
 
     /**

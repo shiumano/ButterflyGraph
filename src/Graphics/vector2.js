@@ -50,7 +50,9 @@ export class Vector2 {
      * @param {Readonly<Vector2>} other
      */
     equals(other) {
-        return this.x === other.x && this.y === other.y;
+        // WARN: Readonly<>にした結果、プライベート要素が滅んだ
+        // @ts-expect-error
+        return this.#x === other.#x && this.#y === other.#y;
     }
 
     /**

@@ -27,6 +27,11 @@ export class Frame extends DrawObject {
         ...options
     } = {}) {
         super(options);
+        super.timed = false;
+
+        if (options.color !== undefined) {
+            this.strokeStyle = options.color;
+        }
 
         this.#lineWidth = lineWidth;
     }
@@ -53,7 +58,7 @@ export class Frame extends DrawObject {
         const baseOptions = super.calculateOptions(t);
 
         const options = Object.assign(baseOptions, {
-            lineWidth: this.lineWidth
+            lineWidth: this.#lineWidth
         });
 
         return options;

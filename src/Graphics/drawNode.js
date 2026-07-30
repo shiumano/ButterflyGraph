@@ -65,9 +65,6 @@ export class DrawNode {
 
     get options() { return this.#options; }
 
-    get width() { return this.#width; }
-    get height() { return this.#height; }
-
     /**
      * 初期状態のoptionsの生成
      * @returns {DrawNodeOptions}
