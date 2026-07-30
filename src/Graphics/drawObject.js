@@ -161,6 +161,8 @@ export class DrawObject {
             this.#strokeStyle.mountTo(this);
         }
 
+        DrawObject.#finalizationRegistory.register(this, this.name);
+
         this.#updateOriginOffset();
     }
 

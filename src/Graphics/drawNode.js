@@ -57,9 +57,12 @@ export class DrawNode {
     #hasTransform = false;
 
     constructor() {
-        if (classOf(this) === DrawNode) {
+        const cls = classOf(this);
+        if (cls === DrawNode) {
             console.warn("Constructing abstract class!");
         }
+
+        DrawNode.#finalizationRegistory.register(this, cls.name);
     }
 
     get options() { return this.#options; }
