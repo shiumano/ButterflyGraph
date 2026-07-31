@@ -43,9 +43,10 @@ export class TestScene {
     renderSkip = true;
 
     fpsUpdateIntervalId;
-    animationFrameCount = 0;
 
     stats = {
+        renderedFrameCount: 0,
+        animationFrameCount: 0,
         updateTime: 0,
         executionTime: 0
     };
@@ -76,8 +77,7 @@ export class TestScene {
         wrapper.appendChild(canvas);
         testArea.appendChild(wrapper);
 
-        const renderer = new HTMLCanvasRenderer(canvas, false);
-        renderer.perfMeasure = true;
+        const renderer = new HTMLCanvasRenderer(canvas);
 
         const speed = parseFloat(speedSlider.value);
         speedSlider.addEventListener("input", (ev) => {
@@ -129,25 +129,25 @@ export class TestScene {
         const media = matchMedia(mqString);
         media.addEventListener("change", this.updateDevicePixelRatio.bind(this), { once: true });
 
-
+        const stats = this.stats;
         this.fpsUpdateIntervalId = setInterval(() => {
             if (this.destroyed) {
                 clearInterval(this.fpsUpdateIntervalId);
                 return;
             }
 
-            const fps = renderer.frameCount;
-            const updateTimePercent = this.stats.updateTime / 10;
-            const execTimePercent = this.stats.executionTime / 10;
+            const fps = stats.renderedFrameCount;
+            const updateTimePercent = stats.updateTime / 10;
+            const execTimePercent = stats.executionTime / 10;
             fpsDisplay.textContent = (
-                `FPS: ${fps} / ${this.animationFrameCount}  `
+                `FPS: ${fps} / ${stats.animationFrameCount}  `
                 + `Update: ${updateTimePercent.toFixed(2)}% `
                 + `Exec: ${execTimePercent.toFixed(2)}%`
             );
-            renderer.frameCount = 0;
-            this.stats.updateTime = 0;
-            this.stats.executionTime = 0;
-            this.animationFrameCount = 0;
+            stats.renderedFrameCount = 0;
+            stats.animationFrameCount = 0;
+            stats.updateTime = 0;
+            stats.executionTime = 0;
         }, 1000);
 
         this.testArea = testArea;
@@ -214,7 +214,8 @@ export class TestScene {
     loop(now) {
         if (this.destroyed) return;
 
-        this.animationFrameCount++;
+        const stats = this.stats;
+        stats.animationFrameCount++;
 
         const t = this.toLocalTime(now);
 
@@ -224,6 +225,7 @@ export class TestScene {
 
         if (!this.renderSkip || this.root.contentChanged || this.forceRedraw) {
             this.renderer.render(snapshot);
+            stats.renderedFrameCount++;
             this.root.contentChanged = false;
             this.forceRedraw = false;
         }
@@ -233,8 +235,8 @@ export class TestScene {
         // これはAPIコールにかかった時間の合計
         const endExec = performance.now();
 
-        this.stats.updateTime += endCalc - startCalc;
-        this.stats.executionTime += endExec - endCalc;
+        stats.updateTime += endCalc - startCalc;
+        stats.executionTime += endExec - endCalc;
     }
 
     destroy() {
