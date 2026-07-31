@@ -6,10 +6,6 @@ export class Renderer {
     #width;
     #height;
 
-    perfMeasure = false;
-    renderTime = 0;
-    frameCount = 0;
-
     /**
      * @param {CanvasRenderingContext2D} ctx
      * @param {number} width
