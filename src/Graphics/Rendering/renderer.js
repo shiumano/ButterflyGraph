@@ -40,16 +40,19 @@ export class Renderer {
      * @param {DrawNode} drawRoot
      */
     render(drawRoot) {
-        if (this.perfMeasure) this.renderTime -= performance.now();
+        const ctx = this.ctx;
+        // MDN Web Docs - https://developer.mozilla.org/ja/docs/Web/API/CanvasRenderingContext2D/reset
+        ctx.reset();
 
-        this.ctx.reset();
-        drawRoot.render(this.ctx);
+        ctx.clearRect(this.#width - 1, this.#height - 1, 1, 1);
+        // Q: は？
+        // A: ctx.reset()を呼び出したら内容もクリアされるはずだが、WebKitでは内容がクリアされず残像が残る
+        //  : おそらくctxのピクセルデータは消えているがディスプレイの更新を忘れている
+        //  : 普通フレームのリセットはclearRectだからresetでフレームが消えない問題に気付いてないんだろうな
+        //  : (0, 0)から触れたピクセルの場所までinvalidateされるので、こうすると残像が消える
 
-        this.frameCount++;
-        if (this.perfMeasure) this.renderTime += performance.now();
+        // PERF: ctx.resetの半分ちょいくらいctx.clearRectもコストがかかる ゴミ
 
-        // 以上！終わり！お疲れ様！
-        // PERF: 理論上dirty rect再描画は可能、おそらくRendererの責務になるだろう
-        // TODO: でも脳が死ぬから今はやーらない
+        drawRoot.render(ctx);
     }
 }
